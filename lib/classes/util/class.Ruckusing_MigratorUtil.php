@@ -3,6 +3,7 @@
 class Ruckusing_MigratorUtil {
  
   private $adapter = null;
+  private $migrations = array();
   
   function __construct($adapter) {
     $this->adapter = $adapter;
@@ -36,7 +37,15 @@ class Ruckusing_MigratorUtil {
     skip migrations that have not been executed, when going down this method will only include migrations 
     that have been executed.
   */
-	public function get_runnable_migrations($directory, $direction, $destination = null) {
+	public function get_runnable_migrations($directory, $direction, $destination = null, $use_cache = true) {
+	  // cache migration lookups and early return if we've seen this requested set
+	  if($use_cache == true) {
+      $key = $direction . '-' . $destination;
+      if(array_key_exists($key, $this->migrations)) {
+        return($this->migrations[$key]);
+      }
+    }
+	  
 		$runnable = array();
 		$migrations = array();
 		$migrations = $this->get_migration_files($directory, $direction);
@@ -72,8 +81,10 @@ class Ruckusing_MigratorUtil {
       } 
       $to_execute[] = $migration;
     }
-    
-		return $to_execute;
+    if($use_cache == true) {
+      $this->migrations[$key] = $to_execute;
+    }
+    return($to_execute);
 	}//get_relevant_files
 	    
   /* 

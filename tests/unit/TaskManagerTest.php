@@ -1,6 +1,8 @@
 <?php
-require_once '../test_helper.php';
-require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
+if(!defined('BASE')) {
+  define('BASE', dirname(__FILE__) . '/..');
+}
+require_once BASE  . '/test_helper.php';require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/task/class.Ruckusing_TaskManager.php';
 require_once RUCKUSING_BASE  . '/lib/tasks/class.Ruckusing_DB_Schema.php';
 

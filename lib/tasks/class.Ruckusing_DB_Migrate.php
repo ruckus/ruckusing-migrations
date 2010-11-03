@@ -11,6 +11,9 @@ require_once RUCKUSING_BASE . '/lib/classes/Ruckusing_exceptions.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseMigration.php';
 
+define('STYLE_REGULAR', 1);
+define('STYLE_OFFSET', 2);
+
 class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	
 	private $adapter = null;
@@ -37,19 +40,40 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
   	  $this->verify_environment();
 
 			$target_version = null;
-			//did the user specify a version?
+			$style = STYLE_REGULAR;
+			
+			//did the user specify an explicit version?
 			if(array_key_exists('VERSION', $this->task_args)) {
-			  $target_version = $this->task_args['VERSION'];
+			  $target_version = trim($this->task_args['VERSION']);
 			}
+
+      // did the user specify a relative offset, e.g. "-2" or "+3" ?
+			if($target_version !== null) {
+			  if(preg_match('/^([\-\+])(\d+)$/', $target_version, $matches)) {
+			    if(count($matches) == 3) {
+			      $direction = $matches[1] == '-' ? 'down' : 'up';
+			      $offset = intval($matches[2]);
+			      $style = STYLE_OFFSET;
+		      }
+		    }
+		  }
 			//determine our direction and target version
 			$current_version = $this->migrator_util->get_max_version();
-			if(is_null($target_version)) {
-			  $this->migrate_up($target_version);
-		  }elseif($current_version > $target_version) {
-			  $this->migrate_down($target_version);
-	    } else {
-	      $this->migrate_up($target_version);			  
-      }
+			if($style == STYLE_REGULAR) {
+  			if(is_null($target_version)) {
+  			  $this->prepare_to_migrate($target_version, 'up');
+  		  }elseif($current_version > $target_version) {
+  			  $this->prepare_to_migrate($target_version, 'down');
+  	    } else {
+  	      $this->prepare_to_migrate($target_version, 'up');
+        }  			
+		  }
+		  
+		  if($style == STYLE_OFFSET) {
+			  $this->migrate_from_offset($offset, $current_version, $direction);
+	    }
+
+      // Completed - display accumulated output
 			if(!empty($output)) {
 			  echo $output . "\n\n";
 		  }
@@ -62,43 +86,59 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		}	
 		echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";			
 	}
-
-	private function migrate_up($destination) {
-		try {
-		  echo "\tMigrating UP";
-			if(!is_null($destination)) {
-			   echo " to: {$destination}\n";				
-		  } else {
-		    echo ":\n";
-		  }
-		  $migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', $destination);			
-			if(count($migrations) == 0) {
-				return "\nNo relevant migrations to run. Exiting...\n";
-			}
-			$result = $this->run_migrations($migrations, 'up', $destination);
-		}catch(Exception $ex) {
-			throw $ex;
-		}		
-	}//migrate_up
-
-	private function migrate_down($destination) {
-		try {
-		  echo "\tMigrating DOWN";
-			if(!is_null($destination)) {
-			   echo " to: {$destination}\n";				
-		  } else {
-		    echo ":\n";
-		  }
-			$migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', $destination);
-			$result = $this->run_migrations($migrations, 'down', $destination);
-			if(count($migrations) == 0) {
-				return "\nNo relevant migrations to run. Exiting...\n";
-			}
-		}catch(Exception $ex) {
-			throw $ex;
-		}
-	}//migrate_down
 	
+	private function migrate_from_offset($offset, $current_version, $direction) {
+	  $migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, null);
+	  $versions = array();
+	  $current_index = 0;
+	  for($i = 0; $i < count($migrations); $i++) {
+	    $migration = $migrations[$i];
+	    $versions[] = $migration['version'];
+	    if($migration['version'] === $current_version) {
+	      $current_index = $i;
+      }
+    }
+
+    if($current_index >= 0) {
+      //check that our requested offset exists
+      if($direction == 'up') {
+        $requested_offset = $current_index + ($offset-1);
+      } elseif($direction == 'down') {
+        $requested_offset = $current_index + $offset;
+      }
+      
+      if(!isset($migrations[$requested_offset])) {
+        $available = array_slice($migrations, $current_index, $offset);
+        $names = array();
+        foreach($available as $a) { $names[] = $a['file']; }
+        $num_available = count($names);
+        echo "\n\nCannot migrate " . strtoupper($direction) . " via offset \"+{$offset}\": not enough migrations exist to execute.\n";
+        echo "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
+      } else {
+        $target = $migrations[$requested_offset];
+        $this->prepare_to_migrate($target['version'], $direction);
+      }
+    }
+  }
+
+  private function prepare_to_migrate($destination, $direction) {
+    try {
+		  echo "\tMigrating " . strtoupper($direction);
+			if(!is_null($destination)) {
+			   echo " to: {$destination}\n";				
+		  } else {
+		    echo ":\n";
+		  }
+		  $migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, $destination);			
+			if(count($migrations) == 0) {
+				return "\nNo relevant migrations to run. Exiting...\n";
+			}
+			$result = $this->run_migrations($migrations, $direction, $destination);
+		}catch(Exception $ex) {
+			throw $ex;
+		}				
+  }
+
 	private function run_migrations($migrations, $target_method, $destination) {
 		$last_version = -1;
 		foreach($migrations as $file) {
@@ -167,8 +207,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		  die("\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n");
 	  }
 	}
-	
-	
+
 }//class
 
 ?>

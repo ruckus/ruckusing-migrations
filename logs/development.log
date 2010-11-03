@@ -1600,3 +1600,348 @@ Nov 02 18:32:26 [info] DROP TABLE IF EXISTS `reports`
 Nov 02 18:32:26 [info] DELETE FROM schema_migrations WHERE version = '20100921114643'
 Nov 02 18:32:26 [info] DROP TABLE IF EXISTS `promotions`
 Nov 02 18:32:26 [info] DELETE FROM schema_migrations WHERE version = '20100909133617'
+Nov 03 14:10:43 [info] SELECT version FROM schema_migrations
+Nov 03 14:10:43 [info] SELECT version FROM schema_migrations
+Nov 03 14:11:09 [info] SELECT version FROM schema_migrations
+Nov 03 14:11:09 [info] SELECT version FROM schema_migrations
+Nov 03 14:12:40 [info] SELECT version FROM schema_migrations
+Nov 03 14:12:40 [info] SELECT version FROM schema_migrations
+Nov 03 14:12:40 [info] SELECT version FROM schema_migrations
+Nov 03 14:12:58 [info] SELECT version FROM schema_migrations
+Nov 03 14:12:58 [info] SELECT version FROM schema_migrations
+Nov 03 14:12:58 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:08 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:08 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:08 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:29 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:29 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:29 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:45 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:45 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:45 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:27 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:27 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:27 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:27 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:27 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:27 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211004')
+Nov 03 14:16:35 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:39 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:39 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:39 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:39 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:39 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:39 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211006')
+Nov 03 14:16:42 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:51 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211007')
+Nov 03 14:16:51 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211008')
+Nov 03 14:16:51 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211009')
+Nov 03 14:16:51 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211010')
+Nov 03 14:16:51 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211012')
+Nov 03 14:16:55 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:55 [info] SELECT version FROM schema_migrations
+Nov 03 14:16:55 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:18 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:18 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:18 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:53 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:53 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:53 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:57 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:57 [info] SELECT version FROM schema_migrations
+Nov 03 14:18:57 [info] SELECT version FROM schema_migrations
+Nov 03 14:19:13 [info] SELECT version FROM schema_migrations
+Nov 03 14:19:13 [info] SELECT version FROM schema_migrations
+Nov 03 14:19:13 [info] SELECT version FROM schema_migrations
+Nov 03 14:20:57 [info] SELECT version FROM schema_migrations
+Nov 03 14:20:57 [info] SELECT version FROM schema_migrations
+Nov 03 14:20:57 [info] SELECT version FROM schema_migrations
+Nov 03 14:21:19 [info] SELECT version FROM schema_migrations
+Nov 03 14:21:19 [info] SELECT version FROM schema_migrations
+Nov 03 14:21:19 [info] SELECT version FROM schema_migrations
+Nov 03 14:21:30 [info] SELECT version FROM schema_migrations
+Nov 03 14:21:30 [info] SELECT version FROM schema_migrations
+Nov 03 14:21:30 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:08 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:08 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:08 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:29 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:34 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:34 [info] SELECT version FROM schema_migrations
+Nov 03 14:24:34 [info] SELECT version FROM schema_migrations
+Nov 03 14:25:41 [info] SELECT version FROM schema_migrations
+Nov 03 14:25:41 [info] SELECT version FROM schema_migrations
+Nov 03 14:25:41 [info] SELECT version FROM schema_migrations
+Nov 03 14:25:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:25:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:25:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:26:03 [info] SELECT version FROM schema_migrations
+Nov 03 14:26:03 [info] SELECT version FROM schema_migrations
+Nov 03 14:26:03 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:25 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:25 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:25 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:25 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:25 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:33 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:33 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:33 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:33 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:33 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:35 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:35 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:35 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:35 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:35 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:42 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:42 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:42 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:42 [info] SELECT version FROM schema_migrations
+Nov 03 14:40:42 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:36 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:36 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:36 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:36 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:36 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:36 [info] DELETE FROM schema_migrations WHERE version = '20101103211012'
+Nov 03 14:41:50 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:50 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:50 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:50 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:50 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:50 [info] DELETE FROM schema_migrations WHERE version = '20101103211010'
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] DELETE FROM schema_migrations WHERE version = '20101103211009'
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:51 [info] DELETE FROM schema_migrations WHERE version = '20101103211008'
+Nov 03 14:41:52 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:52 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:52 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:52 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:52 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:52 [info] DELETE FROM schema_migrations WHERE version = '20101103211007'
+Nov 03 14:41:54 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:54 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:54 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:54 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:54 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:54 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211007')
+Nov 03 14:41:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:56 [info] SELECT version FROM schema_migrations
+Nov 03 14:41:56 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211008')
+Nov 03 15:13:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:09 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211009')
+Nov 03 15:13:09 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211010')
+Nov 03 15:13:15 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:15 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:15 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:15 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211012')
+Nov 03 15:13:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:21 [info] DELETE FROM schema_migrations WHERE version = '20101103211012'
+Nov 03 15:13:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:25 [info] DELETE FROM schema_migrations WHERE version = '20101103211010'
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] DELETE FROM schema_migrations WHERE version = '20101103211009'
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:26 [info] DELETE FROM schema_migrations WHERE version = '20101103211008'
+Nov 03 15:13:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:27 [info] DELETE FROM schema_migrations WHERE version = '20101103211007'
+Nov 03 15:13:35 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:42 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:42 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:42 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:42 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:42 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:42 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211007')
+Nov 03 15:13:42 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211008')
+Nov 03 15:13:52 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:56 [info] SELECT version FROM schema_migrations
+Nov 03 15:13:56 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211009')
+Nov 03 15:13:56 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211010')
+Nov 03 15:26:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:25 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:55 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:55 [info] SELECT version FROM schema_migrations
+Nov 03 15:26:55 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:21 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:21 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211012')
+Nov 03 15:28:23 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:23 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:23 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:24 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:24 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:24 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:27 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:30 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:30 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:30 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:30 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:30 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:31 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:32 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:32 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:32 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:32 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:32 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:39 [info] DELETE FROM schema_migrations WHERE version = '20101103211012'
+Nov 03 15:28:40 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:40 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:40 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:40 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:40 [info] SELECT version FROM schema_migrations
+Nov 03 15:28:40 [info] DELETE FROM schema_migrations WHERE version = '20101103211010'
+Nov 03 15:29:35 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:35 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:35 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:35 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:35 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:35 [info] DELETE FROM schema_migrations WHERE version = '20101103211009'
+Nov 03 15:29:59 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:59 [info] SELECT version FROM schema_migrations
+Nov 03 15:29:59 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:28 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:36 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:32:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:33:55 [info] SELECT version FROM schema_migrations
+Nov 03 15:33:55 [info] SELECT version FROM schema_migrations
+Nov 03 15:33:55 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:07 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:07 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:07 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:09 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:39 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:39 [info] DELETE FROM schema_migrations WHERE version = '20101103211008'
+Nov 03 15:34:39 [info] DELETE FROM schema_migrations WHERE version = '20101103211007'
+Nov 03 15:34:39 [info] DELETE FROM schema_migrations WHERE version = '20101103211006'
+Nov 03 15:34:39 [info] DELETE FROM schema_migrations WHERE version = '20101103211004'
+Nov 03 15:34:44 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:44 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:44 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211004')
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211006')
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211007')
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211008')
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211009')
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211010')
+Nov 03 15:34:44 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211012')
+Nov 03 15:34:51 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:51 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:51 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:54 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:54 [info] SELECT version FROM schema_migrations
+Nov 03 15:34:54 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:01 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:01 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:01 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:01 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:01 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:01 [info] DELETE FROM schema_migrations WHERE version = '20101103211012'
+Nov 03 15:35:03 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:03 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:03 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:03 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:03 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:03 [info] DELETE FROM schema_migrations WHERE version = '20101103211010'
+Nov 03 15:35:04 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:04 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:04 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:04 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:04 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:04 [info] DELETE FROM schema_migrations WHERE version = '20101103211009'
+Nov 03 15:35:05 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:05 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:05 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:05 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:05 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:05 [info] DELETE FROM schema_migrations WHERE version = '20101103211008'
+Nov 03 15:35:08 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:08 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:08 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:08 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:08 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:08 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211008')
+Nov 03 15:35:16 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:16 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:16 [info] SELECT version FROM schema_migrations
+Nov 03 15:35:16 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211009')
+Nov 03 15:35:16 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211010')
+Nov 03 15:35:16 [info] INSERT INTO schema_migrations (version) VALUES ('20101103211012')

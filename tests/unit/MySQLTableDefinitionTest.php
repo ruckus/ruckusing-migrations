@@ -1,6 +1,9 @@
 <?php
 
-require_once '../test_helper.php';
+if(!defined('BASE')) {
+  define('BASE', dirname(__FILE__) . '/..');
+}
+require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';

@@ -3,7 +3,7 @@
 //set up some preliminary defaults, this is so all of our
 //framework includes work!
 if(!defined('RUCKUSING_BASE')) {
-	define('RUCKUSING_BASE', realpath(dirname('../../../')));
+	define('RUCKUSING_BASE', dirname(__FILE__) . '/..');
 }
 
 //Parent of migrations directory.
