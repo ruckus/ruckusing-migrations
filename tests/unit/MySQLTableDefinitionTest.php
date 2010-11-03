@@ -2,6 +2,7 @@
 
 require_once '../test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
+require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLTableDefinition.php';
@@ -87,6 +88,46 @@ EXP;
 		$c = new Ruckusing_ColumnDefinition($this->adapter, "id", "integer", array("primary_key" => true, "unsigned" => true));
 		$this->assertEquals("`id` int(11) UNSIGNED", trim($c));
 	}//test_column_definition
+
+  public function test_multiple_primary_keys() {
+    $bm = new Ruckusing_BaseMigration();
+    $bm->set_adapter($this->adapter);
+    $ts = time();
+    $table_name = "users_${ts}";
+    $table = $bm->create_table($table_name, array('id' => false));
+    $table->column('user_id', 'integer', array('unsigned' => true, 'primary_key' => true));
+    $table->column('username', 'string', array('primary_key' => true));
+    $table->finish();
+    
+    $user_id_actual = $this->adapter->column_info($table_name, "user_id");
+    $username_actual = $this->adapter->column_info($table_name, "username");
+    $this->assertEquals('PRI', $user_id_actual['key']);
+    $this->assertEquals('PRI', $username_actual['key']);
+
+		//make sure there is NO 'id' column
+    $id_actual = $this->adapter->column_info($table_name, "id");
+    $this->assertEquals(NULL, $id_actual);    
+    $bm->drop_table($table_name);
+  }
+
+  public function test_custom_primary_key_with_auto_increment() {
+    $bm = new Ruckusing_BaseMigration();
+    $bm->set_adapter($this->adapter);
+    $ts = time();
+    $table_name = "users_${ts}";
+    $table = $bm->create_table($table_name, array('id' => false));
+    $table->column('user_id', 'integer', array('unsigned' => true, 'primary_key' => true, 'auto_increment' => true));
+    $sql = $table->finish();
+
+    $user_id_actual = $this->adapter->column_info($table_name, "user_id");
+    $this->assertEquals('PRI', $user_id_actual['key']);
+    $this->assertEquals('auto_increment', $user_id_actual['extra']);
+
+		//make sure there is NO 'id' column
+    $id_actual = $this->adapter->column_info($table_name, "id");
+    $this->assertEquals(NULL, $id_actual);    
+    $bm->drop_table($table_name);
+  }
 
 	//test that we can generate a table w/o a primary key
 	public function test_generate_table_without_primary_key() {
