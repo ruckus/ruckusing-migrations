@@ -1,6 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
- 
 require_once '../test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/task/class.Ruckusing_TaskManager.php';
@@ -17,7 +15,7 @@ class TaskManagerTest extends PHPUnit_Framework_TestCase {
 
 		$test_db = $ruckusing_db_config['test'];
 		//setup our log
-		$logger = &Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
+		$logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
 		$this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
 		$this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );

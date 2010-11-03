@@ -5,6 +5,13 @@ class Ruckusing_MissingSchemaInfoTableException extends Exception {
       parent::__construct ( $msg, $code );
   }
 }
+
+class Ruckusing_InvalidIndexNameException extends Exception {
+	public function __construct ( $msg = '', $code = 0 ) {
+      parent::__construct ( $msg, $code );
+  }
+}
+
 class Ruckusing_MissingMigrationDirException extends Exception {
 	public function __construct ( $msg = '', $code = 0 ) {
       parent::__construct ( $msg, $code );

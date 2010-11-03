@@ -1,8 +1,10 @@
 <?php
 require_once '../test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
+require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
+require_once RUCKUSING_BASE  . '/lib/classes/Ruckusing_exceptions.php';
 
 /*
 	To run these unit-tests an empty test database needs to be setup in database.inc.php
@@ -82,8 +84,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			$this->assertEquals(true, $this->adapter->database_exists($db) );
 			
 			$db = "db_does_not_exist";
-			$this->assertEquals(false, $this->adapter->database_exists($db) );
-			
+			$this->assertEquals(false, $this->adapter->database_exists($db) );			
 		}
 
 		public function test_database_droppage() {
@@ -96,12 +97,24 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			$this->assertEquals(true, $this->adapter->drop_database($db) );
 			$this->assertEquals(false, $this->adapter->database_exists($db) );
 		}
+		
+		public function test_index_name_too_long_throws_exception() {
+		  $this->setExpectedException('Ruckusing_InvalidIndexNameException');
+		  $bm = new Ruckusing_BaseMigration();
+      $bm->set_adapter($this->adapter);
+      $ts = time();
+      $table_name = "users_${ts}";
+      $table = $bm->create_table($table_name, array('id' => false));
+      $table->column('somecolumnthatiscrazylong', 'integer');
+      $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
+      $sql = $table->finish();
+      $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));      
+	  }
 
 		public function test_custom_primary_key_1() {
 		  $t1 = new Ruckusing_MySQLTableDefinition($this->adapter, "users", array('id' => true, 'options' => 'Engine=InnoDB') );
   		$t1->column("user_id", "integer", array("primary_key" => true));
   		$actual = $t1->finish(true);
-  		echo $actual;
 	  }
 
 		public function test_column_definition() {			

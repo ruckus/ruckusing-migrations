@@ -393,7 +393,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		    $msg = "The auto-generated index name is too long for MySQL (max is 64 chars). ";
 		    $msg .= "Considering using 'name' parameter to specify a custom name for this index. Note: you will also need to specify";
 		    $msg .= " this custom name in a drop_index() - if you have one.";
-		    throw new Ruckusing_ArgumentException($msg);
+		    throw new Ruckusing_InvalidIndexNameException($msg);
 	    }
 		if(!is_array($column_name)) {
 			$column_name = array($column_name);
