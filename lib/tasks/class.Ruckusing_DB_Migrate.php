@@ -20,6 +20,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	private $migrator_util = null;
 	private $task_args = array(); 
 	private $regexp = '/^(\d+)\_/';
+	private $debug = false;
 	
 	function __construct($adapter) {
 		$this->adapter = $adapter;
@@ -88,9 +89,10 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	}
 	
 	private function migrate_from_offset($offset, $current_version, $direction) {
-	  $migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, null);
+	  //$migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, null);
+	  $migrations = $this->migrator_util->get_migration_files(RUCKUSING_MIGRATION_DIR, $direction);
 	  $versions = array();
-	  $current_index = 0;
+	  $current_index = -1;
 	  for($i = 0; $i < count($migrations); $i++) {
 	    $migration = $migrations[$i];
 	    $versions[] = $migration['version'];
@@ -98,26 +100,40 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	      $current_index = $i;
       }
     }
-
-    if($current_index >= 0) {
-      //check that our requested offset exists
-      if($direction == 'up') {
-        $requested_offset = $current_index + ($offset-1);
-      } elseif($direction == 'down') {
-        $requested_offset = $current_index + $offset;
+    if($this->debug == true) {
+      print_r($migrations);
+      echo "\ncurrent_index: " . $current_index . "\n";
+      echo "\ncurrent_version: " . $current_version . "\n";
+      echo "\noffset: " . $offset . "\n";
+    }
+    
+    // If we are not at the bottom then adjust our index (to satisfy array_slice)
+    if($current_index == -1) {
+      $current_index = 0;
+    } else {
+      $current_index += 1;
+    }
+    
+    // check to see if we have enough migrations to run - the user
+    // might have asked to run more than we have available
+    $available = array_slice($migrations, $current_index, $offset);
+    // echo "\n------------- AVAILABLE ------------------\n";
+    // print_r($available);
+    if(count($available) != $offset) {
+      $names = array();
+      foreach($available as $a) { $names[] = $a['file']; }
+      $num_available = count($names);
+      $prefix = $direction == 'down' ? '-' : '+';
+      echo "\n\nCannot migrate " . strtoupper($direction) . " via offset \"{$prefix}{$offset}\": not enough migrations exist to execute.\n";
+      echo "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
+    } else {
+      // run em
+      $target = end($available);
+      if($this->debug == true) {
+        echo "\n------------- TARGET ------------------\n";
+        print_r($target);
       }
-      
-      if(!isset($migrations[$requested_offset])) {
-        $available = array_slice($migrations, $current_index, $offset);
-        $names = array();
-        foreach($available as $a) { $names[] = $a['file']; }
-        $num_available = count($names);
-        echo "\n\nCannot migrate " . strtoupper($direction) . " via offset \"+{$offset}\": not enough migrations exist to execute.\n";
-        echo "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
-      } else {
-        $target = $migrations[$requested_offset];
-        $this->prepare_to_migrate($target['version'], $direction);
-      }
+      $this->prepare_to_migrate($target['version'], $direction);
     }
   }
 
