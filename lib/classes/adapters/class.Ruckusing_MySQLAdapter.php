@@ -128,7 +128,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		if($this->database_exists($db)) {
 			return false;
 		}
-		$ddl = sprintf("CREATE DATABASE `%s`", $db);
+		$ddl = sprintf("CREATE DATABASE %s", $this->identifier($db));
 		$result = $this->query($ddl);
 		if($result === true) {
 			return true;
@@ -141,7 +141,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		if(!$this->database_exists($db)) {
 			return false;
 		}
-		$ddl = sprintf("DROP DATABASE IF EXISTS `%s`", $db);
+		$ddl = sprintf("DROP DATABASE IF EXISTS %s", $this->identifier($db));
 		$result = $this->query($ddl);
 		if( $result === true) {
 			return true;
@@ -164,7 +164,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 
 			if($tbl == 'schema_info') { continue; }
 
-			$stmt = "SHOW CREATE TABLE `$tbl`";
+			$stmt = sprintf("SHOW CREATE TABLE %s", $this->identifier($tbl));
 			$result = $this->query($stmt);
 
       if(is_array($result) && count($result) == 1) {
@@ -244,7 +244,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	}
 	
 	public function drop_table($tbl) {
-		$ddl = "DROP TABLE IF EXISTS `$tbl`";
+		$ddl = sprintf("DROP TABLE IF EXISTS %s", $this->identifier($tbl));
 		$result = $this->query($ddl);
 		return true;
 	}
@@ -272,7 +272,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		if(empty($new_name)) {
 			throw new Ruckusing_ArgumentException("Missing new column name parameter");
 		}
-		$sql = sprintf("RENAME TABLE %s TO %s", $name, $new_name);
+		$sql = sprintf("RENAME TABLE %s TO %s", $this->identifier($name), $this->identifier($new_name));
 		return $this->execute_ddl($sql);
 	}//create_table
 	
@@ -302,7 +302,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	}//add_column
 	
 	public function remove_column($table_name, $column_name) {
-		$sql = sprintf("ALTER TABLE `%s` DROP COLUMN `%s`", $table_name, $column_name);
+		$sql = sprintf("ALTER TABLE %s DROP COLUMN %s", $this->identifier($table_name), $this->identifier($column_name));
 		return $this->execute_ddl($sql);
 	}//remove_column
 	
@@ -318,7 +318,10 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		}
 		$column_info = $this->column_info($table_name, $column_name);
 		$current_type = $column_info['type'];
-		$sql =  sprintf("ALTER TABLE `%s` CHANGE `%s` `%s` %s", $table_name, $column_name, $new_column_name, $current_type);
+		$sql =  sprintf("ALTER TABLE %s CHANGE %s %s %s", 
+		    $this->identifier($table_name), 
+		    $this->identifier($column_name), 
+		    $this->identifier($new_column_name), $current_type);
 		return $this->execute_ddl($sql);
 	}//rename_column
 
@@ -357,7 +360,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 			throw new Ruckusing_ArgumentException("Missing original column name parameter");
 		}
 		try {
-			$sql = sprintf("SHOW COLUMNS FROM `%s` LIKE '%s'", $table, $column);
+			$sql = sprintf("SHOW COLUMNS FROM %s LIKE '%s'", $this->identifier($table), $column);
 			$result = $this->select_one($sql);
 			if(is_array($result)) {
 			  //lowercase key names
@@ -391,18 +394,23 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		
 		if(strlen($index_name) > MAX_IDENTIFIER_LENGTH) {
 		    $msg = "The auto-generated index name is too long for MySQL (max is 64 chars). ";
-		    $msg .= "Considering using 'name' parameter to specify a custom name for this index. Note: you will also need to specify";
+		    $msg .= "Considering using 'name' option parameter to specify a custom name for this index.";
+		    $msg .= " Note: you will also need to specify";
 		    $msg .= " this custom name in a drop_index() - if you have one.";
 		    throw new Ruckusing_InvalidIndexNameException($msg);
 	    }
 		if(!is_array($column_name)) {
-			$column_name = array($column_name);
+			$column_names = array($column_name);
 		}
-		$sql = sprintf("CREATE %sINDEX %s ON `%s`(%s)",
+		$cols = array();
+		foreach($column_names as $name) {
+		    $cols[] = $this->identifier($name);
+	    }
+		$sql = sprintf("CREATE %sINDEX %s ON %s(%s)",
 											$unique ? "UNIQUE " : "",
 											$index_name, 
-											$table_name,
-											join(", ", $column_name));
+											$this->identifier($table_name),
+											join(", ", $cols));
 		return $this->execute_ddl($sql);		
 	}//add_index
 	
@@ -419,7 +427,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		} else {
 			$index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
 		}
-		$sql = sprintf("DROP INDEX `%s` ON `%s`", $index_name, $table_name);		
+		$sql = sprintf("DROP INDEX %s ON %s", $this->identifier($index_name), $this->identifier($table_name));		
 		return $this->execute_ddl($sql);
 	}
 
@@ -446,7 +454,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	}//has_index
 	
 	public function indexes($table_name) {
-		$sql = sprintf("SHOW KEYS FROM `%s`", $table_name);
+		$sql = sprintf("SHOW KEYS FROM %s", $this->identifier($table_name));
 		$result = $this->select_all($sql);
 		$indexes = array();
 		$cur_idx = null;

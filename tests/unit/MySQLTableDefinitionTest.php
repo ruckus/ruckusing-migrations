@@ -91,6 +91,50 @@ EXP;
 		$c = new Ruckusing_ColumnDefinition($this->adapter, "id", "integer", array("primary_key" => true, "unsigned" => true));
 		$this->assertEquals("`id` int(11) UNSIGNED", trim($c));
 	}//test_column_definition
+	
+	public function test_column_definition_with_limit() {
+    $bm = new Ruckusing_BaseMigration();
+    $bm->set_adapter($this->adapter);
+    $ts = time();
+    $table_name = "users_${ts}";
+    $table = $bm->create_table($table_name);
+    $table->column('username', 'string', array('limit' => 17));
+    $table->finish();
+
+    $username_actual = $this->adapter->column_info($table_name, "username");
+    $this->assertEquals('varchar(17)', $username_actual['type']);
+    $bm->drop_table($table_name);
+  }
+
+	public function test_column_definition_with_not_null() {
+    $bm = new Ruckusing_BaseMigration();
+    $bm->set_adapter($this->adapter);
+    $ts = time();
+    $table_name = "users_${ts}";
+    $table = $bm->create_table($table_name);
+    $table->column('username', 'string', array('limit' => 17, 'null' => false));
+    $table->finish();
+
+    $username_actual = $this->adapter->column_info($table_name, "username");
+    $this->assertEquals('varchar(17)', $username_actual['type']);
+    $this->assertEquals('NO', $username_actual['null']);
+    $bm->drop_table($table_name);
+  }
+
+	public function test_column_definition_with_default_value() {
+    $bm = new Ruckusing_BaseMigration();
+    $bm->set_adapter($this->adapter);
+    $ts = time();
+    $table_name = "users_${ts}";
+    $table = $bm->create_table($table_name);
+    $table->column('username', 'string', array('limit' => 17, 'default' => 'thor'));
+    $table->finish();
+
+    $username_actual = $this->adapter->column_info($table_name, "username");
+    $this->assertEquals('varchar(17)', $username_actual['type']);
+    $this->assertEquals('thor', $username_actual['default']);
+    $bm->drop_table($table_name);
+  }
 
   public function test_multiple_primary_keys() {
     $bm = new Ruckusing_BaseMigration();

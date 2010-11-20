@@ -25,7 +25,7 @@ class Ruckusing_MySQLTableDefinition {
 		$this->name = $name;
 		$this->options = $options;		
 		$this->init_sql($name, $options);
-		$this->table_def = new Ruckusing_TableDefinition($this->adapter);
+		$this->table_def = new Ruckusing_TableDefinition($this->adapter, $this->options);
 
 		if(array_key_exists('id', $options)) {
 			if(is_bool($options['id']) && $options['id'] == false) {
@@ -89,13 +89,10 @@ class Ruckusing_MySQLTableDefinition {
 		    $column_options['auto_increment'] = true;
 	    }
 	  }
-		
-		
-		$column = new Ruckusing_ColumnDefinition($this->adapter, $column_name, $type, $column_options);
-		foreach($options as $key => $value) {
-			$column->$key = $value;
-		}
-		$this->columns[] = $column;
+        $column_options = array_merge($column_options, $options);
+        $column = new Ruckusing_ColumnDefinition($this->adapter, $column_name, $type, $column_options);
+        
+        $this->columns[] = $column;
 	}//column
 	
 	private function keys() {
@@ -126,14 +123,14 @@ class Ruckusing_MySQLTableDefinition {
 		$create_table_sql = $this->sql . $this->columns_to_str();
 		
 		if($this->auto_generate_id === true) {
-		  $this->primary_keys[] = 'id';
-		  $primary_id = new Ruckusing_ColumnDefinition($this->adapter, 'id', 'integer', 
-		                  array('unsigned' => true, 'null' => false, 'auto_increment' => true));
-		  
-  	  $create_table_sql .= ",\n" . $primary_id->to_sql();
-	  }
+            $this->primary_keys[] = 'id';
+            $primary_id = new Ruckusing_ColumnDefinition($this->adapter, 'id', 'integer', 
+            array('unsigned' => true, 'null' => false, 'auto_increment' => true));
+
+            $create_table_sql .= ",\n" . $primary_id->to_sql();
+	    }
 	  
-	  $create_table_sql .= $this->keys() . $close_sql;
+	    $create_table_sql .= $this->keys() . $close_sql;
 		
 		if($wants_sql) {
 			return $create_table_sql;
@@ -167,7 +164,7 @@ class Ruckusing_MySQLTableDefinition {
 			$temp = " TEMPORARY";
 		}
 		$create_sql = sprintf("CREATE%s TABLE ", $temp);
-    $create_sql .= sprintf("%s (\n", $this->adapter->identifier($name));
+        $create_sql .= sprintf("%s (\n", $this->adapter->identifier($name));
 		$this->sql .= $create_sql;
 		$this->initialized = true;
 	}//init_sql	
@@ -183,11 +180,14 @@ class Ruckusing_TableDefinition {
 		$this->adapter = $adapter;
 	}
 	
+	/*
 	public function column($name, $type, $options = array()) {
+	    die;
 		$column = new Ruckusing_ColumnDefinition($this->adapter, $name, $type);
 		$native_types = $this->adapter->native_database_types();
+		echo "\n\nCOLUMN: " . print_r($options,true) . "\n\n";
 		
-		if($native_types && array_key_exists('limit', $native_types)) {
+		if($native_types && array_key_exists('limit', $native_types) && !array_key_exists('limit', $options)) {
 			$limit = $native_types['limit'];
 		} elseif(array_key_exists('limit', $options)) {
 			$limit = $options['limit'];
@@ -228,6 +228,7 @@ class Ruckusing_TableDefinition {
 			$this->columns[] = $column;
 		}		
 	}//column
+	*/
 	
 	/*
 		Determine whether or not the given column already exists in our 
@@ -266,12 +267,12 @@ class Ruckusing_ColumnDefinition {
 		$this->adapter = $adapter;
 		$this->name = $name;
 		$this->type = $type;
-	  $this->options = $options;
+	    $this->options = $options;
 	}
 
 	public function to_sql() {
 		$column_sql = sprintf("%s %s", $this->adapter->identifier($this->name), $this->sql_type());
-		$column_sql .= $this->adapter->add_column_options($this->type, $this->options);						
+		$column_sql .= $this->adapter->add_column_options($this->type, $this->options);			
 		return $column_sql;
 	}
 
