@@ -261,6 +261,18 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			$this->adapter->add_index("users", "title", array('name' => 'index_on_super_title'));
 			$this->assertEquals(true, $this->adapter->has_index("users", "title", array('name' => 'index_on_super_title')));								
 		}
+		
+		public function test_multi_column_index() {
+			//create it
+			$this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");	
+			$this->adapter->add_index("users", array("name", "age"));
+			
+			$this->assertEquals(true, $this->adapter->has_index("users", array("name", "age") ));						
+			
+			//drop it
+			$this->adapter->remove_index("users", array("name", "age"));
+			$this->assertEquals(false, $this->adapter->has_index("users", array("name", "age") ));
+	    }
 
 		public function test_remove_index_with_default_index_name() {
 			//create it

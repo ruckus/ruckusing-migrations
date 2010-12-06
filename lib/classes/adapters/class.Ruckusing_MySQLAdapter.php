@@ -401,7 +401,9 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	    }
 		if(!is_array($column_name)) {
 			$column_names = array($column_name);
-		}
+		} else {
+		    $column_names = $column_name;
+	    }
 		$cols = array();
 		foreach($column_names as $name) {
 		    $cols[] = $this->identifier($name);
