@@ -50,8 +50,8 @@ class Ruckusing_BaseMigration {
 		return $this->adapter->add_index($table_name, $column_name, $options);			
 	}
 	
-	public function remove_index($table_name, $column_name) {
-		return $this->adapter->remove_index($table_name, $column_name);					
+	public function remove_index($table_name, $column_name, $options = array()) {
+		return $this->adapter->remove_index($table_name, $column_name, $options);
 	}
 	
 	public function create_table($table_name, $options = array()) {
