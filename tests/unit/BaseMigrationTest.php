@@ -52,11 +52,11 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase {
 			$base->add_index("users", "name", array('name' => 'my_special_index'));
 			
 			//ensure it exists
-			$this->assertEquals(true, $this->adapter->has_index("users", "name") );						
+			$this->assertEquals(true, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')));
 			
 			//drop it
 			$base->remove_index("users", "name", array('name' => 'my_special_index'));
-			$this->assertEquals(false, $this->adapter->has_index("users", "name") );
+			$this->assertEquals(false, $this->adapter->has_index("users", "my_special_index") );
 	    }
 
 }
