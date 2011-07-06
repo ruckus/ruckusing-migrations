@@ -120,16 +120,17 @@ class Ruckusing_MySQLTableDefinition {
 		}
 		
 		$close_sql = sprintf(") %s;",$opt_str);
-		$create_table_sql = $this->sql . $this->columns_to_str();
+		$create_table_sql = $this->sql;
 		
 		if($this->auto_generate_id === true) {
             $this->primary_keys[] = 'id';
             $primary_id = new Ruckusing_ColumnDefinition($this->adapter, 'id', 'integer', 
             array('unsigned' => true, 'null' => false, 'auto_increment' => true));
 
-            $create_table_sql .= ",\n" . $primary_id->to_sql();
+            $create_table_sql .= $primary_id->to_sql() . ",\n";
 	    }
-	  
+	    
+	    $create_table_sql .= $this->columns_to_str();
 	    $create_table_sql .= $this->keys() . $close_sql;
 		
 		if($wants_sql) {
