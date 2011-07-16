@@ -46,6 +46,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
       'mediumtext'    => array('name' => 'mediumtext'                   ),
       'integer'       => array('name' => "int", 			'limit' 		=> 11 ),
       'smallinteger'  => array('name' => "smallint"                     ),
+      'biginteger'    => array('name' => "bigint"),
       'float'         => array('name' => "float", 											),
       'decimal'       => array('name' => "decimal", 										),
       'datetime'      => array('name' => "datetime", 										),

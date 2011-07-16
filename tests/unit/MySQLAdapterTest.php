@@ -143,7 +143,10 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			$this->assertEquals($expected, $this->adapter->column_definition("age", "integer"));
 
 			$expected = "`active` tinyint(1)";
-			$this->assertEquals($expected, $this->adapter->column_definition("active", "boolean"));			
+			$this->assertEquals($expected, $this->adapter->column_definition("active", "boolean"));	
+			
+			$expected = "`weight` bigint(20)";
+			$this->assertEquals($expected, $this->adapter->column_definition("weight", "biginteger", array('limit' => 20)));		
 		}//test_column_definition
 
 		public function test_column_info() {			
@@ -208,9 +211,13 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			$this->adapter->add_column("users", "age", "integer", array('unsigned' => true));
 			$col = $this->adapter->column_info("users", "age");
 			$this->assertEquals("age", $col['field']);			
-			$this->assertEquals('int(11) unsigned', $col['type'] );			
+			$this->assertEquals('int(11) unsigned', $col['type'] );
 			
-			
+			//add column with biginteger datatype
+			$this->adapter->add_column("users", "weight", "biginteger", array('limit' => 20));
+			$col = $this->adapter->column_info("users", "weight");
+			$this->assertEquals("weight", $col['field']);			
+			$this->assertEquals('bigint(20)', $col['type'] );
 		}
 
 		public function test_remove_column() {			
