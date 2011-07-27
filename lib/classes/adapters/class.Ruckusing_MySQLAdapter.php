@@ -577,6 +577,9 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		if(is_array($options) && array_key_exists('null', $options) && $options['null'] === false) {
 			$sql .= " NOT NULL";
 		}
+		if(is_array($options) && array_key_exists('after', $options)) {
+      $sql .= sprintf(" AFTER %s", $this->identifier($options['after']));
+    }
 		return $sql;
 	}//add_column_options
 	
