@@ -160,6 +160,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	*/
 	public function schema() {
 		$final = "";
+    $views = '';
 		$this->load_tables(true);
 		foreach($this->tables as $tbl => $idx) {
 
@@ -171,11 +172,15 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
       if(is_array($result) && count($result) == 1) {
         $row = $result[0];
         if(count($row) == 2) {
-          $final .= $row['Create Table'] . ";\n\n";
+          if (isset($row['Create Table'])) {
+            $final .= $row['Create Table'] . ";\n\n";
+          } else if (isset($row['Create View'])) {
+            $views .= $row['Create View'] . ";\n\n";
+          }
         }
       }
 		}
-		return $final;
+		return $final.$views;
 	}
 	
 	public function table_exists($tbl, $reload_tables = false) {
