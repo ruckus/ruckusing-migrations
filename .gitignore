@@ -1,4 +1,3 @@
-db/migrate/*.php
 logs/*.log
 tests/logs/*.log
 tests/dummy/db/schema.txt
