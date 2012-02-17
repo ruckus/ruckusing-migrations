@@ -5,6 +5,7 @@
 	up to the current version.
 */
 
+require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
 require_once RUCKUSING_BASE . '/config/config.inc.php';
 require_once RUCKUSING_BASE . '/lib/classes/Ruckusing_exceptions.php';
@@ -14,23 +15,24 @@ require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseMigration.php';
 define('STYLE_REGULAR', 1);
 define('STYLE_OFFSET', 2);
 
-class Ruckusing_DB_Migrate implements Ruckusing_iTask {
+class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask {
 	
-	private $adapter = null;
 	private $migrator_util = null;
 	private $task_args = array(); 
 	private $regexp = '/^(\d+)\_/';
 	private $debug = false;
+	private $migrations_directory;
+	private $framework;
 	
 	function __construct($adapter) {
-		$this->adapter = $adapter;
-    $this->migrator_util = new Ruckusing_MigratorUtil($this->adapter);
+		parent::__construct($adapter);
+    $this->migrator_util = new Ruckusing_MigratorUtil($adapter);
 	}
 	
 	/* Primary task entry point */
 	public function execute($args) {
 	  $output = "";
-	  if(!$this->adapter->supports_migrations()) {
+	  if(!$this->get_adapter()->supports_migrations()) {
 	   die("This database does not support migrations.");
     }
 		$this->task_args = $args;
@@ -80,8 +82,6 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		  }
 		}catch(Ruckusing_MissingSchemaInfoTableException $ex) {
 			echo "\tSchema info table does not exist. I tried creating it but failed. Check permissions.";
-		}catch(Ruckusing_MissingMigrationDirException $ex) {
-			echo "\tMigration directory does not exist: " . RUCKUSING_MIGRATION_DIR;
 		}catch(Ruckusing_Exception $ex) {
 			die("\n\n" . $ex->getMessage() . "\n\n");
 		}	
@@ -89,8 +89,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	}
 	
 	private function migrate_from_offset($offset, $current_version, $direction) {
-	  //$migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, null);
-	  $migrations = $this->migrator_util->get_migration_files(RUCKUSING_MIGRATION_DIR, $direction);
+	  $migrations = $this->migrator_util->get_migration_files($this->get_framework()->migrations_directory(), $direction);
 	  $versions = array();
 	  $current_index = -1;
 	  for($i = 0; $i < count($migrations); $i++) {
@@ -117,8 +116,6 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
     // check to see if we have enough migrations to run - the user
     // might have asked to run more than we have available
     $available = array_slice($migrations, $current_index, $offset);
-    // echo "\n------------- AVAILABLE ------------------\n";
-    // print_r($available);
     if(count($available) != $offset) {
       $names = array();
       foreach($available as $a) { $names[] = $a['file']; }
@@ -145,37 +142,37 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		  } else {
 		    echo ":\n";
 		  }
-		  $migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, $destination);			
+		  $migrations = $this->migrator_util->get_runnable_migrations($this->get_framework()->migrations_directory(), $direction, $destination);			
 			if(count($migrations) == 0) {
 				return "\nNo relevant migrations to run. Exiting...\n";
 			}
 			$result = $this->run_migrations($migrations, $direction, $destination);
 		}catch(Exception $ex) {
 			throw $ex;
-		}				
+		}
   }
 
 	private function run_migrations($migrations, $target_method, $destination) {
 		$last_version = -1;
 		foreach($migrations as $file) {
-			$full_path = RUCKUSING_MIGRATION_DIR . '/' . $file['file'];
+			$full_path = $this->get_framework()->migrations_directory()  . '/' . $file['file'];
 			if(is_file($full_path) && is_readable($full_path) ) {
 				require_once $full_path;
 				$klass = Ruckusing_NamingUtil::class_from_migration_file($file['file']);
 				$obj = new $klass();
 				$refl = new ReflectionObject($obj);
 				if($refl->hasMethod($target_method)) {
-					$obj->set_adapter($this->adapter);
+					$obj->set_adapter($this->get_adapter());
 					$start = $this->start_timer();
 					try {
 						//start transaction
-						$this->adapter->start_transaction();
+						$this->get_adapter()->start_transaction();
 						$result =  $obj->$target_method();
 						//successfully ran migration, update our version and commit
-						$this->migrator_util->resolve_current_version($file['version'], $target_method);										
-						$this->adapter->commit_transaction();
+						$this->migrator_util->resolve_current_version($file['version'], $target_method);
+						$this->get_adapter()->commit_transaction();
 					}catch(Exception $e) {
-						$this->adapter->rollback_transaction();
+						$this->get_adapter()->rollback_transaction();
 						//wrap the caught exception in our own
 						$ex = new Exception(sprintf("%s - %s", $file['class'], $e->getMessage()));
 						throw $ex;
@@ -195,34 +192,44 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		return $result;
 	}//run_migrations
 	
-	private function start_timer() {
-		return microtime(true);
-	}
-
-	private function end_timer() {
-		return microtime(true);
-	}
-	
-	private function diff_timer($s, $e) {
-		return $e - $s;
-	}
-	
-	private function verify_environment() {
-	  if(!$this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
-			echo "\n\tSchema version table does not exist. Auto-creating.";
-	    $this->auto_create_schema_info_table();
-    }	 
+  private function start_timer() {
+    return microtime(true);
   }
-	
-	private function auto_create_schema_info_table() {
-	  try {
-  		echo sprintf("\n\tCreating schema version table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME . "\n\n");
-  		$this->adapter->create_schema_version_table();
-  		return true;
-		}catch(Exception $e) {
-		  die("\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n");
-	  }
-	}
+
+  private function end_timer() {
+    return microtime(true);
+  }
+
+  private function diff_timer($s, $e) {
+    return $e - $s;
+  }
+
+  private function verify_environment() {
+    if(!$this->get_adapter()->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
+      echo "\n\tSchema version table does not exist. Auto-creating.";
+      $this->auto_create_schema_info_table();
+    }
+    // create the migrations directory if it doesnt exist
+    $migrations_directory = $this->get_framework()->migrations_directory();
+    if(!is_dir($migrations_directory)) {
+      printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $migrations_directory);
+      if(mkdir($migrations_directory) === FALSE) {
+        printf("\n\tUnable to create migrations directory at %s, check permissions?", $migrations_directory);
+      } else {
+        printf("\n\tCreated OK");
+      }
+    }
+  }
+
+  private function auto_create_schema_info_table() {
+    try {
+      echo sprintf("\n\tCreating schema version table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME . "\n\n");
+      $this->get_adapter()->create_schema_version_table();
+      return true;
+    }catch(Exception $e) {
+      die("\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n");
+    }
+  }
 
 }//class
 

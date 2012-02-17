@@ -4,6 +4,7 @@ if(!defined('BASE')) {
   define('BASE', dirname(__FILE__) . '/..');
 }
 require_once BASE  . '/test_helper.php';
+require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
@@ -31,7 +32,13 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
   	$this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );
 
     //create the schema table if necessary
-    $this->adapter->create_schema_version_table();    
+    $this->adapter->create_schema_version_table();
+    
+    $framework = new Ruckusing_FrameworkRunner($ruckusing_db_config, null);
+    $this->migrations_dir = $framework->migrations_directory();
+    if(!is_dir($this->migrations_dir)) {
+      mkdir($this->migrations_dir);
+    }
   }//setUp()
   
   protected function tearDown() {			
@@ -89,7 +96,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 
   public function test_get_runnable_migrations_going_up_no_target_version() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'up', false);
     $expect_up_files = array(
   												array(
   													'version' => 1,
@@ -112,13 +119,13 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
   
   public function test_get_runnable_migrations_going_down_no_target_version() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $actual_down_files  = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', false);
+    $actual_down_files  = $migrator_util->get_runnable_migrations($this->migrations_dir, 'down', false);
     $this->assertEquals( array() , $actual_down_files);
   }
 
   public function test_get_runnable_migrations_going_up_with_target_version_no_current() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', 3, false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'up', 3, false);
     $expect_up_files = array(
   												array(
   													'version' => 1,
@@ -138,7 +145,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
     //pretend we already executed version 1
     $this->insert_dummy_version_data( array(1) );    
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', 3, false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'up', 3, false);
     $expect_up_files = array(
   												array(
   													'version' => 3,
@@ -151,14 +158,14 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 
     //now pre-register some migrations that we have already executed
     $this->insert_dummy_version_data( array(1,3) );    
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', 3, false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'up', 3, false);
     $this->assertEquals(array(), $actual_up_files);
   }
   
   public function test_get_runnable_migrations_going_down_with_target_version_no_current() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
     $this->insert_dummy_version_data( array(3, '20090122193325') );    
-    $actual_down_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', 1, false);
+    $actual_down_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'down', 1, false);
     $expect_down_files = array(
                           array(
                     			  'version' => '20090122193325',
@@ -176,7 +183,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     $this->clear_dummy_data();
 
     $this->insert_dummy_version_data( array(3) );    
-    $actual_down_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', 1, false);
+    $actual_down_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'down', 1, false);
     $expect_down_files = array(
   												array(
   													'version' => 3,
@@ -189,7 +196,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     //go all the way down!
     $this->clear_dummy_data();
     $this->insert_dummy_version_data( array(1, 3, '20090122193325') );    
-    $actual_down_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', 0, false);
+    $actual_down_files    = $migrator_util->get_runnable_migrations($this->migrations_dir, 'down', 0, false);
     $expect_down_files = array(
                       		array(
                       		  'version' => '20090122193325',

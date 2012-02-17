@@ -34,6 +34,10 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		$this->set_logger($logger);
 	}
 	
+	public function get_database_name() {
+	  return($this->db_info['database']);
+  }
+	
 	public function supports_migrations() {
 	 return true;
   }
@@ -131,11 +135,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		}
 		$ddl = sprintf("CREATE DATABASE %s", $this->identifier($db));
 		$result = $this->query($ddl);
-		if($result === true) {
-			return true;
-		} else {
-			return false;
-		}		
+		return($result === true);
 	}
 	
 	public function drop_database($db) {
@@ -144,11 +144,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		}
 		$ddl = sprintf("DROP DATABASE IF EXISTS %s", $this->identifier($db));
 		$result = $this->query($ddl);
-		if( $result === true) {
-			return true;
-		} else {
-			return false;
-		}		
+		return($result === true);
 	}
 
 	/*
@@ -549,14 +545,6 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		if(is_array($options) && array_key_exists('unsigned', $options) && $options['unsigned'] === true) {
 			$sql .= ' UNSIGNED';
 		}
-    /*
-        if($type === 'primary_key') {
-      		if(is_array($options) && array_key_exists('auto_increment', $options) && $options['auto_increment'] === true) {
-      			$sql .= ' auto_increment';
-      		}
-      		$sql .= ' PRIMARY KEY';
-        }
-    */
 
 		if(is_array($options) && array_key_exists('auto_increment', $options) && $options['auto_increment'] === true) {
 			$sql .= ' auto_increment';
