@@ -6,9 +6,9 @@ The idea of the framework was borrowed from the migration system built into Ruby
 
 ## Getting Started & Documentation
 
-See the Wiki for the complete documentation on the migration methods supported and how to get started.
+See the [Wiki][1] for the complete documentation on the migration methods supported and how to get started.
 
-https://github.com/ruckus/ruckusing-migrations/wiki
+[1] https://github.com/ruckus/ruckusing-migrations/wiki
 
 ## Features
 
