@@ -46,9 +46,9 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
       'mediumtext'    => array('name' => 'mediumtext'                   ),
       'integer'       => array('name' => "int", 			'limit' 		=> 11 ),
       'smallinteger'  => array('name' => "smallint"                     ),
-      'biginteger'    => array('name' => "bigint"),
-      'float'         => array('name' => "float", 											),
-      'decimal'       => array('name' => "decimal", 										),
+      'biginteger'    => array('name' => "bigint"                     ),
+      'float'         => array('name' => "float"),
+      'decimal'       => array('name' => "decimal", 'scale' => 10, 'precision' => 0),
       'datetime'      => array('name' => "datetime", 										),
       'timestamp'     => array('name' => "timestamp",										),
       'time'          => array('name' => "time", 												),
@@ -519,10 +519,10 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		}
 		if($type == "decimal") {
 			//ignore limit, use precison and scale
-			if( $precision == null || array_key_exists('precision', $native_type)) {
+			if( $precision == null && array_key_exists('precision', $native_type)) {
 				$precision = $native_type['precision'];
 			}
-			if( $scale == null || array_key_exists('scale', $native_type)) {
+			if( $scale == null && array_key_exists('scale', $native_type)) {
 				$scale = $native_type['scale'];
 			}
 			if($precision != null) {
@@ -536,7 +536,26 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 					throw new Ruckusing_ArgumentException("Error adding decimal column: precision cannot be empty if scale is specified");
 				}
 			}//precision			
-		} else {
+		} elseif($type == "float") {
+			//ignore limit, use precison and scale
+			if( $precision == null && array_key_exists('precision', $native_type)) {
+				$precision = $native_type['precision'];
+			}
+			if( $scale == null && array_key_exists('scale', $native_type)) {
+				$scale = $native_type['scale'];
+			}
+			if($precision != null) {
+				if(is_int($scale)) {
+					$column_type_sql .= sprintf("(%d, %d)", $precision, $scale);
+				} else {
+					$column_type_sql .= sprintf("(%d)", $precision);						
+				}//scale
+			} else {
+				if ($scale) {
+					throw new Ruckusing_ArgumentException("Error adding float column: precision cannot be empty if scale is specified");
+				}
+			}//precision			
+		}  {
 			//not a decimal column
 			if($limit == null && array_key_exists('limit', $native_type)) {
 				$limit = $native_type['limit'];
