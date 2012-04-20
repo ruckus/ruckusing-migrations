@@ -569,46 +569,46 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	
 	public function add_column_options($type, $options) {
 		$sql = "";
+		
+		if(!is_array($options))
+		    return $sql;
 
-		if(is_array($options) && array_key_exists('unsigned', $options) && $options['unsigned'] === true) {
+		if(array_key_exists('unsigned', $options) && $options['unsigned'] === true) {
 			$sql .= ' UNSIGNED';
 		}
-    /*
-        if($type === 'primary_key') {
-      		if(is_array($options) && array_key_exists('auto_increment', $options) && $options['auto_increment'] === true) {
-      			$sql .= ' auto_increment';
-      		}
-      		$sql .= ' PRIMARY KEY';
-        }
-    */
 
-		if(is_array($options) && array_key_exists('auto_increment', $options) && $options['auto_increment'] === true) {
+		if(array_key_exists('auto_increment', $options) && $options['auto_increment'] === true) {
 			$sql .= ' auto_increment';
 		}
 
-		if(is_array($options) && array_key_exists('default', $options) && $options['default'] !== null) {
+		if(array_key_exists('default', $options) && $options['default'] !== null) {
 			if($this->is_sql_method_call($options['default'])) {
 				//$default_value = $options['default'];
 				throw new Exception("MySQL does not support function calls as default values, constants only.");
-			} else {
-			  if(is_int($options['default'])) {			    
-          $default_format = '%d';
-        } elseif(is_bool($options['default'])) {
-          $default_format = "'%d'";
-        } else {
-          $default_format = "'%s'";
-        }
-        $default_value = sprintf($default_format, $options['default']);			
-      }
+			}
+
+            if(is_int($options['default'])) {
+                $default_format = '%d';
+            } elseif(is_bool($options['default'])) {
+                $default_format = "'%d'";
+            } else {
+                $default_format = "'%s'";
+            }
+            $default_value = sprintf($default_format, $options['default']);
+
 			$sql .= sprintf(" DEFAULT %s", $default_value);
 		}
-		
-		if(is_array($options) && array_key_exists('null', $options) && $options['null'] === false) {
+
+		if(array_key_exists('null', $options) && $options['null'] === false) {
 			$sql .= " NOT NULL";
 		}
-		if(is_array($options) && array_key_exists('after', $options)) {
-      $sql .= sprintf(" AFTER %s", $this->identifier($options['after']));
-    }
+		if(array_key_exists('comment', $options)) {
+            $sql .= sprintf(" COMMENT '%s'", $this->quote_string($options['comment']));
+        }
+		if(array_key_exists('after', $options)) {
+            $sql .= sprintf(" AFTER %s", $this->identifier($options['after']));
+        }
+
 		return $sql;
 	}//add_column_options
 	
