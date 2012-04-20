@@ -15,12 +15,6 @@ if(!defined('RUCKUSING_TS_SCHEMA_TBL_NAME')) {
 	define('RUCKUSING_TS_SCHEMA_TBL_NAME', 'schema_migrations');
 }
 
-//Where the dummy migrations reside
-if(!defined('RUCKUSING_MIGRATION_DIR')) {
-	define('RUCKUSING_MIGRATION_DIR', RUCKUSING_DB_DIR . '/migrate');
-}
-
 require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
-
 
 ?>

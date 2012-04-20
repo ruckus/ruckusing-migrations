@@ -22,9 +22,4 @@ if(!defined('RUCKUSING_DB_DIR')) {
 	define('RUCKUSING_DB_DIR', RUCKUSING_BASE . '/db');
 }
 
-//Where the actual migrations reside
-if(!defined('RUCKUSING_MIGRATION_DIR')) {
-	define('RUCKUSING_MIGRATION_DIR', RUCKUSING_DB_DIR . '/migrate');
-}
-
 ?>

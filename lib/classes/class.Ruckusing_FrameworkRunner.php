@@ -21,7 +21,7 @@ class Ruckusing_FrameworkRunner {
 	
 	//set up some defaults
 	private $opt_map = array(
-		'ENV'					=> 'development'
+		'ENV' => 'development'
 	);
 	
 	function __construct($db, $argv) {
@@ -59,7 +59,7 @@ class Ruckusing_FrameworkRunner {
 	//-------------------------	
 	public function execute() {
 		if($this->task_mgr->has_task($this->cur_task_name)) {
-			$output = $this->task_mgr->execute($this->cur_task_name, $this->task_options);
+			$output = $this->task_mgr->execute($this, $this->cur_task_name, $this->task_options);
 			$this->display_results($output);
 			exit(0); // 0 is success
 		} else {
@@ -71,9 +71,17 @@ class Ruckusing_FrameworkRunner {
 	  }
 	}
 	
+	public function get_adapter() {
+	  return($this->adapter);
+  }
+	
 	public function init_tasks() {
 		$this->task_mgr = new Ruckusing_TaskManager($this->adapter);
 	}
+	
+	public function migrations_directory() {
+	  return(RUCKUSING_DB_DIR . '/' . $this->get_adapter()->get_database_name());
+  }
 	
 	public function initialize_db() {
 		try {
