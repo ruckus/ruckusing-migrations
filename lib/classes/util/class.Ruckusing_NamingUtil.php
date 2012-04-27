@@ -51,7 +51,7 @@ class Ruckusing_NamingUtil {
 	}
 	
 	public static function class_from_migration_file($file_name) {
-		if(preg_match('/^(\d+)_(.*)\.php$/', $file_name, $matches)) {
+		if(preg_match('/^.+\/(\d+)_(.*)\.php$/', $file_name, $matches)) {
 			if( count($matches) == 3) {
 				return $matches[2];
 			}

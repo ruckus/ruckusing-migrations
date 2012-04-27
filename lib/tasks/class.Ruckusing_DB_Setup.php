@@ -21,6 +21,28 @@ class Ruckusing_DB_Setup implements Ruckusing_iTask {
 	public function execute($args) {
 		echo "Started: " . date('Y-m-d g:ia T') . "\n\n";		
 		echo "[db:setup]: \n";
+		
+		$dsn = $this->adapter->get_dsn();
+		$templates = $dsn['templates'];
+		
+		// Creating the migrationfolders if necessary
+		foreach ($templates as $template)
+		{
+			$migrationDir = RUCKUSING_MIGRATION_DIR.'/'.$template;
+			
+			if(is_dir($migrationDir))
+			{
+				echo sprintf("\tNOTICE: Directory %s already exists.\n", $migrationDir);
+			}
+			else
+			{
+				if(mkdir($migrationDir) === false)
+				{
+					echo sprintf("\tWARNING: Could not create directory: %s\n", $migrationDir);
+				}
+			}
+		}
+		
 		//it doesnt exist, create it
 		if( !$this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
 			echo sprintf("\tCreating table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME);

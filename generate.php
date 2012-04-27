@@ -8,7 +8,8 @@
 
 
 define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
-require_once RUCKUSING_BASE . '/config/config.inc.php';
+require RUCKUSING_BASE.'/bootstrap.php';
+require_once getConfigFile($argv);
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 
@@ -27,7 +28,19 @@ function parse_args($argv) {
    print_help(true); 
   }
   $migration_name = $argv[1];
-  return array('name' => $migration_name);
+  
+  if(isset($argv[2]))
+  {
+	  $template = $argv[2];
+  }
+  else
+  {
+	  $template = 'development';
+	  echo sprintf("\nNo Db was delivered. Generating Migrationfile for standard Db '%s'. Give a additional parameter to use an other Db.\n", $template);
+  }
+  
+  return array('name' => $migration_name,
+			   'template' => $template);
 }
 
 
@@ -52,21 +65,28 @@ function main($args) {
   //clear any filesystem stats cache
   clearstatcache();
   
+	$newMigrationDir = RUCKUSING_MIGRATION_DIR.'/'.$args['template'];
+	
+	if(!is_dir($newMigrationDir))
+	{
+		mkdir($newMigrationDir);
+	}
+  
   //check to make sure our migration directory exists
-  if(!is_dir(RUCKUSING_MIGRATION_DIR)) {
-   die_with_error("ERROR: migration directory '" . RUCKUSING_MIGRATION_DIR . "' does not exist. Specify MIGRATION_DIR in config/config.inc.php and try again.");
+  if(!is_dir($newMigrationDir)) {
+	die_with_error("ERROR: migration directory '" . $newMigrationDir . "' does not exist. Specify MIGRATION_DIR in config/config.inc.php and try again.");
   }
   
   //generate a complete migration file
   $next_version     = Ruckusing_MigratorUtil::generate_timestamp();
   $klass            = Ruckusing_NamingUtil::camelcase($migration_name);
   $file_name        = $next_version . '_' . $klass . '.php';
-  $full_path        = realpath(RUCKUSING_MIGRATION_DIR) . '/' . $file_name;
+  $full_path        = realpath($newMigrationDir) . '/' . $file_name;
   $template_str     = get_template($klass);
     
   //check to make sure our destination directory is writable
-  if(!is_writable(RUCKUSING_MIGRATION_DIR . '/')) {
-    die_with_error("ERROR: migration directory '" . RUCKUSING_MIGRATION_DIR . "' is not writable by the current user. Check permissions and try again.");
+  if(!is_writable($newMigrationDir . '/')) {
+    die_with_error("ERROR: migration directory '" . $newMigrationDir . "' is not writable by the current user. Check permissions and try again.");
   }
 
   //write it out!
@@ -74,7 +94,7 @@ function main($args) {
 	if($file_result === FALSE) {
 		die_with_error("Error writing to migrations directory/file. Do you have sufficient privileges?");
 	} else {
-  	echo "\nCreated migration: {$file_name}\n\n";
+  	echo "\nCreated migration: {$file_name} for Db '{$args['template']}'.\n\n";
 	}
 }
 

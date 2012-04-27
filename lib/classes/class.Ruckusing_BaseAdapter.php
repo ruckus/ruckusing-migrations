@@ -36,5 +36,81 @@ class Ruckusing_BaseAdapter {
 		return $this->table_exists($tbl);
 	}
 	
+	public function getDbName()
+	{
+		$dbName = $this->dsn['database'];
+		return $dbName;
+	}
+	
+	/**
+	 * Returns the templates for the adapter
+	 * 
+	 * @return array An array with values as templateNames
+	 */
+	public function getTemplates()
+	{
+		$dsn = $this->dsn;
+		
+		if(isset($dsn['templates']))
+		{
+			return $dsn['templates'];
+		}
+		else
+		{
+			return array();
+		}
+	}
+	
+	/**
+	 * Returns whether the adapter is using templates
+	 * 
+	 * @return boolean False if the adapter is not using templates, true otherwise
+	 */
+	public function hasTemplates()
+	{
+		$templates = $this->getTemplates();
+		
+		if(empty($templates))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	/**
+	 * Returns whether the adapter is for a master db or not
+	 * 
+	 * Standard behaviour when no config option was delivered is no master
+	 * 
+	 * @return boolean True if the adapter is for a master db, false if not
+	 */
+	public function isMaster()
+	{
+		$dsn = $this->dsn;
+		
+		if(isset($dsn['master']))
+		{
+			return $dsn['master'];
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns whether this adapter is used for a template db
+	 * 
+	 * @return boolean True if the adapter is used for a template, otherwise false
+	 */
+	public function isTemplate()
+	{
+		$dsn = $this->dsn;
+		return $dsn['isTemplate'];
+	}
+	
 }
 ?>

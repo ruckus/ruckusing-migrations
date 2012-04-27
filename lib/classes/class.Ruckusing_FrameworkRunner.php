@@ -141,7 +141,9 @@ class Ruckusing_FrameworkRunner {
 	  $this->adapter->create_schema_version_table();
 	  //insert all existing records into our new table
 	  $migrator_util = new Ruckusing_MigratorUtil($this->adapter);
-	  $files = $migrator_util->get_migration_files(RUCKUSING_MIGRATION_DIR, 'up');
+	  $dsn = $this->adapter->get_dsn();
+	  $templates = $dsn['templates'];
+	  $files = $migrator_util->get_migration_files($templates, 'up');
     foreach($files as $file) {
       if( (int)$file['version'] >= PHP_INT_MAX) {
         //its new style like '20081010170207' so its not a candidate

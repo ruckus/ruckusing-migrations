@@ -24,7 +24,10 @@ class Ruckusing_DB_Status implements Ruckusing_iTask {
 		echo "[db:status]: \n";
 		$util = new Ruckusing_MigratorUtil($this->adapter);
 		$migrations = $util->get_executed_migrations();
-		$files = $util->get_migration_files(RUCKUSING_MIGRATION_DIR, 'up');
+		$dsn = $this->adapter->get_dsn();
+		$templates = $dsn['templates'];
+		$files = $util->get_migration_files($templates, 'up');
+		
 		$applied = array();
 		$not_applied = array();
 		foreach($files as $file) {

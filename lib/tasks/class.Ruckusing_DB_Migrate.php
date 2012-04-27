@@ -89,8 +89,9 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	}
 	
 	private function migrate_from_offset($offset, $current_version, $direction) {
-	  //$migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, null);
-	  $migrations = $this->migrator_util->get_migration_files(RUCKUSING_MIGRATION_DIR, $direction);
+		$dsn = $this->adapter->get_dsn();
+		$templates = $dsn['templates'];
+	  $migrations = $this->migrator_util->get_migration_files($templates, $direction);
 	  $versions = array();
 	  $current_index = -1;
 	  for($i = 0; $i < count($migrations); $i++) {
@@ -145,7 +146,8 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		  } else {
 		    echo ":\n";
 		  }
-		  $migrations = $this->migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, $direction, $destination);			
+		  $migrations = $this->migrator_util->get_runnable_migrations($direction, $destination);			
+		  
 			if(count($migrations) == 0) {
 				return "\nNo relevant migrations to run. Exiting...\n";
 			}
@@ -158,10 +160,10 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	private function run_migrations($migrations, $target_method, $destination) {
 		$last_version = -1;
 		foreach($migrations as $file) {
-			$full_path = RUCKUSING_MIGRATION_DIR . '/' . $file['file'];
+			$full_path = RUCKUSING_MIGRATION_DIR . '/' . $file['path'];
 			if(is_file($full_path) && is_readable($full_path) ) {
 				require_once $full_path;
-				$klass = Ruckusing_NamingUtil::class_from_migration_file($file['file']);
+				$klass = Ruckusing_NamingUtil::class_from_migration_file($file['path']);
 				$obj = new $klass();
 				$refl = new ReflectionObject($obj);
 				if($refl->hasMethod($target_method)) {

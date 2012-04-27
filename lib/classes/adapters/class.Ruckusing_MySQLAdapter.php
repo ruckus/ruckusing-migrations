@@ -30,8 +30,8 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 
 	function __construct($dsn, $logger) {
 		parent::__construct($dsn);
-		$this->connect($dsn);
 		$this->set_logger($logger);
+		$this->connect($dsn);
 	}
 	
 	public function supports_migrations() {
@@ -194,6 +194,16 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 
 	public function execute($query) {
 		return $this->query($query);
+	}
+	
+	public function executeSchema($schemaSql)
+	{
+		preg_match_all('/CREATE TABLE [^;]*;/s', $schemaSql, $queries);
+		
+		foreach ($queries[0] as $query)
+		{
+			$this->query($query);
+		}
 	}
 
 	public function query($query) {
@@ -648,7 +658,10 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
       if(!$this->conn) {
         die("\n\nCould not connect to the DB, check host / user / password\n\n");
       }
-      if(!mysql_select_db($db_info['database'], $this->conn)) {
+	  
+	  $this->create_database($this->getDbName());
+      
+	  if(!mysql_select_db($db_info['database'], $this->conn)) {
         die("\n\nCould not select the DB, check permissions on host\n\n");
       }
       return true;

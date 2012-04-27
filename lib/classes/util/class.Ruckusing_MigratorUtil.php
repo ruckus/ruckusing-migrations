@@ -37,7 +37,7 @@ class Ruckusing_MigratorUtil {
     skip migrations that have not been executed, when going down this method will only include migrations 
     that have been executed.
   */
-	public function get_runnable_migrations($directory, $direction, $destination = null, $use_cache = true) {
+	public function get_runnable_migrations($direction, $destination = null, $use_cache = true) {
 	  // cache migration lookups and early return if we've seen this requested set
 	  if($use_cache == true) {
       $key = $direction . '-' . $destination;
@@ -48,7 +48,9 @@ class Ruckusing_MigratorUtil {
 	  
 		$runnable = array();
 		$migrations = array();
-		$migrations = $this->get_migration_files($directory, $direction);
+		$dsn = $this->adapter->get_dsn();
+		$templates = $dsn['templates'];
+		$migrations = $this->get_migration_files($templates, $direction);
 		$current = $this->find_version($migrations, $this->get_max_version() );
 		$target = $this->find_version($migrations, $destination);
 		if(is_null($target) && !is_null($destination) && $destination > 0) {
@@ -120,17 +122,32 @@ class Ruckusing_MigratorUtil {
 		If nested, then return a complex array with the migration parts broken up into parts
 		which make analysis much easier.
 	*/
-	public static function get_migration_files($directory, $direction) { 
-   $valid_files = array();
-  	if(!is_dir($directory)) {
-  	  die("\nRuckusing_MigratorUtil - ({$directory}) is not a directory.\n");
-  	}
-  	$files = scandir($directory);
+	public static function get_migration_files($templates, $direction) { 
+	    $files = array();
+		
+		foreach ($templates as $template)
+		{
+			$migrationDir = RUCKUSING_MIGRATION_DIR.'/'.$template;
+			
+			if(!is_dir($migrationDir)) {
+				die("\nRuckusing_MigratorUtil - ({$migrationDir}) is not a directory.\n");
+			}
+			
+			$filesInDir = scandir($migrationDir);
+			
+			foreach ($filesInDir as $file)
+			{
+				$files[] = $template.'/'.$file;
+			}
+		}
+		
+		$valid_files = array();
+		
   	$file_cnt = count($files);
   	if($file_cnt > 0) {
   		for($i = 0; $i < $file_cnt; $i++) {
-  			if(preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
-  				if(count($matches) == 3) {
+  			if(preg_match('/^(.+)\/(\d+)_(.*)\.php$/', $files[$i], $matches)) {
+  				if(count($matches) == 4) {
   				  $valid_files[] = $files[$i];
   				}//if-matches
         }//if-preg-match
@@ -146,11 +163,12 @@ class Ruckusing_MigratorUtil {
 		$cnt = count($valid_files);
 		for($i = 0; $i < $cnt; $i++) {
 			$migration = $valid_files[$i];
-			if(preg_match('/^(\d+)_(.*)\.php$/', $migration, $matches)) {
+			if(preg_match('/^(.+)\/(\d+)_(.*)\.php$/', $migration, $matches)) {
 				$files[] = array(
-										'version' => $matches[1],
-										'class' 	=> $matches[2],
-										'file'		=> $matches[0]
+										'version' => $matches[2],
+										'class' 	=> $matches[3],
+										'file'		=> $matches[1],
+										'path'		=> $matches[0]
 									);					
 			}
 		}//for

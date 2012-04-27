@@ -10,6 +10,9 @@ require_once RUCKUSING_BASE . '/config/config.inc.php';
 
 class Ruckusing_DB_Schema implements Ruckusing_iTask {
 	
+	/**
+	 * @var Ruckusing_BaseAdapter
+	 */
 	private $adapter = null;
 	
 	function __construct($adapter) {
@@ -23,8 +26,38 @@ class Ruckusing_DB_Schema implements Ruckusing_iTask {
 			echo "[db:schema]: \n";
 			$schema = $this->adapter->schema();
 			//write to disk
-			$schema_file = RUCKUSING_DB_DIR . '/schema.txt';
-			file_put_contents($schema_file, $schema, LOCK_EX);
+			
+			if(isset($args['FILENAME']))
+			{ // Checking if a custom filename is specified
+				$filename = $args['FILENAME'];
+			}
+			else
+			{
+				if($this->adapter->isMaster())
+				{
+					$filenameSuffix = 'master';
+				}
+				else
+				{
+					$filenameSuffix = 'client';
+				}
+
+				$dbName = $this->adapter->getDbName();
+				$filename = 'schema_'.$filenameSuffix.'_'.$dbName.'.txt';
+			}
+			
+			$schema_file = RUCKUSING_DB_DIR . '/'.$filename;
+			
+			if(is_file($schema_file))
+			{
+				// Dont overwrite file if already exists
+				die("\tCan't write schema because file already exists: ".$schema_file."\n");
+			}
+			else
+			{
+				file_put_contents($schema_file, $schema, LOCK_EX);
+			}
+			
 			echo "\tSchema written to: $schema_file\n\n";
 			echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";							
 		}catch(Exception $ex) {
