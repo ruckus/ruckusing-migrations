@@ -146,8 +146,20 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		  } else {
 		    echo ":\n";
 		  }
-		  $migrations = $this->migrator_util->get_runnable_migrations($direction, $destination);			
-		  
+			
+
+			if(array_key_exists('FLAVOUR', $this->task_args))
+			{
+				$templates = array(
+					$this->task_args['FLAVOUR']
+				);
+				$migrations = $this->migrator_util->get_runnable_migrations($direction, $destination, true, $templates);
+			}
+			else
+			{
+				$migrations = $this->migrator_util->get_runnable_migrations($direction, $destination);
+			}
+		
 			if(count($migrations) == 0) {
 				return "\nNo relevant migrations to run. Exiting...\n";
 			}

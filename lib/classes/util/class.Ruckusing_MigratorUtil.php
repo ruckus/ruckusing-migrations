@@ -37,7 +37,7 @@ class Ruckusing_MigratorUtil {
     skip migrations that have not been executed, when going down this method will only include migrations 
     that have been executed.
   */
-	public function get_runnable_migrations($direction, $destination = null, $use_cache = true) {
+	public function get_runnable_migrations($direction, $destination = null, $use_cache = true, $templates = null) {
 	  // cache migration lookups and early return if we've seen this requested set
 	  if($use_cache == true) {
       $key = $direction . '-' . $destination;
@@ -48,8 +48,13 @@ class Ruckusing_MigratorUtil {
 	  
 		$runnable = array();
 		$migrations = array();
-		$dsn = $this->adapter->get_dsn();
-		$templates = $dsn['templates'];
+		
+		if($templates === null)
+		{
+			$dsn = $this->adapter->get_dsn();
+			$templates = $dsn['templates'];
+		}
+		
 		$migrations = $this->get_migration_files($templates, $direction);
 		$current = $this->find_version($migrations, $this->get_max_version() );
 		$target = $this->find_version($migrations, $destination);
