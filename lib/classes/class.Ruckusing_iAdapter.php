@@ -6,6 +6,7 @@ interface Ruckusing_iAdapter {
 	public function supports_migrations();
 	public function native_database_types();
 	public function schema();
+	public function getTemplates();
 	
 	public function execute($query);
 	public function quote_string($str);

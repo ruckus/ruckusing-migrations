@@ -34,6 +34,27 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		$this->connect($dsn);
 	}
 	
+	/**
+	 * Returns the used templates for this database.
+	 */
+	public function getTemplates()
+	{
+		$sql = 'SELECT DISTINCT template
+				FROM schema_migrations';
+		$result = $this->query($sql);
+		$templates = array();
+		
+		foreach ($result as $template)
+		{
+			$templateDb = $template['template'];
+			$templates[$templateDb] = $templateDb;
+		}
+		
+		$templates[RUCKUSING_STANDARD_TEMPLATE] = RUCKUSING_STANDARD_TEMPLATE;
+		
+		return $templates;
+	}
+	
 	public function supports_migrations() {
 	 return true;
   }
@@ -68,6 +89,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	  if(!$this->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
   	  $t = $this->create_table(RUCKUSING_TS_SCHEMA_TBL_NAME, array('id' => false));
   	  $t->column('version', 'string');
+	  $t->column('template', 'string');
   	  $t->finish();
   	  $this->add_index(RUCKUSING_TS_SCHEMA_TBL_NAME, 'version', array('unique' => true));
 	  }//if !has_table
@@ -622,8 +644,8 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		return $sql;
 	}//add_column_options
 	
-	public function set_current_version($version) {
-		$sql = sprintf("INSERT INTO %s (version) VALUES ('%s')", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);		
+	public function set_current_version($version, $template) {
+		$sql = sprintf("INSERT INTO %s (version,template) VALUES ('%s','%s')", RUCKUSING_TS_SCHEMA_TBL_NAME, $version, $template);		
 		return $this->execute_ddl($sql);
 	}
 	

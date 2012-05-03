@@ -89,8 +89,14 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	}
 	
 	private function migrate_from_offset($offset, $current_version, $direction) {
-		$dsn = $this->adapter->get_dsn();
-		$templates = $dsn['templates'];
+		$templates = $this->adapter->getTemplates();
+		
+		if(isset($this->task_args['FLAVOUR']))
+		{
+			$flavour = $this->task_args['FLAVOUR'];
+			$templates[$flavour] = $flavour;
+		}
+		
 	  $migrations = $this->migrator_util->get_migration_files($templates, $direction);
 	  $versions = array();
 	  $current_index = -1;
@@ -102,7 +108,6 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
       }
     }
     if($this->debug == true) {
-      print_r($migrations);
       echo "\ncurrent_index: " . $current_index . "\n";
       echo "\ncurrent_version: " . $current_version . "\n";
       echo "\noffset: " . $offset . "\n";
@@ -111,31 +116,43 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
     // If we are not at the bottom then adjust our index (to satisfy array_slice)
     if($current_index == -1) {
       $current_index = 0;
-    } else {
-      $current_index += 1;
     }
     
     // check to see if we have enough migrations to run - the user
     // might have asked to run more than we have available
-    $available = array_slice($migrations, $current_index, $offset);
-    // echo "\n------------- AVAILABLE ------------------\n";
-    // print_r($available);
-    if(count($available) != $offset) {
-      $names = array();
-      foreach($available as $a) { $names[] = $a['file']; }
-      $num_available = count($names);
-      $prefix = $direction == 'down' ? '-' : '+';
-      echo "\n\nCannot migrate " . strtoupper($direction) . " via offset \"{$prefix}{$offset}\": not enough migrations exist to execute.\n";
-      echo "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
-    } else {
-      // run em
-      $target = end($available);
-      if($this->debug == true) {
-        echo "\n------------- TARGET ------------------\n";
-        print_r($target);
-      }
-      $this->prepare_to_migrate($target['version'], $direction);
-    }
+
+	if($direction === 'down')
+	{
+		$offset = -$offset;
+	}
+	
+	$migrationsCount = count($migrations);
+	$targetVersion;
+	
+	if(isset($migrations[$current_index+$offset]))
+	{
+		$target = $migrations[$current_index+$offset];
+		$targetVersion = $target['version'];
+	}
+	elseif(($current_index+$offset) < 0)
+	{
+		$targetVersion = 0;
+	}
+	else
+	{
+		echo "\nNot enough migrations available for the offset '{$offset}'. Updating to the newest version.";
+		$target = $migrations[$migrationsCount-1];
+		$targetVersion = $target['version'];
+	}
+	
+	if($current_version !== $targetVersion)
+	{
+		$this->prepare_to_migrate($targetVersion, $direction);
+	}
+	else
+	{
+		echo "\nCurrent version equals desired version. Doesnt need to execute any migration.";
+	}
   }
 
   private function prepare_to_migrate($destination, $direction) {
@@ -147,19 +164,16 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		    echo ":\n";
 		  }
 			
-
+			$templates = $this->adapter->getTemplates();
+			
 			if(array_key_exists('FLAVOUR', $this->task_args))
 			{
-				$templates = array(
-					$this->task_args['FLAVOUR']
-				);
-				$migrations = $this->migrator_util->get_runnable_migrations($direction, $destination, true, $templates);
+				$flavour = $this->task_args['FLAVOUR'];
+				$templates[$flavour] = $flavour;
 			}
-			else
-			{
-				$migrations = $this->migrator_util->get_runnable_migrations($direction, $destination);
-			}
-		
+			
+			$migrations = $this->migrator_util->get_runnable_migrations($direction, $destination, true, $templates);
+			
 			if(count($migrations) == 0) {
 				return "\nNo relevant migrations to run. Exiting...\n";
 			}
@@ -186,7 +200,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 						$this->adapter->start_transaction();
 						$result =  $obj->$target_method();
 						//successfully ran migration, update our version and commit
-						$this->migrator_util->resolve_current_version($file['version'], $target_method);										
+						$this->migrator_util->resolve_current_version($file['version'], $target_method, $file['template']);										
 						$this->adapter->commit_transaction();
 					}catch(Exception $e) {
 						$this->adapter->rollback_transaction();

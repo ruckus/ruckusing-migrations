@@ -43,25 +43,6 @@ class Ruckusing_BaseAdapter {
 	}
 	
 	/**
-	 * Returns the templates for the adapter
-	 * 
-	 * @return array An array with values as templateNames
-	 */
-	public function getTemplates()
-	{
-		$dsn = $this->dsn;
-		
-		if(isset($dsn['templates']))
-		{
-			return $dsn['templates'];
-		}
-		else
-		{
-			return array();
-		}
-	}
-	
-	/**
 	 * Returns whether the adapter is using templates
 	 * 
 	 * @return boolean False if the adapter is not using templates, true otherwise

@@ -2,6 +2,9 @@
 
 class Ruckusing_MigratorUtil {
  
+	/**
+	 * @var Ruckusing_BaseAdapter|Ruckusing_MySQLAdapter
+	 */
   private $adapter = null;
   private $migrations = array();
   
@@ -51,8 +54,7 @@ class Ruckusing_MigratorUtil {
 		
 		if($templates === null)
 		{
-			$dsn = $this->adapter->get_dsn();
-			$templates = $dsn['templates'];
+			$templates = $this->adapter->getTemplates();
 		}
 		
 		$migrations = $this->get_migration_files($templates, $direction);
@@ -65,16 +67,19 @@ class Ruckusing_MigratorUtil {
 	  $start = $start !== false ? $start : 0;
 	  $finish = array_search($target, $migrations);
 	  $finish = $finish !== false ? $finish : (count($migrations) - 1);
-	  $item_length = ($finish - $start) + 1;
+	  $item_length = $finish - $start;
 	  
-	  $runnable = array_slice($migrations, $start, $item_length);
-	    
-    //dont include first item if going down but not if going all the way to the bottom
-    if($direction == 'down' && count($runnable) > 0 && $target != null) {
-      array_pop($runnable);
-    }
-    
+	  if($item_length < 0)
+	  {
+		$runnable = array_slice($migrations, ($start - abs($item_length)) + 1, abs($item_length));
+	  }
+	  else
+	  {
+		$runnable = array_slice($migrations, $start, $item_length + 1);
+	  }
+	  
     $executed = $this->get_executed_migrations();
+	//var_dump($runnable, $executed);
     $to_execute = array();
 
     foreach($runnable as $migration) {
@@ -91,6 +96,7 @@ class Ruckusing_MigratorUtil {
     if($use_cache == true) {
       $this->migrations[$key] = $to_execute;
     }
+	//var_dump($to_execute, $destination);
     return($to_execute);
 	}//get_relevant_files
 	    
@@ -105,9 +111,9 @@ class Ruckusing_MigratorUtil {
   /* If we are going UP then log this version as executed, if going DOWN then delete
 	this version from our set of executed migrations.
 	*/
-	public function resolve_current_version($version, $direction) {
+	public function resolve_current_version($version, $direction, $template) {
 	  if($direction === 'up') {
-	    $this->adapter->set_current_version($version);
+	    $this->adapter->set_current_version($version, $template);
     }
     if($direction === 'down') {
 	    $this->adapter->remove_version($version);
@@ -158,7 +164,7 @@ class Ruckusing_MigratorUtil {
         }//if-preg-match
   		}//for
   	}//if-file-cnt		
-  	sort($valid_files); //sorts in place
+  	
     if($direction == 'down') {
       $valid_files = array_reverse($valid_files);
     }
@@ -168,15 +174,18 @@ class Ruckusing_MigratorUtil {
 		$cnt = count($valid_files);
 		for($i = 0; $i < $cnt; $i++) {
 			$migration = $valid_files[$i];
-			if(preg_match('/^(.+)\/(\d+)_(.*)\.php$/', $migration, $matches)) {
+			if(preg_match('/^(.+)\/((\d+)_(.*)\.php)$/', $migration, $matches)) {
 				$files[] = array(
-										'version' => $matches[2],
-										'class' 	=> $matches[3],
-										'file'		=> $matches[1],
-										'path'		=> $matches[0]
+										'version' => $matches[3],
+										'class' 	=> $matches[4],
+										'template'		=> $matches[1],
+										'path'		=> $matches[0],
+										'file'	=>	$matches[2]
 									);					
 			}
 		}//for
+		
+		sort($files);
 		return $files;
   }//get_migration_files
   

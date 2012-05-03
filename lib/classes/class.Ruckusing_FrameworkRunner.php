@@ -141,8 +141,7 @@ class Ruckusing_FrameworkRunner {
 	  $this->adapter->create_schema_version_table();
 	  //insert all existing records into our new table
 	  $migrator_util = new Ruckusing_MigratorUtil($this->adapter);
-	  $dsn = $this->adapter->get_dsn();
-	  $templates = $dsn['templates'];
+	  $templates = $this->adapter->getTemplates();
 	  $files = $migrator_util->get_migration_files($templates, 'up');
     foreach($files as $file) {
       if( (int)$file['version'] >= PHP_INT_MAX) {

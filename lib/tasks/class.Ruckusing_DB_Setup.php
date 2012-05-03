@@ -22,8 +22,14 @@ class Ruckusing_DB_Setup implements Ruckusing_iTask {
 		echo "Started: " . date('Y-m-d g:ia T') . "\n\n";		
 		echo "[db:setup]: \n";
 		
-		$dsn = $this->adapter->get_dsn();
-		$templates = $dsn['templates'];
+		$templates = array(
+			RUCKUSING_STANDARD_TEMPLATE
+		);
+		
+		if(isset($args['FLAVOUR']))
+		{
+			$templates[] = $args['FLAVOUR'];
+		}
 		
 		// Creating the migrationfolders if necessary
 		foreach ($templates as $template)

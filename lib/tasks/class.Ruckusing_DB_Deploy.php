@@ -46,37 +46,16 @@ class Ruckusing_DB_Deploy implements Ruckusing_iTask
 		
 		echo "\tStarted executing SQL for schema ".date('Y-m-d g:ia T')."\n\n";
 		
-		if($this->adapter->hasTemplates())
+		if($this->adapter->isMaster())
 		{
-			$templates = $this->adapter->getTemplates();
-			$tplDbName = $templates[0];
-			
-			if($this->adapter->isMaster())
-			{
-				$filenameSuffix = 'master';
-			}
-			else
-			{
-				$filenameSuffix = 'client';
-			}
-			
-			$filename = 'schema_'.$filenameSuffix.'_'.$tplDbName.'.txt';
+			$filenameSuffix = 'master';
 		}
 		else
 		{
-			if($this->adapter->isMaster())
-			{
-				$filenameSuffix = 'master';
-			}
-			else
-			{
-				$filenameSuffix = 'client';
-			}
-
-			$dbName = $this->adapter->getDbName();
-			$filename = 'schema_'.$filenameSuffix.'_'.$dbName.'.txt';
+			$filenameSuffix = 'client';
 		}
-		
+
+		$filename = 'schema_'.$filenameSuffix.'_'.RUCKUSING_STANDARD_TEMPLATE.'.txt';
 		$schemaSql = file_get_contents(RUCKUSING_DB_DIR.'/'.$filename);
 		$this->adapter->executeSchema($schemaSql);
 		
@@ -85,8 +64,22 @@ class Ruckusing_DB_Deploy implements Ruckusing_iTask
 		$setup = new Ruckusing_DB_Setup($this->adapter);
 		$setup->execute($args);
 		
+		if(isset($args['FLAVOUR']))
+		{
+			$flavour = $args['FLAVOUR'];
+			unset($args['FLAVOUR']);
+		}
+		
 		$migrate = new Ruckusing_DB_Migrate($this->adapter);
 		$migrate->execute($args);
+		
+		if(isset($flavour))
+		{
+			$args['FLAVOUR'] = $flavour;
+			$migrate = new Ruckusing_DB_Migrate($this->adapter);
+			$migrate->execute($args);
+		}
+		
 		
 		echo "\n\nFinished deploy: " . date('Y-m-d g:ia T') . "\n\n";
 	}
