@@ -46,14 +46,7 @@ class Ruckusing_DB_Deploy implements Ruckusing_iTask
 		
 		echo "\tStarted executing SQL for schema ".date('Y-m-d g:ia T')."\n\n";
 		
-		if($this->adapter->isMaster())
-		{
-			$filenameSuffix = 'master';
-		}
-		else
-		{
-			$filenameSuffix = 'client';
-		}
+		$filenameSuffix = $this->adapter->getDbType();
 
 		$filename = 'schema_'.$filenameSuffix.'_'.RUCKUSING_STANDARD_TEMPLATE.'.txt';
 		$schemaSql = file_get_contents(RUCKUSING_DB_DIR.'/'.$filename);

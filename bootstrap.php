@@ -53,7 +53,7 @@ function getConfigFile($argv)
 	}
 	else
 	{
-		$configFile .= 'database.inc.php';
+		$configFile .= RUCKUSING_DB_CONFIG;
 		
 		if(!is_file($configFile))
 		{

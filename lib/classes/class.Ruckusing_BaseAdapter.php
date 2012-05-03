@@ -62,23 +62,23 @@ class Ruckusing_BaseAdapter {
 	}
 	
 	/**
-	 * Returns whether the adapter is for a master db or not
+	 * Returns for which db type this adapter is for
 	 * 
-	 * Standard behaviour when no config option was delivered is no master
+	 * Standard behaviour when no config option was delivered is returning 'standard'
 	 * 
-	 * @return boolean True if the adapter is for a master db, false if not
+	 * @return string The dbType defined in the config. 'standard' if nothing defined.
 	 */
-	public function isMaster()
+	public function getDbType()
 	{
 		$dsn = $this->dsn;
 		
-		if(isset($dsn['master']))
+		if(isset($dsn['dbType']))
 		{
-			return $dsn['master'];
+			return $dsn['dbType'];
 		}
 		else
 		{
-			return false;
+			return 'standard';
 		}
 	}
 	

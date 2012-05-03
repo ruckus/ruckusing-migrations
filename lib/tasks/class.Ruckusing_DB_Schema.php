@@ -33,14 +33,7 @@ class Ruckusing_DB_Schema implements Ruckusing_iTask {
 			}
 			else
 			{
-				if($this->adapter->isMaster())
-				{
-					$filenameSuffix = 'master';
-				}
-				else
-				{
-					$filenameSuffix = 'client';
-				}
+				$filenameSuffix = $this->adapter->getDbType();
 
 				$dbName = $this->adapter->getDbName();
 				$filename = 'schema_'.$filenameSuffix.'_'.$dbName.'.txt';
