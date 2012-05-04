@@ -57,22 +57,8 @@ class Ruckusing_DB_Deploy implements Ruckusing_iTask
 		$setup = new Ruckusing_DB_Setup($this->adapter);
 		$setup->execute($args);
 		
-		if(isset($args['FLAVOUR']))
-		{
-			$flavour = $args['FLAVOUR'];
-			unset($args['FLAVOUR']);
-		}
-		
 		$migrate = new Ruckusing_DB_Migrate($this->adapter);
 		$migrate->execute($args);
-		
-		if(isset($flavour))
-		{
-			$args['FLAVOUR'] = $flavour;
-			$migrate = new Ruckusing_DB_Migrate($this->adapter);
-			$migrate->execute($args);
-		}
-		
 		
 		echo "\n\nFinished deploy: " . date('Y-m-d g:ia T') . "\n\n";
 	}
