@@ -140,7 +140,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	}
 	else
 	{
-		echo "\nNot enough migrations available for the offset '{$offset}'. Updating to the newest version.";
+		echo "\nNot enough migrations available for the offset '{$offset}'. Updating to the newest version.\n";
 		$target = $migrations[$migrationsCount-1];
 		$targetVersion = $target['version'];
 	}
@@ -185,6 +185,12 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 
 	private function run_migrations($migrations, $target_method, $destination) {
 		$last_version = -1;
+		
+		if($target_method === 'down')
+		{
+			$migrations = array_reverse($migrations);
+		}
+		
 		foreach($migrations as $file) {
 			$full_path = RUCKUSING_MIGRATION_DIR . '/' . $file['path'];
 			if(is_file($full_path) && is_readable($full_path) ) {

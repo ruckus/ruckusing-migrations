@@ -65,8 +65,17 @@ class Ruckusing_MigratorUtil {
 	  }
 	  $start = $direction == 'up' ? 0 : array_search($current, $migrations);
 	  $start = $start !== false ? $start : 0;
-	  $finish = array_search($target, $migrations);
-	  $finish = $finish !== false ? $finish : (count($migrations) - 1);
+	  $finish = array_search($target, $migrations); // Problem ist dass wenn ein zu hoher negativer Wert gefunden $finish false ist
+	  
+	  if($direction === 'up')
+	  {
+		  $finish = $finish !== false ? $finish : (count($migrations) - 1); // Hier wird finish deswegen anschließend zum letzten Element, wodurch nur eins weggeht
+	  }
+	  elseif($direction === 'down')
+	  {
+		  $finish = $finish !== false ? $finish : -1;
+	  }
+	  
 	  $item_length = $finish - $start;
 	  
 	  if($item_length < 0)
@@ -96,7 +105,6 @@ class Ruckusing_MigratorUtil {
     if($use_cache == true) {
       $this->migrations[$key] = $to_execute;
     }
-	//var_dump($to_execute, $destination);
     return($to_execute);
 	}//get_relevant_files
 	    
