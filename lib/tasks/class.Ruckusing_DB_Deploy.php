@@ -49,18 +49,28 @@ class Ruckusing_DB_Deploy implements Ruckusing_iTask
 		$filenameSuffix = $this->adapter->getDbType();
 
 		$filename = 'schema_'.$filenameSuffix.'_'.RUCKUSING_STANDARD_TEMPLATE.'.txt';
-		$schemaSql = file_get_contents(RUCKUSING_DB_DIR.'/'.$filename);
-		$this->adapter->executeSchema($schemaSql);
+		$filepath = RUCKUSING_DB_DIR.'/'.$filename;
 		
-		echo "\tFinished executing SQL for schema ".date('Y-m-d g:ia T');
-		
-		$setup = new Ruckusing_DB_Setup($this->adapter);
-		$setup->execute($args);
-		
-		$migrate = new Ruckusing_DB_Migrate($this->adapter);
-		$migrate->execute($args);
-		
-		echo "\n\nFinished deploy: " . date('Y-m-d g:ia T') . "\n\n";
+		if(is_file($filepath))
+		{ // Only doing the deploy if a SQL schema file exists.
+			$schemaSql = file_get_contents($filepath);
+			$this->adapter->executeSchema($schemaSql);
+			echo "\tFinished executing SQL for schema ".date('Y-m-d g:ia T');
+			
+			$setup = new Ruckusing_DB_Setup($this->adapter);
+			$setup->execute($args);
+
+			$migrate = new Ruckusing_DB_Migrate($this->adapter);
+			$migrate->execute($args);
+
+			echo "\n\nFinished deploy: " . date('Y-m-d g:ia T') . "\n\n";
+		}
+		else
+		{
+			echo "\tNo SQL schema for Template '".RUCKUSING_STANDARD_TEMPLATE."' ".date('Y-m-d g:ia T');
+			echo "\nAborting db:deploy for database '".$this->adapter->getDbName()."'";
+			
+		}
 	}
 }
 ?>
