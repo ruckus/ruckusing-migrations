@@ -222,9 +222,10 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	
 	public function executeSchema($schemaSql)
 	{
-		preg_match_all('/CREATE TABLE [^;]*;/s', $schemaSql, $queries);
+		// This regex searches for SQL queries in a string. With it we can split a string into its SQL queries.
+		$queries = preg_split("/;+(?=([^'|^\\\']*['|\\\'][^'|^\\\']*['|\\\'])*[^'|^\\\']*[^'|^\\\']$)/", trim($schemaSql));
 		
-		foreach ($queries[0] as $query)
+		foreach ($queries as $query)
 		{
 			$this->query($query);
 		}
