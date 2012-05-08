@@ -31,31 +31,15 @@ class Ruckusing_DB_Setup implements Ruckusing_iTask {
 			$templates[] = $args['FLAVOUR'];
 		}
 		
-		if(! is_dir(RUCKUSING_DB_DIR))
-		{
-			mkdir(RUCKUSING_DB_DIR);
-		}
-		
-		if(! is_dir(RUCKUSING_MIGRATION_DIR))
-		{
-			mkdir(RUCKUSING_MIGRATION_DIR);
-		}
-		
 		// Creating the migrationfolders if necessary
 		foreach ($templates as $template)
 		{
 			$migrationDir = RUCKUSING_MIGRATION_DIR.'/'.$template;
 			
-			if(is_dir($migrationDir))
+			if(!is_dir($migrationDir))
 			{
-				echo sprintf("\tNOTICE: Directory %s already exists.\n", $migrationDir);
-			}
-			else
-			{
-				if(mkdir($migrationDir) === false)
-				{
-					echo sprintf("\tWARNING: Could not create directory: %s\n", $migrationDir);
-				}
+				echo sprintf("\tWARNING: Template directory '%s' does not exist. Create it and try again.\n\n", $migrationDir);
+				die;
 			}
 		}
 		
