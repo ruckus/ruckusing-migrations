@@ -4,7 +4,8 @@ tests/dummy/db/schema.txt
 .DS_Store
 lib/.DS_Store
 tests/.DS_Store
-/config/database.inc.php
-/config/config.inc.php
-/config/config.ini
+/config/*
+!/config/database.example.inc.php
+!/config/config.example.inc.php
+!/config/config.example.ini
 /nbproject
