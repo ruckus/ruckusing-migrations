@@ -6,6 +6,13 @@
 
 //These might already be defined, so wrap them in checks
 
+//Path to the ini config file. Root folder is config/.
+if(!defined('RUCKUSING_INI_CONFIG'))
+{
+	define('RUCKUSING_INI_CONFIG', 'config.ini');
+}
+
+//Path to the database config file. Root folder is config/.
 if(!defined('RUCKUSING_DB_CONFIG'))
 {
 	define('RUCKUSING_DB_CONFIG', 'database.inc.php');

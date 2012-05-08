@@ -6,4 +6,5 @@ lib/.DS_Store
 tests/.DS_Store
 /config/database.inc.php
 /config/config.inc.php
+/config/config.ini
 /nbproject
