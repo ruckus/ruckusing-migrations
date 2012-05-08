@@ -14,8 +14,7 @@ $ruckusing_db_config = array(
         'database' => 'ruckusing_migrations',
         'user' => $cfg['dbUser'],
         'password' => $cfg['dbPass'],
-		'dbType'	=> 'standard',
-		'isTemplate' => false
+		'dbType'	=> 'standard'
     ),
 
 	'test' => array(
@@ -25,8 +24,7 @@ $ruckusing_db_config = array(
 		'database' => 'ruckusing_migrations_test',
 		'user' => $cfg['dbUser'],
 		'password' => $cfg['dbPass'],
-		'dbType'	=> 'standard',
-		'isTemplate' => false
+		'dbType'	=> 'standard'
 	)
 
 );

@@ -9,7 +9,6 @@
 
 define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
 require RUCKUSING_BASE.'/bootstrap.php';
-require_once getConfigFile($argv);
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 

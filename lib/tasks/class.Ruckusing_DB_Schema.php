@@ -33,10 +33,8 @@ class Ruckusing_DB_Schema implements Ruckusing_iTask {
 			}
 			else
 			{
-				$filenameSuffix = $this->adapter->getDbType();
-
 				$dbName = $this->adapter->getDbName();
-				$filename = 'schema_'.$filenameSuffix.'_'.$dbName.'.txt';
+				$filename = 'schema_'.$dbName.'.txt';
 			}
 			
 			$schema_file = RUCKUSING_DB_DIR . '/'.$filename;

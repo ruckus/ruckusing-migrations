@@ -41,57 +41,5 @@ class Ruckusing_BaseAdapter {
 		$dbName = $this->dsn['database'];
 		return $dbName;
 	}
-	
-	/**
-	 * Returns whether the adapter is using templates
-	 * 
-	 * @return boolean False if the adapter is not using templates, true otherwise
-	 */
-	public function hasTemplates()
-	{
-		$templates = $this->getTemplates();
-		
-		if(empty($templates))
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-	
-	/**
-	 * Returns for which db type this adapter is for
-	 * 
-	 * Standard behaviour when no config option was delivered is returning 'standard'
-	 * 
-	 * @return string The dbType defined in the config. 'standard' if nothing defined.
-	 */
-	public function getDbType()
-	{
-		$dsn = $this->dsn;
-		
-		if(isset($dsn['dbType']))
-		{
-			return $dsn['dbType'];
-		}
-		else
-		{
-			return 'standard';
-		}
-	}
-	
-	/**
-	 * Returns whether this adapter is used for a template db
-	 * 
-	 * @return boolean True if the adapter is used for a template, otherwise false
-	 */
-	public function isTemplate()
-	{
-		$dsn = $this->dsn;
-		return $dsn['isTemplate'];
-	}
-	
 }
 ?>
