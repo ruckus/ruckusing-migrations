@@ -8,20 +8,32 @@ require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_MigratorUtil.p
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
-require_once RUCKUSING_BASE  . '/config/database.inc.php';
+require_once RUCKUSING_BASE  . '/tests/database.inc.php';
 require_once RUCKUSING_BASE  . '/config/config.inc.php';
 
 define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
 
 class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 
-  protected function setUp() {
+	protected $template = array(
+	    'testtpl'
+	);
+	 
+	protected function setUp() {
     global $ruckusing_db_config;
     
   	if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
   		die("\n'test' DB is not defined in config/database.inc.php\n\n");
   	}
 
+	if(! defined('RUCKUSING_CURRENT_TASK')) {
+		define('RUCKUSING_CURRENT_TASK', 'db:migrate');
+	}
+	
+	if(! defined('RUCKUSING_STANDARD_TEMPLATE')) {
+		define('RUCKUSING_STANDARD_TEMPLATE', 'testtpl');
+	}
+			
   	$test_db = $ruckusing_db_config['test'];
 
   	//setup our log
@@ -41,7 +53,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 	
 	private function insert_dummy_version_data($data) {
     foreach($data as $version) {
-      $insert_sql = sprintf("INSERT INTO %s (version) VALUES ('%s')", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);
+      $insert_sql = sprintf("INSERT INTO %s (version, template) VALUES ('%s', '".RUCKUSING_STANDARD_TEMPLATE."')", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);
       $this->adapter->query($insert_sql);
     }
   }
@@ -66,7 +78,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     $this->insert_dummy_version_data( array(1) );
     
     $migrator_util = new Ruckusing_MigratorUtil($this->adapter);
-    $migrator_util->resolve_current_version(3, 'up');
+    $migrator_util->resolve_current_version(3, 'up', $this->template);
     
     $executed = $migrator_util->get_executed_migrations();
     $this->assertEquals(true, in_array(3, $executed) );
@@ -79,7 +91,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     $this->insert_dummy_version_data( array(1,2,3) );
     
     $migrator_util = new Ruckusing_MigratorUtil($this->adapter);
-    $migrator_util->resolve_current_version(3, 'down');
+    $migrator_util->resolve_current_version(3, 'down', $this->template);
     
     $executed = $migrator_util->get_executed_migrations();
     $this->assertEquals(false, in_array(3, $executed) );
@@ -89,22 +101,28 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 
   public function test_get_runnable_migrations_going_up_no_target_version() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations('up', null, false, $this->template);
     $expect_up_files = array(
   												array(
   													'version' => 1,
   													'class' 	=> 'CreateUsers',
-  													'file'		=> '001_CreateUsers.php'
+  													'file'		=> '001_CreateUsers.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/001_CreateUsers.php'
   												),
   												array(
   													'version' => 3,
   													'class' 	=> 'AddIndexToBlogs',
-  													'file'		=> '003_AddIndexToBlogs.php'
+  													'file'		=> '003_AddIndexToBlogs.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/003_AddIndexToBlogs.php'
   												),
   												array(
   												  'version' => '20090122193325',
   												  'class'   => 'AddNewTable',
-  												  'file'    => '20090122193325_AddNewTable.php'
+  												  'file'    => '20090122193325_AddNewTable.php',
+												  'template' => 'testtpl',
+												  'path' => 'testtpl/20090122193325_AddNewTable.php'
   												)
   											);  
     $this->assertEquals($expect_up_files, $actual_up_files);
@@ -112,23 +130,27 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
   
   public function test_get_runnable_migrations_going_down_no_target_version() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $actual_down_files  = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', false);
+    $actual_down_files  = $migrator_util->get_runnable_migrations('down', null, false, $this->template);
     $this->assertEquals( array() , $actual_down_files);
   }
 
   public function test_get_runnable_migrations_going_up_with_target_version_no_current() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', 3, false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations('up', 3, false, $this->template);
     $expect_up_files = array(
   												array(
   													'version' => 1,
   													'class' 	=> 'CreateUsers',
-  													'file'		=> '001_CreateUsers.php'
+  													'file'		=> '001_CreateUsers.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/001_CreateUsers.php'
   												),
   												array(
   													'version' => 3,
   													'class' 	=> 'AddIndexToBlogs',
-  													'file'		=> '003_AddIndexToBlogs.php'
+  													'file'		=> '003_AddIndexToBlogs.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/003_AddIndexToBlogs.php'
   												)
   											);  
     $this->assertEquals($expect_up_files, $actual_up_files);
@@ -138,12 +160,14 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
     //pretend we already executed version 1
     $this->insert_dummy_version_data( array(1) );    
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', 3, false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations('up', 3, false, $this->template);
     $expect_up_files = array(
   												array(
   													'version' => 3,
   													'class' 	=> 'AddIndexToBlogs',
-  													'file'		=> '003_AddIndexToBlogs.php'
+  													'file'		=> '003_AddIndexToBlogs.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/003_AddIndexToBlogs.php'
   												)
   											);  
     $this->assertEquals($expect_up_files, $actual_up_files);
@@ -151,37 +175,43 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 
     //now pre-register some migrations that we have already executed
     $this->insert_dummy_version_data( array(1,3) );    
-    $actual_up_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'up', 3, false);
+    $actual_up_files    = $migrator_util->get_runnable_migrations('up', 3, false, $this->template);
     $this->assertEquals(array(), $actual_up_files);
   }
   
   public function test_get_runnable_migrations_going_down_with_target_version_no_current() {
     $migrator_util      = new Ruckusing_MigratorUtil($this->adapter);
-    $this->insert_dummy_version_data( array(3, '20090122193325') );    
-    $actual_down_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', 1, false);
+    $this->insert_dummy_version_data( array(3, '20090122193325') );
+    $actual_down_files    = $migrator_util->get_runnable_migrations('down', 1, false, $this->template);
     $expect_down_files = array(
-                          array(
+                          1 => array(
                     			  'version' => '20090122193325',
                     			  'class'   => 'AddNewTable',
-                    			  'file'    => '20090122193325_AddNewTable.php'
+                    			  'file'    => '20090122193325_AddNewTable.php',
+								  'template' => 'testtpl',
+								  'path' => 'testtpl/20090122193325_AddNewTable.php'
                     			),
-  												array(
+  												0 => array(
   													'version' => 3,
   													'class' 	=> 'AddIndexToBlogs',
-  													'file'		=> '003_AddIndexToBlogs.php'
+  													'file'		=> '003_AddIndexToBlogs.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/003_AddIndexToBlogs.php'
   												)
-  											);  
+  											);
     $this->assertEquals($expect_down_files, $actual_down_files);
 
     $this->clear_dummy_data();
 
     $this->insert_dummy_version_data( array(3) );    
-    $actual_down_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', 1, false);
+    $actual_down_files    = $migrator_util->get_runnable_migrations('down', 1, false, $this->template);
     $expect_down_files = array(
   												array(
   													'version' => 3,
   													'class' 	=> 'AddIndexToBlogs',
-  													'file'		=> '003_AddIndexToBlogs.php'
+  													'file'		=> '003_AddIndexToBlogs.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/003_AddIndexToBlogs.php'
   												)
   											);  
     $this->assertEquals($expect_down_files, $actual_down_files);
@@ -189,22 +219,28 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     //go all the way down!
     $this->clear_dummy_data();
     $this->insert_dummy_version_data( array(1, 3, '20090122193325') );    
-    $actual_down_files    = $migrator_util->get_runnable_migrations(RUCKUSING_MIGRATION_DIR, 'down', 0, false);
+    $actual_down_files    = $migrator_util->get_runnable_migrations('down', 0, false, $this->template);
     $expect_down_files = array(
-                      		array(
+                      		2 => array(
                       		  'version' => '20090122193325',
                       		  'class'   => 'AddNewTable',
-                      		  'file'    => '20090122193325_AddNewTable.php'
+                      		  'file'    => '20090122193325_AddNewTable.php',
+							  'template' => 'testtpl',
+							  'path' => 'testtpl/20090122193325_AddNewTable.php'
                       		),
-  												array(
+  												1 => array(
   													'version' => 3,
   													'class' 	=> 'AddIndexToBlogs',
-  													'file'		=> '003_AddIndexToBlogs.php'
+  													'file'		=> '003_AddIndexToBlogs.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/003_AddIndexToBlogs.php'
   												),
-  												array(
+  												0 => array(
   													'version' => 1,
   													'class' 	=> 'CreateUsers',
-  													'file'		=> '001_CreateUsers.php'
+  													'file'		=> '001_CreateUsers.php',
+													'template' => 'testtpl',
+													'path' => 'testtpl/001_CreateUsers.php'
   												)
   											);
     $this->assertEquals($expect_down_files, $actual_down_files);    

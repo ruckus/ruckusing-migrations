@@ -3,6 +3,7 @@ if(!defined('BASE')) {
   define('BASE', dirname(__FILE__) . '/..');
 }
 require_once BASE  . '/test_helper.php';
+require_once RUCKUSING_BASE . '/bootstrap.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
@@ -17,14 +18,18 @@ require_once RUCKUSING_BASE  . '/lib/classes/Ruckusing_exceptions.php';
 class BaseMigrationTest extends PHPUnit_Framework_TestCase {
 		
 		protected function setUp() {
-			require RUCKUSING_BASE . '/config/database.inc.php';
+			require RUCKUSING_BASE . '/tests/database.inc.php';
 
 			if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
-				die("\n'test' DB is not defined in config/database.inc.php\n\n");
+				die("\n'test' DB is not defined in tests/database.inc.php\n\n");
 			}
 
 			$test_db = $ruckusing_db_config['test'];
-
+			
+			if(! defined('RUCKUSING_CURRENT_TASK')) {
+				define('RUCKUSING_CURRENT_TASK', 'db:migrate');
+			}
+			
 			//setup our log
 			$logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
