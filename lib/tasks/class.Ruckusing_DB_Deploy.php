@@ -2,7 +2,7 @@
 /**
  * Holds the deploy task
  * 
- * @package DbMigrations
+ * @package Ruckusing-Migrations
  * @author Martin Jainta <maj@tradebyte.biz>
  * @copyright 2012 Tradebyte Software GmbH
  */
@@ -16,7 +16,7 @@ require_once RUCKUSING_BASE . '/config/config.inc.php';
  * Deploying means executing the schema to the database and afterwards
  * doing the setup and migrate task.
  * 
- * @package DbMigrations
+ * @package Ruckusing-Migrations
  * @author Martin Jainta <maj@tradebyte.biz>
  * @copyright 2012 Tradebyte Software GmbH
  */

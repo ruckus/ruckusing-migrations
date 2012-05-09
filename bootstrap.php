@@ -2,7 +2,7 @@
 /**
  * Bootstrap file for ruckusing-migrations
  * 
- * @package DbMigrations
+ * @package Ruckusing-Migrations
  * @author Martin Jainta <maj@tradebyte.biz>
  * @copyright 2012 Tradebyte Software GmbH
  */
