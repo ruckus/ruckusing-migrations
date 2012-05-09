@@ -89,8 +89,8 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	}
 	
 	private function migrate_from_offset($offset, $current_version, $direction) {
-		$templates = $this->adapter->getTemplates();
-		
+		$templates = $this->adapter->getTemplates($this->task_args);
+	
 		if(isset($this->task_args['FLAVOUR']))
 		{
 			$flavour = $this->task_args['FLAVOUR'];
@@ -164,7 +164,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		    echo ":\n";
 		  }
 			
-			$templates = $this->adapter->getTemplates();
+			$templates = $this->getTemplates();
 			
 			if(array_key_exists('FLAVOUR', $this->task_args))
 			{

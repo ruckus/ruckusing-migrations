@@ -35,25 +35,25 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	}
 	
 	/**
-	 * Returns the used templates for this database.
+	 * Returns the used templates for this database. If a template is passed by arguments, it will be used instead.
 	 * 
 	 * @return $string[] An array with the template names as values.
 	 */
-	public function getTemplates()
-	{
-		$sql = 'SELECT DISTINCT template
-				FROM schema_migrations';
-		$result = $this->query($sql);
+	public function getTemplates($args = null) {
 		$templates = array();
-		
-		foreach ($result as $template)
-		{
-			$templateDb = $template['template'];
-			$templates[$templateDb] = $templateDb;
+		if(isset($args['TEMPLATE'])) {
+			$templates[] = $args['TEMPLATE'];
+		} else {
+			$sql = 'SELECT DISTINCT template
+					FROM schema_migrations';
+			$result = $this->query($sql);
+			$templates = array();
+			foreach ($result as $template) {
+				$templateDb = $template['template'];
+				$templates[$templateDb] = $templateDb;
+			}
+			$templates[RUCKUSING_STANDARD_TEMPLATE] = RUCKUSING_STANDARD_TEMPLATE;
 		}
-		
-		$templates[RUCKUSING_STANDARD_TEMPLATE] = RUCKUSING_STANDARD_TEMPLATE;
-		
 		return $templates;
 	}
 	

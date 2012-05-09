@@ -24,7 +24,7 @@ class Ruckusing_DB_Status implements Ruckusing_iTask {
 		echo "[db:status]: \n";
 		$util = new Ruckusing_MigratorUtil($this->adapter);
 		$migrations = $util->get_executed_migrations();
-		$templates = $this->adapter->getTemplates();
+		$templates = $this->adapter->getTemplates($args);
 		
 		if(array_key_exists('FLAVOUR', $args))
 		{
