@@ -11,6 +11,12 @@ if(!defined('RUCKUSING_DB_DIR')) {
 	define('RUCKUSING_DB_DIR', RUCKUSING_BASE . '/tests/dummy/db');
 }
 
+// DB name which is used as the standard template for all DBs
+if(!defined('RUCKUSING_STANDARD_TEMPLATE'))
+{
+	define('RUCKUSING_STANDARD_TEMPLATE', 'testtpl');
+}
+
 if(!defined('RUCKUSING_TS_SCHEMA_TBL_NAME')) {
 	define('RUCKUSING_TS_SCHEMA_TBL_NAME', 'schema_migrations');
 }

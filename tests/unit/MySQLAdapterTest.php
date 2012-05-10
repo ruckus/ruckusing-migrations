@@ -20,7 +20,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			require RUCKUSING_BASE . '/tests/database.inc.php';
 
 			if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
-				die("\n'test' DB is not defined in config/database.inc.php\n\n");
+				die("\n'test' DB is not defined in tests/database.inc.php\n\n");
 			}
 
 			if(!defined('RUCKUSING_CURRENT_TASK')) {
@@ -47,12 +47,165 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 			if($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME,true)) {
 				$this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
 			}
+			
+			if($this->adapter->has_table('names',true)) {
+				$this->adapter->drop_table('names');
+			}
+			
+			if($this->adapter->has_table('cities',true)) {
+				$this->adapter->drop_table('cities');
+			}
 
 			$db = "test_db";
 			//delete any databases we created
 			if($this->adapter->database_exists($db)) {
 				$this->adapter->drop_database($db);				
 			}			
+		}
+		
+		/**
+		 * Tests the method getTemplates if it behaviour is correct.
+		 * 
+		 * Tests if the getTemplates method works correctly when having more than one template. 
+		 * Tests if the getTemplates method works correctly when having one template in db which isnt the standard one. 
+		 * Tests if the getTemplates method works correctly when using the TEMPLATE parameter as an argument for the task.
+		 * 
+		 * @dataProvider provide_for_get_templates
+		 * @param string $sql The SQL statement which is used to fill the database versioning table.
+		 * @param mixed[] $expectedTpls The result which getTemplates should return.
+		 * @param mixed $args Either an array representing the tasks arguments or null.
+		 */
+		public function test_get_templates($sql, $expectedTpls, $args) {
+			$this->adapter->create_schema_version_table();
+			$this->adapter->query($sql);
+			$actualTpls = $this->adapter->getTemplates($args);
+			$this->assertEquals($expectedTpls, $actualTpls);
+		}
+		
+		/**
+		 * Provides various SQL statements and expected results for another test function.
+		 * 
+		 * @return mixed[] An array with a string representing a SQL statement, an array representing an expected result and the arguments for the task.
+		 */
+		public function provide_for_get_templates() {
+			return array(
+				array("INSERT INTO schema_migrations (version, template) VALUES (3, 'testtpl'),(4, 'tpl2')", 
+					array(
+						'testtpl' => 'testtpl', 
+						'tpl2' => 'tpl2'
+					),
+					null
+				),
+				array("INSERT INTO schema_migrations (version, template) VALUES (4, 'tpl2')",
+					array(
+						'testtpl' => 'testtpl', 
+						'tpl2' => 'tpl2'
+					),
+					null
+				),
+				array("INSERT INTO schema_migrations (version, template) VALUES (4, 'tpl2')",
+					array(
+						'othertpl' => 'othertpl'
+					),
+					array('TEMPLATE' => 'othertpl') // Simulates that a arg TEMPLATE was provided.
+				)
+			);
+		}
+		
+		/**
+		 *  Tests the method executeSchema when only create statements are used.
+		 */
+		public function test_execute_schema_only_create() {
+			$sql = '
+				
+					CREATE TABLE `names` (
+					`ID` int(10) unsigned NOT NULL,
+					`name` varchar(20),
+					PRIMARY KEY (`ID`,`name`)
+					) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+					
+					CREATE TABLE `cities` (
+					`ID` int(10) unsigned NOT NULL,
+					`name` varchar(20),
+					PRIMARY KEY (`ID`,`name`)
+					) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+					
+					';
+			
+			$this->adapter->executeSchema($sql);
+			$this->assertTrue($this->adapter->has_table('names'));
+			$this->assertTrue($this->adapter->has_table('cities'));
+		}
+		
+		/**
+		 * Tests the method executeSchema when create, insert and update statements are delivered in a mix. 
+		 * 
+		 * Executes some SQL statements and then verifies if tables were created and rows were inserted and updated.
+		 */
+		public function test_execute_schema_with_insert_update() {
+			$sql = "
+				
+					CREATE TABLE `names` (
+					`ID` int(10) unsigned NOT NULL,
+					`name` varchar(20),
+					PRIMARY KEY (`ID`,`name`)
+					) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+					
+					INSERT INTO names (ID,name)
+					VALUES (1, 'Peter'),(2, 'James');
+
+					CREATE TABLE `cities` (
+					`ID` int(10) unsigned NOT NULL,
+					`name` varchar(20),
+					PRIMARY KEY (`ID`,`name`)
+					) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+					
+					UPDATE names
+					SET name='Joe'
+					WHERE ID=2;
+					
+					INSERT INTO cities (ID, name)
+					VALUES (1, 'New York'),(2, 'London'),(3, 'Berlin');
+					
+					";
+			
+			$this->adapter->executeSchema($sql); //Executing the SQL statements
+			$this->assertTrue($this->adapter->has_table('names'));
+			$this->assertTrue($this->adapter->has_table('cities'));
+			
+			// Verifying that the correct rows were inserted and updated to the table 'names'
+			$sql = 'SELECT * FROM names';
+			$actualNames = $this->adapter->query($sql);
+			$expectedNames = array(
+				array(
+					'ID' => 1,
+					'name' => 'Peter'
+				),
+				array(
+					'ID' => 2,
+					'name' => 'Joe'
+				)
+			);
+			$this->assertEquals($expectedNames, $actualNames);
+			
+			// Verifying that the correct rows were inserted to the table 'cities'
+			$sql = 'SELECT * FROM cities';
+			$actualCities = $this->adapter->query($sql);
+			$expectedCities = array(
+				array(
+					'ID' => 1,
+					'name' => 'New York'
+				),
+				array(
+					'ID' => 2,
+					'name' => 'London'
+				),
+				array(
+					'ID' => 3,
+					'name' => 'Berlin'
+				)
+			);
+			$this->assertEquals($expectedCities, $actualCities);
 		}
 		
 		public function test_create_schema_version_table() {

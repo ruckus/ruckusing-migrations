@@ -42,7 +42,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	public function getTemplates($args = null) {
 		$templates = array();
 		if(isset($args['TEMPLATE'])) {
-			$templates[] = $args['TEMPLATE'];
+			$templates[$args['TEMPLATE']] = $args['TEMPLATE'];
 		} else {
 			$sql = 'SELECT DISTINCT template
 					FROM schema_migrations';
@@ -220,6 +220,13 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		return $this->query($query);
 	}
 	
+	/**
+	 * Executes the schema for a db.
+	 * 
+	 * Basically splits the given SQL string into its statements and executes them one after another.
+	 * 
+	 * @param string $schemaSql The SQL statements for the schema in one string.
+	 */
 	public function executeSchema($schemaSql)
 	{
 		// This regex searches for SQL queries in a string. With it we can split a string into its SQL queries.
