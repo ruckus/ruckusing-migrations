@@ -112,14 +112,6 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
       echo "\ncurrent_version: " . $current_version . "\n";
       echo "\noffset: " . $offset . "\n";
     }
-    
-    // If we are not at the bottom then adjust our index (to satisfy array_slice)
-    if($current_index == -1) {
-      $current_index = 0;
-    }
-    
-    // check to see if we have enough migrations to run - the user
-    // might have asked to run more than we have available
 
 	if($direction === 'down')
 	{
@@ -129,6 +121,8 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	$migrationsCount = count($migrations);
 	$targetVersion;
 	
+    // check to see if we have enough migrations to run - the user
+    // might have asked to run more than we have available
 	if(isset($migrations[$current_index+$offset]))
 	{
 		$target = $migrations[$current_index+$offset];

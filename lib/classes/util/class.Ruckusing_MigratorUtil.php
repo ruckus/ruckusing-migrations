@@ -63,27 +63,37 @@ class Ruckusing_MigratorUtil {
 		if(is_null($target) && !is_null($destination) && $destination > 0) {
 		  trigger_error("Could not find target version {$destination} in set of migrations.");
 	  }
+	  //If direction is 'up', start is at 0, otherwise at the return of array_search
 	  $start = $direction == 'up' ? 0 : array_search($current, $migrations);
+	  //If start is false, set start to 0
 	  $start = $start !== false ? $start : 0;
+	  //finish is the return of array_search for the target version
 	  $finish = array_search($target, $migrations);
 	  
 	  if($direction === 'up')
 	  {
+		  //If direction is up and finish was set to false, set it to the last element
 		  $finish = $finish !== false ? $finish : (count($migrations) - 1);
 	  }
 	  elseif($direction === 'down')
 	  {
+		  //If direction is down and finish was set to false, set it to -1
 		  $finish = $finish !== false ? $finish : -1;
 	  }
 	  
-	  $item_length = $finish - $start;
+	  $item_length = $finish - $start; //The length of how many items should be sliced
 	  
 	  if($item_length < 0)
 	  {
+		//If the item length is negative, we start at the migration which should be last executed and go for the absolute number of item_length
 		$runnable = array_slice($migrations, ($start - abs($item_length)) + 1, abs($item_length));
 	  }
 	  else
 	  {
+		/* 
+		 * If the item length is positive or 0, we start at the current version (or 0) and go on for (item_length + 1) migrations. 
+		 * The +1 is necessary because we start at 0 or the current migration.
+		 */
 		$runnable = array_slice($migrations, $start, $item_length + 1);
 	  }
 	  
