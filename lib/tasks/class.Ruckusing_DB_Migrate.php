@@ -164,7 +164,7 @@ class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 		    echo ":\n";
 		  }
 			
-			$templates = $this->getTemplates();
+			$templates = $this->adapter->getTemplates($this->task_args);
 			
 			if(array_key_exists('FLAVOUR', $this->task_args))
 			{
