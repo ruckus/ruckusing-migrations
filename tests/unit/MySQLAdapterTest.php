@@ -17,10 +17,10 @@ require_once RUCKUSING_BASE  . '/lib/classes/Ruckusing_exceptions.php';
 class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 		
 		protected function setUp() {
-			require RUCKUSING_BASE . '/tests/database.inc.php';
+			require RUCKUSING_BASE . '/tests/config/database.inc.php';
 
 			if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
-				die("\n'test' DB is not defined in tests/database.inc.php\n\n");
+				die("\n'test' DB is not defined in tests/config/database.inc.php\n\n");
 			}
 
 			if(!defined('RUCKUSING_CURRENT_TASK')) {
@@ -262,8 +262,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
 		  $this->setExpectedException('Ruckusing_InvalidIndexNameException');
 		  $bm = new Ruckusing_BaseMigration();
       $bm->set_adapter($this->adapter);
-      $ts = time();
-      $table_name = "users_${ts}";
+      $table_name = "users";
       $table = $bm->create_table($table_name, array('id' => false));
       $table->column('somecolumnthatiscrazylong', 'integer');
       $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');

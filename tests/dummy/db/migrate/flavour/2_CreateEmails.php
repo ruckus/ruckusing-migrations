@@ -1,6 +1,6 @@
 <?php
 
-class CreateUsers extends Ruckusing_BaseMigration {
+class CreateEmails extends Ruckusing_BaseMigration {
 	
 	public function up() {
 		

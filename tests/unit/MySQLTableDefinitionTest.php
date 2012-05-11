@@ -14,10 +14,10 @@ require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLTable
 class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase {
 
 	protected function setUp() {
-		require RUCKUSING_BASE . '/tests/database.inc.php';
+		require RUCKUSING_BASE . '/tests/config/database.inc.php';
 
 		if( !is_array($ruckusing_db_config) || !array_key_exists("test", $ruckusing_db_config)) {
-			die("\n'test' DB is not defined in config/database.inc.php\n\n");
+			die("\n'test' DB is not defined in tests/config/database.inc.php\n\n");
 		}
 		
 		if(!defined('RUCKUSING_CURRENT_TASK')) {

@@ -27,6 +27,11 @@ if(!defined('RUCKUSING_MIGRATION_DIR')) {
 }
 
 require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
-
+require RUCKUSING_BASE . '/lib/tasks/class.Ruckusing_DB_Deploy.php';
+require RUCKUSING_BASE . '/lib/tasks/class.Ruckusing_DB_Migrate.php';
+require RUCKUSING_BASE . '/lib/tasks/class.Ruckusing_DB_Schema.php';
+require RUCKUSING_BASE . '/lib/tasks/class.Ruckusing_DB_Setup.php';
+require RUCKUSING_BASE . '/lib/tasks/class.Ruckusing_DB_Status.php';
+require RUCKUSING_BASE . '/lib/tasks/class.Ruckusing_DB_Version.php';
 
 ?>

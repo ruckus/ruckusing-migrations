@@ -1,0 +1,4 @@
+CREATE TABLE `roles` ( name varchar(20), age int(3) );
+INSERT INTO roles (name,age) VALUES ('admin', 35),('member', 22);
+UPDATE roles SET name='user' WHERE age < 25;
+CREATE TABLE `cars` (ID int(10), name varchar(50));
