@@ -31,7 +31,7 @@ function parseAllArgs($argv)
 }
 
 /**
- * Returns the configfile which should be required to get the db config array
+ * Returns the database configfile which should be required to get the db config array
  * 
  * @param array The argv variable storing the given parameters
  * @return string The full filepath to the config file
@@ -39,7 +39,7 @@ function parseAllArgs($argv)
 function getConfigFile($argv)
 {
 	$args = parseAllArgs($argv);
-	$configFile = RUCKUSING_BASE . '/config/';
+	$configFile = realpath(RUCKUSING_BASE) . '/config/';
 	
 	if(isset($args['CONFIG']))
 	{
@@ -47,8 +47,7 @@ function getConfigFile($argv)
 		
 		if(!is_file($configFile))
 		{
-			echo sprintf("\tConfigfile does not exist: %s\n", $configFile);
-			die();
+			trigger_error(sprintf("\tConfigfile does not exist: %s\n", $configFile));
 		}
 	}
 	else
@@ -57,8 +56,7 @@ function getConfigFile($argv)
 		
 		if(!is_file($configFile))
 		{
-			echo sprintf("\tConfigfile does not exist: %s\n", $configFile);
-			die();
+			trigger_error(sprintf("\tConfigfile does not exist: %s\n", $configFile));
 		}
 	}
 	

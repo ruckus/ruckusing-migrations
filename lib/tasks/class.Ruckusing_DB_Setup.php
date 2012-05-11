@@ -31,7 +31,7 @@ class Ruckusing_DB_Setup implements Ruckusing_iTask {
 			$templates[] = $args['FLAVOUR'];
 		}
 		
-		// Creating the migrationfolders if necessary
+		// Checking if the migrationfolders exist
 		foreach ($templates as $template)
 		{
 			$migrationDir = RUCKUSING_MIGRATION_DIR.'/'.$template;

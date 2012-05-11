@@ -73,7 +73,7 @@ class Ruckusing_DB_Deploy implements Ruckusing_iTask
 		else
 		{
 			echo "\tNo SQL schema for Template '".RUCKUSING_STANDARD_TEMPLATE."' ".date('Y-m-d g:ia T');
-			echo "\nAborting db:deploy for database '".$this->adapter->getDbName()."'\n\n";
+			trigger_error("\nAborting db:deploy for database '".$this->adapter->getDbName()."'\n\n");
 		}
 	}
 }
