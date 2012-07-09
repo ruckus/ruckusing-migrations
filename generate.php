@@ -8,15 +8,54 @@
 
 
 define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
-require_once RUCKUSING_BASE . '/config/config.inc.php';
-require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
-require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
+require RUCKUSING_BASE . '/config/config.inc.php';
+require RUCKUSING_BASE . '/config/database.inc.php';
+require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
+require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
+require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
+require RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 
 $args = parse_args($argv);
-main($args);
+$framework = new Ruckusing_FrameworkRunner($ruckusing_db_config, null);
+//input sanity check
+if(!is_array($args) || (is_array($args) && !array_key_exists('name', $args)) ) {
+  print_help(true);
+}
+$migration_name = $args['name'];
 
+//clear any filesystem stats cache
+clearstatcache();
 
-//-------------------
+//generate a complete migration file
+$next_version = Ruckusing_MigratorUtil::generate_timestamp();
+$klass = Ruckusing_NamingUtil::camelcase($migration_name);
+$file_name = $next_version . '_' . $klass . '.php';
+$migrations_dir = $framework->migrations_directory();
+
+$template_str = get_template($klass);
+
+if(!is_dir($migrations_dir)) {
+  printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $migrations_dir);
+  if(mkdir($migrations_dir) === FALSE) {
+    printf("\n\tUnable to create migrations directory at %s, check permissions?", $migrations_dir);
+  } else {
+    printf("\n\tCreated OK");
+  }
+}
+
+//check to make sure our destination directory is writable
+if(!is_writable($migrations_dir)) {
+  die_with_error("ERROR: migration directory '" . $migrations_dir . "' is not writable by the current user. Check permissions and try again.");
+}
+
+//write it out!
+$full_path = $migrations_dir . '/' . $file_name;
+$file_result = file_put_contents($full_path, $template_str);
+if($file_result === FALSE) {
+  die_with_error("Error writing to migrations directory/file. Do you have sufficient privileges?");
+} else {
+  echo "\n\tCreated migration: {$file_name}\n\n";
+}
 
 /*
   Parse command line arguments.
@@ -24,7 +63,7 @@ main($args);
 function parse_args($argv) {
   $num_args = count($argv);
   if($num_args < 2) {
-   print_help(true); 
+    print_help(true); 
   }
   $migration_name = $argv[1];
   return array('name' => $migration_name);
@@ -40,42 +79,6 @@ function print_help($exit = false) {
   echo "\tWhere <migration name> is a descriptive name of the migration, joined with underscores.\n";
   echo "\tExamples: add_index_to_users | create_users_table | remove_pending_users\n\n";
   if($exit) { exit; }
-}
-
-function main($args) {
-  //input sanity check
-  if(!is_array($args) || (is_array($args) && !array_key_exists('name', $args)) ) {
-    print_help(true);
-  }
-  $migration_name = $args['name'];
-  
-  //clear any filesystem stats cache
-  clearstatcache();
-  
-  //check to make sure our migration directory exists
-  if(!is_dir(RUCKUSING_MIGRATION_DIR)) {
-   die_with_error("ERROR: migration directory '" . RUCKUSING_MIGRATION_DIR . "' does not exist. Specify MIGRATION_DIR in config/config.inc.php and try again.");
-  }
-  
-  //generate a complete migration file
-  $next_version     = Ruckusing_MigratorUtil::generate_timestamp();
-  $klass            = Ruckusing_NamingUtil::camelcase($migration_name);
-  $file_name        = $next_version . '_' . $klass . '.php';
-  $full_path        = realpath(RUCKUSING_MIGRATION_DIR) . '/' . $file_name;
-  $template_str     = get_template($klass);
-    
-  //check to make sure our destination directory is writable
-  if(!is_writable(RUCKUSING_MIGRATION_DIR . '/')) {
-    die_with_error("ERROR: migration directory '" . RUCKUSING_MIGRATION_DIR . "' is not writable by the current user. Check permissions and try again.");
-  }
-
-  //write it out!
-  $file_result = file_put_contents($full_path, $template_str);
-	if($file_result === FALSE) {
-		die_with_error("Error writing to migrations directory/file. Do you have sufficient privileges?");
-	} else {
-  	echo "\nCreated migration: {$file_name}\n\n";
-	}
 }
 
 function die_with_error($str) {

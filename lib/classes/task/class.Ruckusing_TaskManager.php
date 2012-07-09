@@ -94,12 +94,13 @@ class Ruckusing_TaskManager  {
 	private function execute_task($task_obj) {		
 	}
 	
-	public function execute($task_name, $options) {
+	public function execute($framework, $task_name, $options) {
 		if( !$this->has_task($task_name)) {
 			throw new Exception("Task '$task_name' is not registered.");
 		}
 		$task = $this->get_task($task_name);
 		if($task) {
+		  $task->set_framework($framework);
 			return $task->execute($options);
 		}
 		return "";		

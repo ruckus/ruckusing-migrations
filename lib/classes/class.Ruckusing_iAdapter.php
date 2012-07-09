@@ -2,6 +2,7 @@
 
 interface Ruckusing_iAdapter {
 
+  public function get_database_name();
 	public function quote($value, $column);
 	public function supports_migrations();
 	public function native_database_types();
