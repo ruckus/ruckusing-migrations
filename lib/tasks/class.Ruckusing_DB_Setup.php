@@ -23,7 +23,7 @@ class Ruckusing_DB_Setup extends Ruckusing_Task implements Ruckusing_iTask {
     //it doesnt exist, create it
     if( !$this->get_adapter()->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
       echo sprintf("\tCreating table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME);
-      $this->adapter->create_schema_version_table();
+      $this->get_adapter()->create_schema_version_table();
       echo "\n\tDone.\n";
     } else {
       echo sprintf("\tNOTICE: table '%s' already exists. Nothing to do.", RUCKUSING_TS_SCHEMA_TBL_NAME);
