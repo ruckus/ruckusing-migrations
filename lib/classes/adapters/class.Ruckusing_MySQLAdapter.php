@@ -387,7 +387,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 			throw new Ruckusing_ArgumentException("Missing column name parameter");
 		}
 		//unique index?
-		if(is_array($options) && array_key_exists('unique', $options)) {
+		if(is_array($options) && array_key_exists('unique', $options) && $options['unique'] === true) {
 			$unique = true;
 		} else {
 			$unique = false;
