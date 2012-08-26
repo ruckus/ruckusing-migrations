@@ -23,7 +23,8 @@ return array(
 				'user' 			=> 'root',
 				'password' 	=> ''
 		)
-	)
+	), 
+	'migrations_dir' => RUCKUSING_WORKING_BASE . '/ru_migrations'
 );
 
 

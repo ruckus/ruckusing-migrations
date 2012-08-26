@@ -80,8 +80,8 @@ class Ruckusing_FrameworkRunner {
 	}
 	
 	public function migrations_directory() {
-	  return(RUCKUSING_DB_DIR . '/' . $this->get_adapter()->get_database_name());
-  }
+		return $this->config['migrations_dir'];
+	}
 	
 	public function initialize_db() {
 		try {

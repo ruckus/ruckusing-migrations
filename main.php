@@ -1,9 +1,9 @@
 <?php
 
 define('RUCKUSING_BASE', dirname(__FILE__) );
-define('WORKING_BASE', getcwd());
+define('RUCKUSING_WORKING_BASE', getcwd());
 
-$config_filename = WORKING_BASE . '/ruckusing.conf';
+$config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf';
 if (file_exists($config_filename)) {
     $db_config = include $config_filename;
 } else {
