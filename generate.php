@@ -8,15 +8,22 @@
 
 
 define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
+define('RUCKUSING_WORKING_BASE', getcwd());
+
+$config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf';
+if (file_exists($config_filename)) {
+    $config = include $config_filename;
+} else {
+    $config = include RUCKUSING_BASE . '/config/database.inc.php';
+}
 require RUCKUSING_BASE . '/config/config.inc.php';
-require RUCKUSING_BASE . '/config/database.inc.php';
 require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
 require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 
 $args = parse_args($argv);
-$framework = new Ruckusing_FrameworkRunner($ruckusing_db_config, null);
+$framework = new Ruckusing_FrameworkRunner($config, null);
 //input sanity check
 if(!is_array($args) || (is_array($args) && !array_key_exists('name', $args)) ) {
   print_help(true);
@@ -28,11 +35,11 @@ clearstatcache();
 
 //generate a complete migration file
 $next_version = Ruckusing_MigratorUtil::generate_timestamp();
-$klass = Ruckusing_NamingUtil::camelcase($migration_name);
-$file_name = $next_version . '_' . $klass . '.php';
+$class = Ruckusing_NamingUtil::camelcase($migration_name);
+$file_name = $next_version . '_' . $class . '.php';
 $migrations_dir = $framework->migrations_directory();
 
-$template_str = get_template($klass);
+$template_str = get_template($class);
 
 if(!is_dir($migrations_dir)) {
   printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $migrations_dir);
