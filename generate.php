@@ -35,11 +35,11 @@ clearstatcache();
 
 //generate a complete migration file
 $next_version = Ruckusing_MigratorUtil::generate_timestamp();
-$klass = Ruckusing_NamingUtil::camelcase($migration_name);
-$file_name = $next_version . '_' . $klass . '.php';
+$class = Ruckusing_NamingUtil::camelcase($migration_name);
+$file_name = $next_version . '_' . $class . '.php';
 $migrations_dir = $framework->migrations_directory();
 
-$template_str = get_template($klass);
+$template_str = get_template($class);
 
 if(!is_dir($migrations_dir)) {
   printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $migrations_dir);
