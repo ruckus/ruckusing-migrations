@@ -44,7 +44,7 @@ class Ruckusing_FrameworkRunner {
 			
 			//include all adapters
 			$this->load_all_adapters(RUCKUSING_BASE . '/lib/classes/adapters');
-			$this->config['db'] = $config['db'];
+			$this->config = $config;
 			$this->initialize_db();
 			$this->init_tasks();
 		}catch(Exception $e) {
