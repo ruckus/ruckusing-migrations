@@ -12,7 +12,7 @@ class Ruckusing_FrameworkRunner {
 	
 	private $db = null; //reference to our DB connection
 	private $active_db_config; //the currently active config 
-	private $db_config = array(); //all available DB configs (e.g. test,development, production)
+	private $config = array(); //all available DB configs (e.g. test,development, production)
 	private $task_mgr = null;
 	private $adapter = null;
 	private $cur_task_name = "";
@@ -23,8 +23,8 @@ class Ruckusing_FrameworkRunner {
 	private $opt_map = array(
 		'ENV' => 'development'
 	);
-	
-	function __construct($db, $argv) {
+
+	function __construct($config, $argv) {
 		try {
 			set_error_handler( array("Ruckusing_FrameworkRunner", "scr_error_handler"), E_ALL );
 
@@ -44,7 +44,7 @@ class Ruckusing_FrameworkRunner {
 			
 			//include all adapters
 			$this->load_all_adapters(RUCKUSING_BASE . '/lib/classes/adapters');
-			$this->db_config = $db;
+			$this->config = $config;
 			$this->initialize_db();
 			$this->init_tasks();
 		}catch(Exception $e) {
@@ -80,13 +80,13 @@ class Ruckusing_FrameworkRunner {
 	}
 	
 	public function migrations_directory() {
-	  return(RUCKUSING_DB_DIR . '/' . $this->get_adapter()->get_database_name());
-  }
+		return $this->config['migrations_dir'];
+	}
 	
 	public function initialize_db() {
 		try {
 			$this->verify_db_config();			
-			$db = $this->db_config[$this->ENV];
+			$db = $this->config['db'][$this->ENV];
 			$adapter = $this->get_adapter_class($db['type']);
 			
 			if($adapter === null) {
@@ -190,11 +190,11 @@ class Ruckusing_FrameworkRunner {
 	}
 	
 	private function verify_db_config() {
-		if( !array_key_exists($this->ENV, $this->db_config)) {
+		if( !array_key_exists($this->ENV, $this->config['db'])) {
 			throw new Exception(sprintf("Error: '%s' DB is not configured",$this->opt_map[$ENV]));
 		}
 		$env = $this->ENV;
-		$this->active_db_config = $this->db_config[$this->ENV];
+		$this->active_db_config = $this->config['db'][$this->ENV];
 		if(!array_key_exists("type",$this->active_db_config)) {
 			throw new Exception(sprintf("Error: 'type' is not set for '%s' DB",$this->ENV));			
 		}
