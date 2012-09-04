@@ -1,4 +1,4 @@
-Ruckus Migrator
+Ruckusing Migrations
 
 Copyright (C) 2007, Cody Caughlan (codycaughlan % gmail . com)
 

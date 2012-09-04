@@ -3,11 +3,11 @@
 define('RUCKUSING_BASE', dirname(__FILE__) );
 define('RUCKUSING_WORKING_BASE', getcwd());
 
-$config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf';
+$config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf.php';
 if (file_exists($config_filename)) {
-    $db_config = include $config_filename;
+  $db_config = include $config_filename;
 } else {
-    $db_config = include RUCKUSING_BASE . '/config/database.inc.php';
+  $db_config = include RUCKUSING_BASE . '/config/database.inc.php';
 }
 
 //requirements

@@ -1,9 +1,11 @@
 <?php
 
-//set up some preliminary defaults, this is so all of our
-//framework includes work!
+//set up some preliminary defaults, this is so all of our framework includes work
 if(!defined('RUCKUSING_BASE')) {
 	define('RUCKUSING_BASE', dirname(__FILE__) . '/..');
+}
+if(!defined('RUCKUSING_WORKING_BASE')) {
+  define('RUCKUSING_WORKING_BASE', dirname(__FILE__) . '/dummy/db');
 }
 
 //Parent of migrations directory.

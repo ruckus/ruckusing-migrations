@@ -38,35 +38,35 @@ class Ruckusing_MigratorUtil {
     that have been executed.
   */
 	public function get_runnable_migrations($directory, $direction, $destination = null, $use_cache = true) {
-	  // cache migration lookups and early return if we've seen this requested set
-	  if($use_cache == true) {
+    // cache migration lookups and early return if we've seen this requested set
+    if($use_cache == true) {
       $key = $direction . '-' . $destination;
       if(array_key_exists($key, $this->migrations)) {
         return($this->migrations[$key]);
       }
     }
-	  
-		$runnable = array();
-		$migrations = array();
-		$migrations = $this->get_migration_files($directory, $direction);
-		$current = $this->find_version($migrations, $this->get_max_version() );
-		$target = $this->find_version($migrations, $destination);
-		if(is_null($target) && !is_null($destination) && $destination > 0) {
-		  trigger_error("Could not find target version {$destination} in set of migrations.");
-	  }
-	  $start = $direction == 'up' ? 0 : array_search($current, $migrations);
-	  $start = $start !== false ? $start : 0;
-	  $finish = array_search($target, $migrations);
-	  $finish = $finish !== false ? $finish : (count($migrations) - 1);
-	  $item_length = ($finish - $start) + 1;
-	  
-	  $runnable = array_slice($migrations, $start, $item_length);
-	    
+
+    $runnable = array();
+    $migrations = array();
+    $migrations = $this->get_migration_files($directory, $direction);
+    $current = $this->find_version($migrations, $this->get_max_version() );
+    $target = $this->find_version($migrations, $destination);
+    if(is_null($target) && !is_null($destination) && $destination > 0) {
+      trigger_error("Could not find target version {$destination} in set of migrations.");
+    }
+    $start = $direction == 'up' ? 0 : array_search($current, $migrations);
+    $start = $start !== false ? $start : 0;
+    $finish = array_search($target, $migrations);
+    $finish = $finish !== false ? $finish : (count($migrations) - 1);
+    $item_length = ($finish - $start) + 1;
+
+    $runnable = array_slice($migrations, $start, $item_length);
+
     //dont include first item if going down but not if going all the way to the bottom
     if($direction == 'down' && count($runnable) > 0 && $target != null) {
       array_pop($runnable);
     }
-    
+
     $executed = $this->get_executed_migrations();
     $to_execute = array();
 
@@ -78,7 +78,7 @@ class Ruckusing_MigratorUtil {
       //Skip ones that we never executed
       if($direction == 'down' && !in_array($migration['version'], $executed)) {
         continue;
-      } 
+      }
       $to_execute[] = $migration;
     }
     if($use_cache == true) {
