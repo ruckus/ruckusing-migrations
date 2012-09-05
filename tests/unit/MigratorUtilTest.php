@@ -36,7 +36,6 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     
     $framework = new Ruckusing_FrameworkRunner($ruckusing_config, null);
     $this->migrations_dir = $framework->migrations_directory();
-    echo $this->migrations_dir;
     if(!is_dir($this->migrations_dir)) {
       mkdir($this->migrations_dir);
     }
