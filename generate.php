@@ -10,7 +10,7 @@
 define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
 define('RUCKUSING_WORKING_BASE', getcwd());
 
-$config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf';
+$config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf.php';
 if (file_exists($config_filename)) {
     $config = include $config_filename;
 } else {
