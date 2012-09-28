@@ -1,0 +1,26 @@
+{
+	"name":"ruckusing/ruckusing-migrations",
+	"description":"Framework for generating and managing database migrations",
+	"authors":[
+		{
+			"name":"Cody Caughlan",
+			"email":"codycaughlan@gmail.com",
+			"homepage":"https://github.com/ruckus/ruckusing-migrations/wiki",
+			"role":"Project lead / Developer"
+		}
+	],
+	"license":"LGPL-2.1+",
+	"keywords":[
+		"ruckusing",
+		"database",
+		"migrations"
+	],
+	"require":{
+		"PHP":">=5"
+	},
+	"bin":[
+		"generate.php",
+		"main.php",
+		"update_ruckusing_database.php"
+	]
+}
