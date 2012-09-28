@@ -1,5 +1,5 @@
 {
-	"name":"nuxwin/ruckusing-migrations",
+	"name":"ruckusing/ruckusing-migrations",
 	"description":"Framework for generating and managing database migrations",
 	"authors":[
 		{
