@@ -367,7 +367,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 			throw new Ruckusing_ArgumentException("Missing original column name parameter");
 		}
 		try {
-			$sql = sprintf("SHOW COLUMNS FROM %s LIKE '%s'", $this->identifier($table), $column);
+			$sql = sprintf("SHOW FULL COLUMNS FROM %s LIKE '%s'", $this->identifier($table), $column);
 			$result = $this->select_one($sql);
 			if(is_array($result)) {
 			  //lowercase key names
@@ -597,6 +597,9 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 
 		if(array_key_exists('null', $options) && $options['null'] === false) {
 			$sql .= " NOT NULL";
+		}
+		if (array_key_exists('collate', $options)) {
+			$sql .= sprintf(" COLLATE %s", $this->identifier($options['collate']));
 		}
 		if(array_key_exists('comment', $options)) {
             $sql .= sprintf(" COMMENT '%s'", $this->quote_string($options['comment']));
