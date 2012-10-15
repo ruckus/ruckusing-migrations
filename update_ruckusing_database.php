@@ -17,7 +17,7 @@ require RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 echo "\n\nStarting upgrade process.\n";
 $main = new Ruckusing_FrameworkRunner($ruckusing_db_config, $argv);
 $main->update_schema_for_timestamps();
-echo "\n\nSuccesfully completed uprade!\n";
+echo "\n\nSuccesfully completed upgrade!\n";
 $notice = <<<NOTICE
 Ruckusing Migrations now uses the table '%s' to keep track of migrations.
 The old table '%s' can be removed at your leisure.
