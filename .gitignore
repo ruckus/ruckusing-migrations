@@ -8,5 +8,6 @@ tests/.DS_Store
 !/config/database.example.inc.php
 !/config/config.example.inc.php
 !/config/config.example.ini
+!/config/migration_template.example.php
 /tests/config/database.inc.php
 /nbproject

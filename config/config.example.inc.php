@@ -44,4 +44,8 @@ if(!defined('RUCKUSING_MIGRATION_DIR')) {
 	define('RUCKUSING_MIGRATION_DIR', RUCKUSING_DB_DIR . '/migrate');
 }
 
+//Where the templatefile for migrationfiles reside. If not set, standard template will be used.
+if(!defined('RUCKUSING_MIGRATION_TPL')) {
+	define('RUCKUSING_MIGRATION_TPL', RUCKUSING_DB_DIR . '/config/migration_template.example.php');
+}
 ?>

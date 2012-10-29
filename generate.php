@@ -102,6 +102,11 @@ function die_with_error($str) {
 }
 
 function get_template($klass) {
+if(defined('RUCKUSING_MIGRATION_TPL')
+	&& is_file(RUCKUSING_MIGRATION_TPL)) {
+    $template = file_get_contents(RUCKUSING_MIGRATION_TPL);
+	$template = str_replace('CLASS_NAME', $klass, $template);
+} else {
 $template = <<<TPL
 <?php\n
 class $klass extends Ruckusing_BaseMigration {\n\n\tpublic function up() {\n\n\t}//up()
@@ -109,6 +114,7 @@ class $klass extends Ruckusing_BaseMigration {\n\n\tpublic function up() {\n\n\t
 }
 ?>
 TPL;
+}
 return $template;
 }
 
