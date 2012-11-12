@@ -29,10 +29,34 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 * As of August 2007, only the MySQL RDBMS is supported.
 
+## Generating Skeleton Migration files
+
+From the top-level of the package run:
+
+```
+$ php generate.php create_users_table
+
+Created OK
+Created migration: 20121112163653_CreateUsersTable.php
+```
+Open up that file and you'll see it looks like:
+
+```
+class CreateUsersTable extends Ruckusing_BaseMigration {
+
+	public function up() {
+
+	}//up()
+
+	public function down() {
+
+	}//down()
+}
+```
+
+All of the methods below are to be implemented in the `up()` and `down()` methods.
 
 ## Overview of the migration methods available
-
-All migrations inherent from the `Ruckusing_BaseMigration` class, so they must be prefixed with `$this` (e.g. `$this->add_column()`. 
 
 The available methods are (brief list below, with detailed usageg further down): 
   
