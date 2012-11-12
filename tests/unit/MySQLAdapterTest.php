@@ -19,11 +19,11 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
   protected function setUp() {
     $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
-    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("test", $ruckusing_config['db']))) {
-      die("\n'test' DB is not defined in config/database.inc.php\n\n");
+    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("mysql_test", $ruckusing_config['db']))) {
+      die("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
     }
 
-    $test_db = $ruckusing_config['db']['test'];
+    $test_db = $ruckusing_config['db']['mysql_test'];
 
     //setup our log
     $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
@@ -77,7 +77,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
   }
 
   private function remove_table($table) {
-    if($this->adapter->has_table($table,true)) {
+    if($this->adapter->has_table($table, true)) {
       $this->adapter->drop_table($table);
     }
   }
@@ -103,17 +103,21 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_index_name_too_long_throws_exception() {
-    $this->setExpectedException('Ruckusing_InvalidIndexNameException');
     $bm = new Ruckusing_BaseMigration();
     $bm->set_adapter($this->adapter);
-    $ts = microtime();
-    $table_name = "users_${ts}";
-    $table = $bm->create_table($table_name, array('id' => false));
-    $table->column('somecolumnthatiscrazylong', 'integer');
-    $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
-    $sql = $table->finish();
-    $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
-    $this->remove_table($table_name);
+    try {
+      srand();
+      $table_name = "users_" . rand(0, 1000000);
+      $table = $bm->create_table($table_name, array('id' => false));
+      $table->column('somecolumnthatiscrazylong', 'integer');
+      $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
+      $sql = $table->finish();
+      $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
+    } catch(Ruckusing_InvalidIndexNameException $exception) {
+      $bm->drop_table($table_name);
+      return;
+    }
+    $this->fail('Expected to raise & catch Ruckusing_InvalidIndexNameException');    
   }
 
   public function test_custom_primary_key_1() {

@@ -133,27 +133,43 @@ SQL;
 
   //-------- DATABASE LEVEL OPERATIONS
 
+  /* Create database cannot run in a transaction block so if we're in a transaction
+  than commit it, do our thing and then re-invoke the transaction
+  */
   public function create_database($db, $options = array()) {
+    
+    $was_in_transaction = false;
+    if($this->inTransaction()) {
+      $this->commit_transaction();
+      $was_in_transaction = true;
+    }
+    
     if(!array_key_exists('encoding', $options)) {
       $options['encoding'] = 'utf8';
     }
     $ddl = sprintf("CREATE DATABASE %s", $this->identifier($db));
     if(array_key_exists('owner', $options)) {
-      $ddl .= " OWNER = '{$options['owner']}'";
+      $ddl .= " OWNER = \"{$options['owner']}\"";
     }
     if(array_key_exists('template', $options)) {
-      $ddl .= " TEMPLATE = '{$options['template']}'";
+      $ddl .= " TEMPLATE = \"{$options['template']}\"";
     }
     if(array_key_exists('encoding', $options)) {
       $ddl .= " ENCODING = '{$options['encoding']}'";
     }
     if(array_key_exists('tablespace', $options)) {
-      $ddl .= " TABLESPACE = '{$options['tablespace']}'";
+      $ddl .= " TABLESPACE = \"{$options['tablespace']}\"";
     }
     if(array_key_exists('connection_limit', $options)) {
-      $ddl .= " CONNECTION LIMIT = '{$options['connection_limit']}'";
+      $connlimit = intval($options['connection_limit']);
+      $ddl .= " CONNECTION LIMIT = {$connlimit}";
     }
     $result = $this->query($ddl);
+    
+    if($was_in_transaction) {
+      $this->start_transaction();
+      $was_in_transaction = false;
+    }
     return($result === true);
   }
   
@@ -216,8 +232,14 @@ SQL;
       if($this->isError($res)) {
         trigger_error(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, pg_last_error($this->conn)));
       }
-      if ($query_type == SQL_INSERT) {
-        return mysql_insert_id($this->conn);
+      // if the query contained a 'RETURNING' class then grab its value
+      $returning_regex = '/ RETURNING \"(.+)\"$/';
+      $matches = array();
+      if(preg_match($returning_regex, $query, $matches)) {
+        if(count($matches) == 2) {
+          $returning_column_value = pg_fetch_result($res, 0, $matches[1]);
+          return($returning_column_value);
+        }
       }
       return true;
     }
@@ -412,13 +434,14 @@ SQL;
       $this->change_column_default($table_name, $column_name, $options['default']);
     }
     if(array_key_exists('null', $options)) {
-      $this->change_column_null($table_name, $column_name, $options['null'], $options['default']);
+      $default = array_key_exists('default', $options) ? $options['default'] : null;
+      $this->change_column_null($table_name, $column_name, $options['null'], $default);
     }
     return $this->execute_ddl($sql);
   }
   
   private function change_column_default($table_name, $column_name, $default) {
-    $sql = sprintf("ALTER TABLE %s ALTER COLUMN %s SET DEFAULT %s /*fo*/",
+    $sql = sprintf("ALTER TABLE %s ALTER COLUMN %s SET DEFAULT %s",
       $this->quote_table_name($table_name),
       $this->quote_column_name($column_name),
       $this->quote($default)
@@ -427,7 +450,7 @@ SQL;
   }
 
   private function change_column_null($table_name, $column_name, $null, $default = null) {
-    if(($null != false) || ($default !== null)) {
+    if(($null !== false) || ($default !== null)) {
       $sql = sprintf("UPDATE %s SET %s=%s WHERE %s IS NULL",
         $this->quote_table_name($table_name),
         $this->quote_column_name($column_name),
@@ -436,7 +459,6 @@ SQL;
       );
       $this->query($sql);
     }
-    //"ALTER TABLE #{quote_table_name(table_name)} ALTER #{quote_column_name(column_name)} #{null ? 'DROP' : 'SET'} NOT NULL"
     $sql = sprintf("ALTER TABLE %s ALTER %s %s NOT NULL",
       $this->quote_table_name($table_name),
       $this->quote_column_name($column_name),
@@ -524,45 +546,45 @@ SQL;
     return $this->execute_ddl($sql);
   }
 
-	public function remove_index($table_name, $column_name, $options = array()) {
-		if(empty($table_name)) {
-			throw new Ruckusing_ArgumentException("Missing table name parameter");
-		}
-		if(empty($column_name)) {
-			throw new Ruckusing_ArgumentException("Missing column name parameter");
-		}
-		//did the user specify an index name?
-		if(is_array($options) && array_key_exists('name', $options)) {
-			$index_name = $options['name'];
-		} else {
-			$index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
-		}
-		$sql = sprintf("DROP INDEX %s ON %s", $this->identifier($index_name), $this->identifier($table_name));		
-		return $this->execute_ddl($sql);
-	}
+  public function remove_index($table_name, $column_name, $options = array()) {
+    if(empty($table_name)) {
+      throw new Ruckusing_ArgumentException("Missing table name parameter");
+    }
+    if(empty($column_name)) {
+      throw new Ruckusing_ArgumentException("Missing column name parameter");
+    }
+    //did the user specify an index name?
+    if(is_array($options) && array_key_exists('name', $options)) {
+      $index_name = $options['name'];
+    } else {
+      $index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
+    }
+    $sql = sprintf("DROP INDEX %s", $this->quote_column_name($index_name));
+    return $this->execute_ddl($sql);
+  }
 
-	public function has_index($table_name, $column_name, $options = array()) {
-		if(empty($table_name)) {
-			throw new Ruckusing_ArgumentException("Missing table name parameter");
-		}
-		if(empty($column_name)) {
-			throw new Ruckusing_ArgumentException("Missing column name parameter");
-		}
-		//did the user specify an index name?
-		if(is_array($options) && array_key_exists('name', $options)) {
-			$index_name = $options['name'];
-		} else {
-			$index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
-		}
-		$indexes = $this->indexes($table_name);
-		foreach($indexes as $idx) {
-			if($idx['name'] == $index_name) {
-				return true;
-			}
-		}
-		return false;
-	}//has_index
-	
+  public function has_index($table_name, $column_name, $options = array()) {
+    if(empty($table_name)) {
+      throw new Ruckusing_ArgumentException("Missing table name parameter");
+    }
+    if(empty($column_name)) {
+      throw new Ruckusing_ArgumentException("Missing column name parameter");
+    }
+    //did the user specify an index name?
+    if(is_array($options) && array_key_exists('name', $options)) {
+      $index_name = $options['name'];
+    } else {
+      $index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
+    }
+    $indexes = $this->indexes($table_name);
+    foreach($indexes as $idx) {
+      if($idx['name'] == $index_name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public function indexes($table_name) {
     $sql = <<<SQL
        SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
@@ -587,11 +609,37 @@ SQL;
     }
     return $indexes;
   }
+  
+  public function primary_keys($table_name) {
+    $sql = <<<SQL
+      SELECT
+        pg_attribute.attname,
+        format_type(pg_attribute.atttypid, pg_attribute.atttypmod)
+      FROM pg_index, pg_class, pg_attribute
+      WHERE
+        pg_class.oid = '%s'::regclass AND
+        indrelid = pg_class.oid AND
+        pg_attribute.attrelid = pg_class.oid AND
+        pg_attribute.attnum = any(pg_index.indkey)
+        AND indisprimary
+SQL;
+    $sql = sprintf($sql, $table_name);
+    $result = $this->select_all($sql);
+
+    $primary_keys = array();
+    foreach($result as $row) {
+      $primary_keys[] = array(
+        'name' => $row['attname'],
+        'type' => $row['format_type']
+      );
+    }
+    return $primary_keys;
+  }
 
   public function type_to_sql($type, $options = array()) {
     $natives = $this->native_database_types();
     if(!array_key_exists($type, $natives)) {
-      $error = sprintf("Error:I dont know what column type of '%s' maps to for Postgres.", $type);
+      $error = sprintf("Error: I dont know what column type of '%s' maps to for Postgres.", $type);
       $error .= "\nYou provided: {$type}\n";
       $error .= "Valid types are: \n";
       $types = array_keys($natives);
@@ -814,6 +862,7 @@ SQL;
      $this->in_trx = false;
     }
   }
-}//class
+
+}
 
 ?>

@@ -19,11 +19,11 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
   protected function setUp() {
     $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
-    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("test", $ruckusing_config['db']))) {
-      die("\n'test' DB is not defined in config/database.inc.php\n\n");
+    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("pg_test", $ruckusing_config['db']))) {
+      die("\n'pg_test' DB is not defined in config/database.inc.php\n\n");
     }
 
-    $test_db = $ruckusing_config['db']['test'];
+    $test_db = $ruckusing_config['db']['pg_test'];
 
     //setup our log
     $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
@@ -50,13 +50,13 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_can_list_indexes() {
-    $this->adapter->execute_ddl('DROP TABLE IF EXISTS animals');
+    $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
     $this->adapter->execute_ddl("CREATE TABLE animals (id serial primary key, name varchar(32))");
     $this->adapter->execute_ddl("CREATE INDEX idx_animals_on_name ON animals(name)");
     $indexes = $this->adapter->indexes('animals');
     $length = count($indexes);
     $this->assertEquals(1, $length);
-    $this->adapter->execute_ddl('DROP TABLE IF EXISTS animals');
+    $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
   }
   
   public function test_create_schema_version_table() {
@@ -69,7 +69,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
   }
   
   public function test_can_dump_schema() {
-    $this->adapter->execute_ddl('DROP TABLE IF EXISTS animals');
+    $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
     $this->adapter->execute_ddl("CREATE TABLE animals (id serial primary key, name varchar(32))");
     $this->adapter->execute_ddl("CREATE INDEX idx_animals_on_name ON animals(name)");
     $file = RUCKUSING_BASE . '/tests/logs/schema.txt';
@@ -78,6 +78,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     if(file_exists($file)) {
       unlink($file);
     }
+    $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
   }
 
   public function test_ensure_table_does_not_exist() {
@@ -94,10 +95,10 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
 
     $users = $this->adapter->table_exists('users', true);
     $this->assertEquals(true, $users);
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
-  private function remove_table($table) {
+  private function drop_table($table) {
     if($this->adapter->has_table($table,true)) {
       $this->adapter->drop_table($table);
     }
@@ -124,26 +125,29 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_index_name_too_long_throws_exception() {
-    $this->setExpectedException('Ruckusing_InvalidIndexNameException');
     $bm = new Ruckusing_BaseMigration();
     $bm->set_adapter($this->adapter);
-    srand();
-    $table_name = "users_" . rand(0, 1000000);
-    $table = $bm->create_table($table_name, array('id' => false));
-    $table->column('somecolumnthatiscrazylong', 'integer');
-    $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
-    $sql = $table->finish();
-    $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
-    $this->remove_table($table_name);
+    try {
+      srand();
+      $table_name = "users_" . rand(0, 1000000);
+      $table = $bm->create_table($table_name, array('id' => false));
+      $table->column('somecolumnthatiscrazylong', 'integer');
+      $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
+      $sql = $table->finish();
+      $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
+    } catch(Ruckusing_InvalidIndexNameException $exception) {
+      $bm->drop_table($table_name);
+      return;
+    }
+    $this->fail('Expected to raise & catch Ruckusing_InvalidIndexNameException');
   }
 
   public function test_custom_primary_key_1() {
-    $this->remove_table('users');
+    $this->drop_table('users');
     $t1 = new Ruckusing_PostgresTableDefinition($this->adapter, "users", array('id' => true) );
     $t1->column("user_id", "integer", array("primary_key" => true));
     $table_create_sql = $t1->finish(true);
-    //echo $table_create_sql;
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_column_definition() {
@@ -173,20 +177,26 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
   }
 
   public function test_column_info() {
-    $this->adapter->execute_ddl("CREATE TABLE \"users\" ( name varchar(20) );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->finish();
+    
 
     $expected = array();
     $actual = $this->adapter->column_info("users", "name");
     $this->assertEquals('character varying(20)', $actual['type'] );
     $this->assertEquals('name', $actual['field'] );
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_rename_table() {
     $this->adapter->drop_table('users');
     $this->adapter->drop_table('users_new');
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->finish();
+    
     $this->assertEquals(true, $this->adapter->has_table('users') );
     $this->assertEquals(false, $this->adapter->has_table('users_new') );
     //rename it
@@ -201,8 +211,10 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
   public function test_rename_column() {
     $this->adapter->drop_table('users');
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
-
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->finish();
+    
     $before = $this->adapter->column_info("users", "name");
     $this->assertEquals('character varying(20)', $before['type'] );
     $this->assertEquals('name', $before['field'] );
@@ -213,13 +225,15 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     $after = $this->adapter->column_info("users", "new_name");
     $this->assertEquals('character varying(20)', $after['type'] );
     $this->assertEquals('new_name', $after['field'] );
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_add_column() {
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
-
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->finish();
+    
     $col = $this->adapter->column_info("users", "name");
     $this->assertEquals("name", $col['field']);
 
@@ -246,13 +260,16 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     $col = $this->adapter->column_info("users", "weight");
     $this->assertEquals("weight", $col['field']);
     $this->assertEquals('bigint', $col['type'] );
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_remove_column() {
-    $this->remove_table('users');
+    $this->drop_table('users');
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20), age integer );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
 
     //verify it exists
     $col = $this->adapter->column_info("users", "name");
@@ -264,12 +281,15 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     //verify it does not exist
     $col = $this->adapter->column_info("users", "name");
     $this->assertEquals(array(), $col);
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_change_column() {
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20), age integer );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
 
     //verify its type
     $col = $this->adapter->column_info("users", "name");
@@ -282,12 +302,17 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     $col = $this->adapter->column_info("users", "name");
     $this->assertEquals('character varying(128)', $col['type'] );
     $this->assertEquals("'abc'::character varying", $col['default'] );
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_add_index() {
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20), age integer, title varchar(20) );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('title', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
+    
     $this->adapter->add_index("users", "name");
 
     $this->assertEquals(true, $this->adapter->has_index("users", "name") );
@@ -298,12 +323,18 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
 
     $this->adapter->add_index("users", "title", array('name' => 'index_on_super_title'));
     $this->assertEquals(true, $this->adapter->has_index("users", "title", array('name' => 'index_on_super_title')));
-    $this->remove_table('users');
+    $this->adapter->remove_index("users", array("name", "age"), array('name' => 'index_on_super_title'));
+    $this->assertEquals(false, $this->adapter->has_index("users", "title", array('name' => 'index_on_super_title')));
+
+    $this->drop_table('users');
   }
 
   public function test_multi_column_index() {
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20), age integer );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
     $this->adapter->add_index("users", array("name", "age"));
 
     $this->assertEquals(true, $this->adapter->has_index("users", array("name", "age") ));
@@ -311,13 +342,16 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     //drop it
     $this->adapter->remove_index("users", array("name", "age"));
     $this->assertEquals(false, $this->adapter->has_index("users", array("name", "age") ));
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
-  /*
   public function test_remove_index_with_default_index_name() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
+    
+    //$this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20), age int(3) );");
     $this->adapter->add_index("users", "name");
 
     $this->assertEquals(true, $this->adapter->has_index("users", "name") );
@@ -325,12 +359,16 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     //drop it
     $this->adapter->remove_index("users", "name");
     $this->assertEquals(false, $this->adapter->has_index("users", "name") );
-    $this->remove_table('users');
+    $this->drop_table('users');
   }
 
   public function test_remove_index_with_custom_index_name() {
     //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
+
     $this->adapter->add_index("users", "name", array('name' => 'my_special_index'));
 
     $this->assertEquals(true, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
@@ -338,15 +376,48 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase {
     //drop it
     $this->adapter->remove_index("users", "name", array('name' => 'my_special_index'));
     $this->assertEquals(false, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
-    $this->remove_table('users');
+    $this->drop_table('users');
+  }
+  
+  public function test_select_all_and_returning() {
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
+    
+    $id1 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d) RETURNING \"id\"", 'Taco', 32));
+    $this->assertEquals(1, $id1);
+    $id2 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d) RETURNING \"id\"", 'Bumblebee', 76));
+    $this->assertEquals(2, $id2);
+    $results = $this->adapter->select_all('SELECT * FROM users ORDER BY name ASC');
+    $this->assertEquals(2, count($results));
+    $first = $results[0];
+    $this->assertEquals('Bumblebee', $first['name']);
+    $this->assertEquals(76, $first['age']);
+    $second = $results[1];
+    $this->assertEquals('Taco', $second['name']);
+    $this->assertEquals(32, $second['age']);
+
+    $this->drop_table('users');
   }
 
-  public function test_string_quoting() {
-    $unquoted = "Hello Sam's";
-    $quoted = "Hello Sam\'s";
-    $this->assertEquals($quoted, $this->adapter->quote_string($unquoted));
+  public function test_select_one() {
+    $table = $this->adapter->create_table('users');
+    $table->column('name', 'string', array('limit' => 20));
+    $table->column('age', 'integer');
+    $table->finish();
+    
+    $id1 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d) RETURNING \"id\"", 'Taco', 32));
+    $this->assertEquals(1, $id1);
+
+    $result = $this->adapter->select_one(sprintf("SELECT * FROM users WHERE name = '%s'", 'Taco'));
+    $this->assertEquals(true, is_array($result));
+    $this->assertEquals('Taco', $result['name']);
+    $this->assertEquals(32, $result['age']);
+
+    $this->drop_table('users');
   }
-  */
+  
 }//class
 
 ?>

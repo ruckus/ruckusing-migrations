@@ -19,11 +19,11 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
   protected function setUp() {
     $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
-    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("test", $ruckusing_config['db']))) {
-      die("\n'test' DB is not defined in config/database.inc.php\n\n");
+    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("mysql_test", $ruckusing_config['db']))) {
+      die("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
     }
 
-    $test_db = $ruckusing_config['db']['test'];
+    $test_db = $ruckusing_config['db']['mysql_test'];
 
     //setup our log
     $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
