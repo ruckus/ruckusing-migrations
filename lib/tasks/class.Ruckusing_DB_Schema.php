@@ -20,10 +20,9 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask {
     try {
       echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
       echo "[db:schema]: \n";
-      $schema = $this->get_adapter()->schema();
       //write to disk
       $schema_file = RUCKUSING_DB_DIR . '/schema.txt';
-      file_put_contents($schema_file, $schema, LOCK_EX);
+      $schema = $this->get_adapter()->schema($schema_file);
       echo "\tSchema written to: $schema_file\n\n";
       echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
     }catch(Exception $ex) {

@@ -4,20 +4,10 @@ require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_iAdapter.php';
 require_once RUCKUSING_BASE . '/lib/classes/adapters/class.Ruckusing_MySQLTableDefinition.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';	
+require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_TableDefinition.php';
+require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_ColumnDefinition.php';
 
-define('SQL_UNKNOWN_QUERY_TYPE', 1);
-define('SQL_SELECT', 2);
-define('SQL_INSERT', 4);
-define('SQL_UPDATE', 8);
-define('SQL_DELETE', 16);
-define('SQL_ALTER', 32);
-define('SQL_DROP', 64);
-define('SQL_CREATE', 128);
-define('SQL_SHOW', 256);
-define('SQL_RENAME', 512);
-define('SQL_SET', 1024);
-
-define('MAX_IDENTIFIER_LENGTH', 64); // max length of an identifier like a column or index name
+define('MYSQL_MAX_IDENTIFIER_LENGTH', 64); // max length of an identifier like a column or index name
 
 
 class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_iAdapter {
@@ -154,7 +144,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		NOTE: this does NOT include any INSERT statements or the actual data
 		(that is, this method is NOT a replacement for mysqldump)
 	*/
-	public function schema() {
+	public function schema($output_file) {
 		$final = "";
     $views = '';
 		$this->load_tables(true);
@@ -176,7 +166,8 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
         }
       }
 		}
-		return $final.$views;
+    $data = $final.$views;
+    return file_put_contents($output_file, $data, LOCK_EX);
 	}
 	
 	public function table_exists($tbl, $reload_tables = false) {
@@ -184,10 +175,6 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 		return array_key_exists($tbl, $this->tables);
 	}
 		
-	public function show_fields_from($tbl) {
-		return "";
-	}
-
 	public function execute($query) {
 		return $this->query($query);
 	}
@@ -399,7 +386,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 			$index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
 		}
 		
-		if(strlen($index_name) > MAX_IDENTIFIER_LENGTH) {
+		if(strlen($index_name) > MYSQL_MAX_IDENTIFIER_LENGTH) {
 		    $msg = "The auto-generated index name is too long for MySQL (max is 64 chars). ";
 		    $msg .= "Considering using 'name' option parameter to specify a custom name for this index.";
 		    $msg .= " Note: you will also need to specify";

@@ -6,7 +6,7 @@ interface Ruckusing_iAdapter {
 	public function quote($value, $column);
 	public function supports_migrations();
 	public function native_database_types();
-	public function schema();
+	public function schema($output_file);
 	
 	public function execute($query);
 	public function quote_string($str);
@@ -17,7 +17,6 @@ interface Ruckusing_iAdapter {
 	public function drop_database($db);
 	
 	//table level opertions
-	public function show_fields_from($tbl);
 	public function table_exists($tbl);
 	public function drop_table($tbl);
 	public function rename_table($name, $new_name);

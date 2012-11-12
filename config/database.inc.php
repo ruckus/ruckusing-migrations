@@ -7,20 +7,20 @@
 return array(
   'db' => array(
     'development' => array(
-      'type'      => 'mysql',
+      'type'      => 'pgsql',
       'host'      => 'localhost',
-      'port'      => 3306,
+      //'port'      => 3306,
       'database'  => 'ruckusing_migrations',
-      'user'      => 'root',
+      'user'      => 'postgres',
       'password'  => ''
     ),
     
     'test'  => array(
-      'type'  => 'mysql',
+      'type'  => 'pgsql',
       'host'  => 'localhost',
-      'port'  => 3306,
+      'port'  => 5432,
       'database'  => 'ruckusing_migrations_test',
-      'user'  => 'root',
+      'user'  => 'postgres',
       'password'  => ''
     )
   ),
