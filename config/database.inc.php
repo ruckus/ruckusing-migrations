@@ -3,14 +3,23 @@
 //----------------------------
 // DATABASE CONFIGURATION
 //----------------------------
+
+/*
+
+Valid types (adapters) are Postgres & MySQL:
+
+'type' must be one of: 'pgsql' or 'mysql'
+
+*/
+
 return array(
   'db' => array(
     'development' => array(
-      'type'      => 'pgsql',
+      'type'      => 'mysql',
       'host'      => 'localhost',
       'port'      => 3306,
       'database'  => 'ruckusing_migrations',
-      'user'      => 'postgres',
+      'user'      => 'root',
       'password'  => ''
     ),
     
