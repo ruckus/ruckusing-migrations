@@ -230,6 +230,12 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
     $col = $this->adapter->column_info("users", "weight");
     $this->assertEquals("weight", $col['field']);
     $this->assertEquals('bigint(20)', $col['type'] );
+
+    // Test that the collate option works
+    $this->adapter->add_column('users', 'shortcode', 'string', array('collate' => 'utf8_bin'));
+    $col = $this->adapter->column_info('users', 'shortcode');
+    $this->assertEquals('utf8_bin', $col['collation']);
+
     $this->remove_table('users');
   }
 
@@ -266,6 +272,13 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
     $col = $this->adapter->column_info("users", "name");
     $this->assertEquals('varchar(128)', $col['type'] );
     $this->assertEquals('abc', $col['default'] );
+
+    // Test collate option
+    $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128, 
+      'collate' => 'ascii_bin'));
+    $col = $this->adapter->column_info('users', 'name');
+    $this->assertEquals('ascii_bin', $col['collation']);
+
     $this->remove_table('users');
   }
 
