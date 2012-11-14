@@ -315,7 +315,7 @@ Indexes can be created and removed using the framework methods.
 ### Removing an index
 Easy enough. If the index was created using the sibling to this method (`add_index`) then one would need to just specify the same arguments to that method (but calling `remove_index`).
 
-**Method Call: ** `remove_index`
+**Method Call:** `remove_index`
 
 **Arguments:**
   `table_name`: The name of the table to remove the index from.
