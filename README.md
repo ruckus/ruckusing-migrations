@@ -63,6 +63,26 @@ class CreateUsersTable extends Ruckusing_BaseMigration {
 
 All of the methods below are to be implemented in the `up()` and `down()` methods.
 
+## Running Migrations
+
+Run all pending migrations:
+
+```
+$ php main.php db:migrate
+```
+
+Rollback the most recent migration:
+
+```
+$ php main.php db:migrate VERSION=-1
+```
+
+Rollback to a specific migration (specify the timestamp in the filename of the migration to rollback to):
+
+```
+$ php main.php db:migrate VERSION=20121114001742
+```
+
 ## Overview of the migration methods available
 
 The available methods are (brief list below, with detailed usageg further down): 
