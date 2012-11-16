@@ -31,7 +31,7 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 ## Configuration
 
-* Open `config/database.inc.php` and update the `development` key with your DB credentials:
+* Copy `/path/to/ruckusing-migrations/config/database.inc.php` to `/path/to/ruckusing-migrations/ruckusing.conf.php` and update the `development` key with your DB credentials:
 
 `type` is one of `pgsql` or `mysql` depending on your database.
 
@@ -85,8 +85,8 @@ $ php main.php db:migrate VERSION=20121114001742
 
 ## Overview of the migration methods available
 
-The available methods are (brief list below, with detailed usageg further down): 
-  
+The available methods are (brief list below, with detailed usageg further down):
+
 ## Database-level operations
 * `create_database`
 * `drop_database`
@@ -101,7 +101,7 @@ The available methods are (brief list below, with detailed usageg further down):
 * `remove_column`
 * `rename_column`
 * `change_column`
-  
+
 ## Index-level operations
 * `add_index`
 * `remove_index`
@@ -150,7 +150,7 @@ This method is probably the most complex of all methods, but also one of the mos
 **Parameters**
 
  `name` : Name of the new table
- 
+
  `options` : (Optional) An associative array of options for creating the new table.
 
 Supported option key/value pairs are:
@@ -158,7 +158,7 @@ Supported option key/value pairs are:
 `id` : Boolean - whether or not the framework should automatically generate a primary key. For MySQL the column will be called `id` and be of type integer with auto-incrementing.
 
 `options` : A string representing finalization parameters that will be passed verbatim to the tail of the create table command. Often this is used to specify the storage engine for MySQL, e.g. 'options' => 'Engine=InnoDB'
- 
+
 **Assumptions**
 Ultimately this method delegates to the appropriate RDMBS adapter and the MySQL adapter makes some important assumptions about the structure of the table.
 
@@ -167,7 +167,7 @@ The database migration framework offers a rich facility for creating, removing a
 
 ### Creating tables
 
-A call to `$this->create_table(...)` actually returns a `TableDefinition` object. This method of the framework is one of the very few which actually returns a result that you must interact with (as and end user). 
+A call to `$this->create_table(...)` actually returns a `TableDefinition` object. This method of the framework is one of the very few which actually returns a result that you must interact with (as and end user).
 
 The steps for creating a new table are:
 * Create the table with a name and any optional options and store the return value for later use:
@@ -194,7 +194,7 @@ By default, the table type will be what your database defaults too. To specify a
 ```php
     $this->create_table('users', array('options' => 'Engine=InnoDB'));
 ```
- 
+
 * This command also assumes that you want an `id` column. This column does **not** need to be specified, it will be auto-generated, unless explicitly told not to via the `id` key in `$options` array.
 
 **Example B:** Create a new table called `users` but do not automatically make a primary key.
@@ -218,15 +218,15 @@ Tables can be removed by using the `drop_table` method call. As might be expecte
 
 **Method Call:** `drop_table`
 
-**Arguments:**: 
+**Arguments:**:
   `table_name`: The name of the table to remove.
 
 ### Renaming tables
-Tables can be renamed using the `rename_table` method. 
+Tables can be renamed using the `rename_table` method.
 
 **Method Call:** `rename_table`
 
-*Arguments:*: 
+*Arguments:*:
   `table_name`: The existing name of the table.
   `new_name`: The new name of the table.
 
@@ -248,11 +248,11 @@ Removing a database column is very simple, but keep in mind that any index assoc
 
 **Example A:**: Remove the `age` column from the `users` table.
 ```php
-    $this->remove_column("users", "age"); 
+    $this->remove_column("users", "age");
 ```
 
 ### Renaming a column
-Database columns can be renamed (assuming the underlying RDMBS/adapter supports it). 
+Database columns can be renamed (assuming the underlying RDMBS/adapter supports it).
 
 **Method call:** `rename_column`
 
@@ -305,7 +305,7 @@ Indexes can be created and removed using the framework methods.
   `options`: (Optional) An associative array of options to control the index generation. Keys / Value pairs:
 
    `unique`: values: `true` or `false`. Whether or not create a unique index for this column. Defaults to `false`.
-   
+
    `name` : values: user defined. The name of the index. If not specified, a default name will be generated based on the table and column name.
 
 **Known Issues / Workarounds**: MySQL is currently limited to 64 characters for identifier names. When _add_index_ is used *without* specifying the name of the index, Ruckusing will generate a suitable name based on the table name and the column(s) being index. For example, if there is a _users_ table and an index is being generated on the _username_ column then the generated index name would be: _idx_users_username_ . If one is attempting to add a multi-column index then its very possible that the generated name would be longer than MySQL's limit of 64 characters. In such situations Ruckusing will raise an error suggesting you use a custom index name via the _name_ option parameter. See *Example C*.
@@ -340,7 +340,7 @@ Easy enough. If the index was created using the sibling to this method (`add_ind
 **Arguments:**
   `table_name`: The name of the table to remove the index from.
 
-  `column_name`: The name of the column from which to remove the index from. 
+  `column_name`: The name of the column from which to remove the index from.
 
   `options`: (Optional) An associative array of options to control the index removal process. Key / Value pairs:
   `name` : values: user defined. The name of the index to remove. If not specified, a default name will be generated based on the table and column name. If during the index creation process (using the `add_index` method) and a `name` is specified then you will need to do the same here and specify the same name. Otherwise, the default name that is generated will likely not match with the actual name of the index.
@@ -365,11 +365,11 @@ Easy enough. If the index was created using the sibling to this method (`add_ind
 
 ## Query Execution
 
-Arbitrary query execution is available via a set of methods. 
+Arbitrary query execution is available via a set of methods.
 
 ### Execute method
 
-The `execute()` method is intended for queries which do not return any data, e.g. `INSERT`, `UPDATE` or `DELETE`. 
+The `execute()` method is intended for queries which do not return any data, e.g. `INSERT`, `UPDATE` or `DELETE`.
 
 **Example A:** Update all rows give some criteria
 ```php
