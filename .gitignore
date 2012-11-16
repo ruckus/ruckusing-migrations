@@ -1,8 +1,8 @@
 logs/*.log
 tests/logs/*.log
 tests/dummy/db/schema.txt
-.DS*
+.DS_Store
+lib/.DS_Store
+tests/.DS_Store
 .idea
 tmp/
-config/*.php
-migrations/
