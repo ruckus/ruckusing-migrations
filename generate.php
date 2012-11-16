@@ -8,9 +8,12 @@
 
 
 define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
-define('RUCKUSING_WORKING_BASE', getcwd());
+if(!defined('RUCKUSING_WORKING_BASE')) {
+    define('RUCKUSING_WORKING_BASE', getcwd());
+}
 
 $config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf.php';
+print_r($config_filename);
 if (file_exists($config_filename)) {
     $config = include $config_filename;
 } else {
@@ -70,7 +73,7 @@ if($file_result === FALSE) {
 function parse_args($argv) {
   $num_args = count($argv);
   if($num_args < 2) {
-    print_help(true); 
+    print_help(true);
   }
   $migration_name = $argv[1];
   return array('name' => $migration_name);
