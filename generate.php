@@ -13,7 +13,6 @@ if(!defined('RUCKUSING_WORKING_BASE')) {
 }
 
 $config_filename = RUCKUSING_WORKING_BASE . '/ruckusing.conf.php';
-print_r($config_filename);
 if (file_exists($config_filename)) {
     $config = include $config_filename;
 } else {
