@@ -12,7 +12,7 @@ if (file_exists($config_filename)) {
     $db_config = include RUCKUSING_BASE . '/config/database.inc.php';
 }
 
-if (isset($argv[1]) && stripos($argv[1], 'db:') !== FALSE) {
+if (isset($argv[1]) && stripos($argv[1], ':') !== FALSE) {
     require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
     require RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 
@@ -29,7 +29,7 @@ require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 
 $args = parse_args($argv);
-$framework = new Ruckusing_FrameworkRunner($config, $argv);
+$framework = new Ruckusing_FrameworkRunner($db_config, $argv);
 //input sanity check
 if (!is_array($args) || (is_array($args) && !array_key_exists('name', $args)) ) {
     print_help(true);
@@ -67,7 +67,7 @@ $file_result = file_put_contents($full_path, $template_str);
 if ($file_result === FALSE) {
     die_with_error("Error writing to migrations directory/file. Do you have sufficient privileges?");
 } else {
-    echo "\n\tCreated migration: {$file_name}\n\n";
+    echo "\n\tCreated migration: {$full_path}\n\n";
 }
 
 /*
