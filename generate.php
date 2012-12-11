@@ -25,7 +25,7 @@ require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 
 $args = parse_args($argv);
-$framework = new Ruckusing_FrameworkRunner($config, null);
+$framework = new Ruckusing_FrameworkRunner($config, $argv);
 //input sanity check
 if(!is_array($args) || (is_array($args) && !array_key_exists('name', $args)) ) {
   print_help(true);
