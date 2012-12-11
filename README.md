@@ -40,7 +40,7 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 From the top-level of the package run:
 
 ```
-$ php generate.php create_users_table
+$ php main.php create_users_table
 
 Created OK
 Created migration: 20121112163653_CreateUsersTable.php
