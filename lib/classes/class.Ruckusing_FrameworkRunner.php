@@ -191,7 +191,7 @@ class Ruckusing_FrameworkRunner {
 	
 	private function verify_db_config() {
 		if( !array_key_exists($this->ENV, $this->config['db'])) {
-			throw new Exception(sprintf("Error: '%s' DB is not configured",$this->opt_map[$ENV]));
+			throw new Exception(sprintf("Error: '%s' DB is not configured",$this->ENV));
 		}
 		$env = $this->ENV;
 		$this->active_db_config = $this->config['db'][$this->ENV];
