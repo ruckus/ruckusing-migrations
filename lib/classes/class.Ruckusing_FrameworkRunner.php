@@ -32,15 +32,14 @@ class Ruckusing_FrameworkRunner {
 			$this->parse_args($argv);
 
 			//initialize logger
-			$log_dir = RUCKUSING_BASE . "/logs";
-			if(is_dir($log_dir) && !is_writable($log_dir)) {
-				die("\n\nCannot write to log directory: $log_dir\n\nCheck permissions.\n\n");
-			}elseif(!is_dir($log_dir)){
+			if(is_dir(RUCKUSING_LOG_DIR) && !is_writable(RUCKUSING_LOG_DIR)) {
+				die("\n\nCannot write to log directory: " . RUCKUSING_LOG_DIR . "\n\nCheck permissions.\n\n");
+			}elseif(!is_dir(RUCKUSING_LOG_DIR)){
 				//try and create the log directory
-				mkdir($log_dir);
+				mkdir(RUCKUSING_LOG_DIR);
 			}
 			$log_name = sprintf("%s.log", $this->ENV);
-			$this->logger = Ruckusing_Logger::instance($log_dir . "/" . $log_name);
+			$this->logger = Ruckusing_Logger::instance(RUCKUSING_LOG_DIR . "/" . $log_name);
 			
 			//include all adapters
 			$this->load_all_adapters(RUCKUSING_BASE . '/lib/classes/adapters');

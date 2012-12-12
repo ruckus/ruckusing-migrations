@@ -22,4 +22,7 @@ if(!defined('RUCKUSING_DB_DIR')) {
 	define('RUCKUSING_DB_DIR', RUCKUSING_BASE . '/db');
 }
 
-?>
+//Logs directory.
+if(!defined('RUCKUSING_LOG_DIR')) {
+    define('RUCKUSING_LOG_DIR', RUCKUSING_BASE . '/logs');
+}
