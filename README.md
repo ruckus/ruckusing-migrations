@@ -405,3 +405,25 @@ Both of these methods return an associative array with each element of the array
       }
     }
 ```
+
+# Testing
+
+The unit tests require phpunit to be installed: http://www.phpunit.de/manual/current/en/installation.html
+
+## Running the complete test suite
+
+```bash
+$ cd tests
+$ phpunit unit/
+```
+
+Will run all test classes in `tests/unit`.
+
+## Running a single test file
+
+```bash
+$ cd tests/unit
+$ phpunit MySQLAdapterTest.php
+```
+Some of the tests require a `mysql_test` or `pg_test` database configuration to be defined. If this is required and its not satisfied than the test will complain appropriately.
+

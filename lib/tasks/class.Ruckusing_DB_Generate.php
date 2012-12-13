@@ -1,9 +1,9 @@
 <?php
 
-require RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
-require RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require RUCKUSING_BASE . '/config/config.inc.php';
-require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
+require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
+require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
+require_once RUCKUSING_BASE . '/config/config.inc.php';
+require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 
 /**
  * Implementation of the Ruckusing_DB_Generate generic task which acts as a Generator for migrations.

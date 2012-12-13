@@ -21,6 +21,7 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase {
 
     if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("mysql_test", $ruckusing_config['db']))) {
       die("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
+      //$this->markTestSkipped
     }
 
     $test_db = $ruckusing_config['db']['mysql_test'];

@@ -20,7 +20,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
     $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
     if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("mysql_test", $ruckusing_config['db']))) {
-      die("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
+      $this->markTestSkipped("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
     }
 
     $test_db = $ruckusing_config['db']['mysql_test'];
