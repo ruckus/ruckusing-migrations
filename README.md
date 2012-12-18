@@ -4,6 +4,8 @@ Ruckusing is a framework written in PHP5 for generating and managing a set of "d
 
 The idea of the framework was borrowed from the migration system built into Ruby on Rails. Any one who is familiar with Migrations in RoR will be immediately at home.
 
+[![Build Status](https://secure.travis-ci.org/ruckus/ruckusing-migrations.png?branch=master)](http://travis-ci.org/ruckus/ruckusing-migrations)
+
 ## Getting Started & Documentation
 
 See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the complete documentation on the migration methods supported and how to get started.
@@ -413,8 +415,10 @@ The unit tests require phpunit to be installed: http://www.phpunit.de/manual/cur
 ## Running the complete test suite
 
 ```bash
-$ cd tests
-$ phpunit unit/
+$ vi config/database.inc.php
+$ mysql -uroot -p < tests/test.sql
+$ psql -Upostgres -f tests/test.sql
+$ phpunit
 ```
 
 Will run all test classes in `tests/unit`.
@@ -422,8 +426,9 @@ Will run all test classes in `tests/unit`.
 ## Running a single test file
 
 ```bash
-$ cd tests/unit
-$ phpunit MySQLAdapterTest.php
+$ vi config/database.inc.php
+$ mysql -uroot -p < tests/test.sql
+$ phpunit tests/unit/MySQLAdapterTest.php
 ```
 Some of the tests require a `mysql_test` or `pg_test` database configuration to be defined. If this is required and its not satisfied than the test will complain appropriately.
 
