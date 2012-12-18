@@ -4,6 +4,8 @@ Ruckusing is a framework written in PHP5 for generating and managing a set of "d
 
 The idea of the framework was borrowed from the migration system built into Ruby on Rails. Any one who is familiar with Migrations in RoR will be immediately at home.
 
+[![Build Status](https://secure.travis-ci.org/ruckus/ruckusing-migrations.png?branch=master)](http://travis-ci.org/ruckus/ruckusing-migrations)
+
 ## Getting Started & Documentation
 
 See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the complete documentation on the migration methods supported and how to get started.
