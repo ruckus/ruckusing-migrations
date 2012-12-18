@@ -3,19 +3,19 @@
 interface Ruckusing_iAdapter {
 
   public function get_database_name();
-	public function quote($value, $column);
+	public function quote($value, $column = null);
 	public function supports_migrations();
 	public function native_database_types();
 	public function schema($output_file);
-	
+
 	public function execute($query);
 	public function quote_string($str);
-	
+
 	//database level operations
 	public function database_exists($db);
 	public function create_table($table_name, $options = array());
 	public function drop_database($db);
-	
+
 	//table level opertions
 	public function table_exists($tbl);
 	public function drop_table($tbl);
