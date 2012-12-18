@@ -413,8 +413,10 @@ The unit tests require phpunit to be installed: http://www.phpunit.de/manual/cur
 ## Running the complete test suite
 
 ```bash
-$ cd tests
-$ phpunit unit/
+$ vi config/database.inc.php
+$ mysql -uroot -p < tests/test.sql
+$ psql -Upostgres -f tests/test.sql
+$ phpunit
 ```
 
 Will run all test classes in `tests/unit`.
@@ -422,8 +424,9 @@ Will run all test classes in `tests/unit`.
 ## Running a single test file
 
 ```bash
-$ cd tests/unit
-$ phpunit MySQLAdapterTest.php
+$ vi config/database.inc.php
+$ mysql -uroot -p < tests/test.sql
+$ phpunit tests/unit/MySQLAdapterTest.php
 ```
 Some of the tests require a `mysql_test` or `pg_test` database configuration to be defined. If this is required and its not satisfied than the test will complain appropriately.
 
