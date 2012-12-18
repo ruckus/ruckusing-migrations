@@ -8,7 +8,11 @@ php:
 before_script:
   - mysql -uroot < tests/test.sql
   - psql -Upostgres -f tests/test.sql
-  
+
+branches:
+  only:
+    - master
+
 notifications:
   email:
     recipients: me@salimane.com
