@@ -635,7 +635,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
         die("\n\nCould not connect to the DB, check host / user / password\n\n");
       }
       if(!mysql_select_db($db_info['database'], $this->conn)) {
-        die("\n\nCould not select the DB, check permissions on host\n\n");
+        die("\n\nCould not select the DB " . $db_info['database'] . ", check permissions on host $host \n\n");
       }
       return true;
     } else {

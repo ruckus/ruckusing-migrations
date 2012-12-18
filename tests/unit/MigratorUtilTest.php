@@ -34,7 +34,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase {
     //create the schema table if necessary
     $this->adapter->create_schema_version_table();
     
-    $framework = new Ruckusing_FrameworkRunner($ruckusing_config, null);
+    $framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test'));
     $this->migrations_dir = $framework->migrations_directory();
     if(!is_dir($this->migrations_dir)) {
       mkdir($this->migrations_dir);

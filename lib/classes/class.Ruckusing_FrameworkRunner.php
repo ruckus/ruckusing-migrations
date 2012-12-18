@@ -112,21 +112,23 @@ class Ruckusing_FrameworkRunner {
 		
 		$num_args = count($argv);
 
-		if($num_args >= 2) {					
-			$this->cur_task_name = $argv[1];			
-			$options = array();
-			for($i = 2; $i < $num_args;$i++) {
-				$arg = $argv[$i];
-				if(strpos($arg, '=') !== FALSE) {
-					list($key, $value) = explode("=", $arg);
-					$options[$key] = $value;
-					if($key == 'ENV') {
-						$this->ENV = $value;
-					}
+		if($num_args >= 2) {
+		    $this->cur_task_name = $argv[1];
+		}
+
+		$options = array();
+		for($i = 0; $i < $num_args;$i++) {
+			$arg = $argv[$i];
+			if(strpos($arg, '=') !== FALSE) {
+				list($key, $value) = explode("=", $arg);
+				$options[$key] = $value;
+				if($key == 'ENV') {
+					$this->ENV = $value;
 				}
 			}
-			$this->task_options = $options;
-		}		
+		}
+		$this->task_options = $options;
+
 	}//parse_args()
 
 	/*
