@@ -2,7 +2,7 @@
 
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_iAdapter.php';
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';	
+require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_TableDefinition.php';
 require_once RUCKUSING_BASE . '/lib/classes/adapters/class.Ruckusing_PostgresTableDefinition.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_ColumnDefinition.php';
@@ -23,15 +23,15 @@ class Ruckusing_PostgresAdapter extends Ruckusing_BaseAdapter implements Ruckusi
 		$this->connect($dsn);
 		$this->set_logger($logger);
 	}
-	
+
 	public function get_database_name() {
 	  return($this->db_info['database']);
   }
-	
+
 	public function supports_migrations() {
 	 return true;
   }
-	
+
   public function native_database_types() {
     $types = array(
       'primary_key'   => array('name' => 'serial'),
@@ -103,7 +103,7 @@ class Ruckusing_PostgresAdapter extends Ruckusing_BaseAdapter implements Ruckusi
     $col = new Ruckusing_ColumnDefinition($this, $column_name, $type, $options);
     return $col->__toString();
   }
-  
+
   // Returns a table's primary key and belonging sequence.
   public function pk_and_sequence_for($table) {
     $sql = <<<SQL
@@ -137,13 +137,13 @@ SQL;
   than commit it, do our thing and then re-invoke the transaction
   */
   public function create_database($db, $options = array()) {
-    
+
     $was_in_transaction = false;
     if($this->inTransaction()) {
       $this->commit_transaction();
       $was_in_transaction = true;
     }
-    
+
     if(!array_key_exists('encoding', $options)) {
       $options['encoding'] = 'utf8';
     }
@@ -165,14 +165,14 @@ SQL;
       $ddl .= " CONNECTION LIMIT = {$connlimit}";
     }
     $result = $this->query($ddl);
-    
+
     if($was_in_transaction) {
       $this->start_transaction();
       $was_in_transaction = false;
     }
     return($result === true);
   }
-  
+
   public function database_exists($db) {
     $sql = sprintf("SELECT datname FROM pg_database WHERE datname = '%s'", $db);
     $result = $this->select_one($sql);
@@ -189,7 +189,7 @@ SQL;
   }
 
   /*
-  Dump the complete schema of the DB. This is really just all of the 
+  Dump the complete schema of the DB. This is really just all of the
   CREATE TABLE statements for all of the tables in the DB.
 
   NOTE: this does NOT include any INSERT statements or the actual data
@@ -203,7 +203,7 @@ SQL;
     );
     return system($command);
   }
-	
+
   public function table_exists($tbl, $reload_tables = false) {
     $this->load_tables($reload_tables);
     return array_key_exists($tbl, $this->tables);
@@ -250,7 +250,7 @@ SQL;
     $query_type = $this->determine_query_type($query);
     if($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
       $res = pg_query($this->conn, $query);
-      if($this->isError($res)) { 
+      if($this->isError($res)) {
         trigger_error(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, pg_last_error($this->conn)));
       }
       return pg_fetch_assoc($res);
@@ -289,7 +289,7 @@ SQL;
   public function identifier($string) {
     return '"' . $string . '"';
   }
-  
+
   public function quote_table_name($string) {
     return '"' . $string . '"';
   }
@@ -365,7 +365,7 @@ SQL;
     if(!array_key_exists('scale', $options)) {
       $options['scale'] = null;
     }
-    $sql = sprintf("ALTER TABLE %s ADD COLUMN %s %s", 
+    $sql = sprintf("ALTER TABLE %s ADD COLUMN %s %s",
       $this->quote_table_name($table_name),
       $this->quote_column_name($column_name),
       $this->type_to_sql($type, $options)
@@ -429,7 +429,7 @@ SQL;
       $this->type_to_sql($type,$options)
     );
     $sql .= $this->add_column_options($type, $options, true);
-    
+
     if(array_key_exists('default', $options)) {
       $this->change_column_default($table_name, $column_name, $options['default']);
     }
@@ -439,7 +439,7 @@ SQL;
     }
     return $this->execute_ddl($sql);
   }
-  
+
   private function change_column_default($table_name, $column_name, $default) {
     $sql = sprintf("ALTER TABLE %s ALTER COLUMN %s SET DEFAULT %s",
       $this->quote_table_name($table_name),
@@ -513,7 +513,7 @@ SQL;
     } else {
       $unique = false;
     }
-    
+
     //did the user specify an index name?
     if(is_array($options) && array_key_exists('name', $options)) {
       $index_name = $options['name'];
@@ -609,7 +609,7 @@ SQL;
     }
     return $indexes;
   }
-  
+
   public function primary_keys($table_name) {
     $sql = <<<SQL
       SELECT
@@ -744,7 +744,7 @@ SQL;
 
   //-----------------------------------
   // PRIVATE METHODS
-  //-----------------------------------	
+  //-----------------------------------
 
   private function connect($dsn) {
     $this->db_connect($dsn);
@@ -761,7 +761,7 @@ SQL;
         $db_info['host'],
         (!empty($db_info['port']) ? $db_info['port'] : '5432'),
         $db_info['database'],
-        $db_info['user'], 
+        $db_info['user'],
         $db_info['password']
       );
       $this->conn = pg_connect($conninfo);
@@ -783,7 +783,7 @@ SQL;
     if($this->tables_loaded == false || $reload) {
       $this->tables = array(); //clear existing structure
       $sql = "SELECT tablename FROM pg_tables WHERE schemaname = ANY (current_schemas(false))";
-      
+
       $res = pg_query($this->conn, $sql);
       while($row = pg_fetch_row($res)) {
         $table = $row[0];
@@ -830,7 +830,7 @@ SQL;
   private function is_select($query_type) {
     return($query_type == SQL_SELECT);
   }
-	
+
   /*
   Detect whether or not the string represents a function call and if so
   do not wrap it in single-quotes, otherwise do wrap in single quotes.
@@ -855,7 +855,7 @@ SQL;
      $this->in_trx = false;
     }
   }
-  
+
   private function rollback() {
     if($this->in_trx === true) {
      pg_query($this->conn, "ROLLBACK");
