@@ -1,7 +1,9 @@
 <?php
-if(!defined('BASE')) {
-  define('BASE', dirname(__FILE__) . '/..');
+
+if (!defined('BASE')) {
+    define('BASE', dirname(__FILE__) . '/..');
 }
+
 require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
@@ -9,339 +11,431 @@ require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
 require_once RUCKUSING_BASE  . '/lib/classes/Ruckusing_exceptions.php';
 
-/*
-	To run these unit-tests an empty test database needs to be setup in database.inc.php
-	and of course, it has to really exist.
-*/
+/**
+ * Implementation of MySQLAdapterTest
+ * To run these unit-tests an empty test database needs to be setup in database.inc.php
+ * and of course, it has to really exist.
+ *
+ * @category Ruckusing_Tests
+ * @package  Ruckusing_Migrations
+ * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ */
+class MySQLAdapterTest extends PHPUnit_Framework_TestCase
+{
+    /**
+     * Setup commands before test case
+     */
+    protected function setUp()
+    {
+        $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
-class MySQLAdapterTest extends PHPUnit_Framework_TestCase {
+        if (!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("mysql_test", $ruckusing_config['db']))) {
+            $this->markTestSkipped("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
+        }
 
-  protected function setUp() {
-    $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
+        $test_db = $ruckusing_config['db']['mysql_test'];
 
-    if(!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("mysql_test", $ruckusing_config['db']))) {
-      $this->markTestSkipped("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
+        //setup our log
+        $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
+
+        $this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
+        $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );
+    }//setUp()
+
+    /**
+     * shutdown commands after test case
+     */
+    protected function tearDown()
+    {
+        //delete any tables we created
+        if ($this->adapter->has_table('users', true)) {
+            $this->adapter->drop_table('users');
+        }
+
+        if ($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME, true)) {
+            $this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
+        }
+
+        $db = "test_db";
+        //delete any databases we created
+        if ($this->adapter->database_exists($db)) {
+            $this->adapter->drop_database($db);
+        }
     }
 
-    $test_db = $ruckusing_config['db']['mysql_test'];
-
-    //setup our log
-    $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
-
-    $this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
-    $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );
-  }//setUp()
-
-  protected function tearDown() {
-    //delete any tables we created
-    if($this->adapter->has_table('users',true)) {
-      $this->adapter->drop_table('users');
+    /**
+     * test create schema version table
+     */
+    public function test_create_schema_version_table()
+    {
+        //force drop, start from a clean slate
+        if ($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME, true)) {
+            $this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
+        }
+        $this->adapter->create_schema_version_table();
+        $this->assertEquals(true, $this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME, true));
     }
 
-    if($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME,true)) {
-      $this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
+    /**
+     * test to ensure table does not exist
+     */
+    public function test_ensure_table_does_not_exist()
+    {
+        $this->assertEquals(false, $this->adapter->has_table('unknown_table'));
     }
 
-    $db = "test_db";
-    //delete any databases we created
-    if($this->adapter->database_exists($db)) {
-      $this->adapter->drop_database($db);
+    /**
+     * test to ensure table does exist
+     */
+    public function test_ensure_table_does_exist()
+    {
+        //first make sure the table does not exist
+        $users = $this->adapter->has_table('users', true);
+        $this->assertEquals(false, $users);
+        $t1 = new Ruckusing_MySQLTableDefinition($this->adapter, "users", array('options' => 'Engine=InnoDB'));
+        $t1->column("name", "string", array('limit' => 20));
+        $sql = $t1->finish();
+
+        //now make sure it does exist
+        $users = $this->adapter->table_exists('users', true);
+        $this->assertEquals(true, $users);
+        $this->remove_table('users');
     }
-  }
-  
-  public function test_create_schema_version_table() {
-    //force drop, start from a clean slate
-    if($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME,true)) {
-      $this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
+
+    /**
+     * Drop a table
+     *
+     * @param string $table the table to drop
+     */
+    private function remove_table($table)
+    {
+        if ($this->adapter->has_table($table, true)) {
+            $this->adapter->drop_table($table);
+        }
     }
-    $this->adapter->create_schema_version_table();
-    $this->assertEquals(true, $this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME,true) );
-  }
 
-  public function test_ensure_table_does_not_exist() {
-    $this->assertEquals(false, $this->adapter->has_table('unknown_table') );
-  }
+    /**
+     * test database creation
+     */
+    public function test_database_creation()
+    {
+        $db = "test_db";
+        $this->assertEquals(true, $this->adapter->create_database($db));
+        $this->assertEquals(true, $this->adapter->database_exists($db));
 
-  public function test_ensure_table_does_exist() {
-    //first make sure the table does not exist
-    $users = $this->adapter->has_table('users',true);
-    $this->assertEquals(false, $users);
-    $t1 = new Ruckusing_MySQLTableDefinition($this->adapter, "users", array('options' => 'Engine=InnoDB') );
-    $t1->column("name", "string", array('limit' => 20));
-    $sql = $t1->finish();
-
-    //now make sure it does exist
-    $users = $this->adapter->table_exists('users',true);
-    $this->assertEquals(true, $users);
-    $this->remove_table('users');
-  }
-
-  private function remove_table($table) {
-    if($this->adapter->has_table($table, true)) {
-      $this->adapter->drop_table($table);
+        $db = "db_does_not_exist";
+        $this->assertEquals(false, $this->adapter->database_exists($db));
     }
-  }
 
-  public function test_database_creation() {
-    $db = "test_db";
-    $this->assertEquals(true, $this->adapter->create_database($db) );
-    $this->assertEquals(true, $this->adapter->database_exists($db) );
+    /**
+     * test drop database
+     */
+    public function test_database_droppage()
+    {
+        $db = "test_db";
+        //create it
+        $this->assertEquals(true, $this->adapter->create_database($db));
+        $this->assertEquals(true, $this->adapter->database_exists($db));
 
-    $db = "db_does_not_exist";
-    $this->assertEquals(false, $this->adapter->database_exists($db) );
-  }
-
-  public function test_database_droppage() {
-    $db = "test_db";
-    //create it
-    $this->assertEquals(true, $this->adapter->create_database($db) );
-    $this->assertEquals(true, $this->adapter->database_exists($db) );
-
-    //drop it
-    $this->assertEquals(true, $this->adapter->drop_database($db) );
-    $this->assertEquals(false, $this->adapter->database_exists($db) );
-  }
-
-  public function test_index_name_too_long_throws_exception() {
-    $bm = new Ruckusing_BaseMigration();
-    $bm->set_adapter($this->adapter);
-    try {
-      srand();
-      $table_name = "users_" . rand(0, 1000000);
-      $table = $bm->create_table($table_name, array('id' => false));
-      $table->column('somecolumnthatiscrazylong', 'integer');
-      $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
-      $sql = $table->finish();
-      $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
-    } catch(Ruckusing_InvalidIndexNameException $exception) {
-      $bm->drop_table($table_name);
-      return;
+        //drop it
+        $this->assertEquals(true, $this->adapter->drop_database($db));
+        $this->assertEquals(false, $this->adapter->database_exists($db));
     }
-    $this->fail('Expected to raise & catch Ruckusing_InvalidIndexNameException');    
-  }
 
-  public function test_custom_primary_key_1() {
-    $t1 = new Ruckusing_MySQLTableDefinition($this->adapter, "users", array('id' => true, 'options' => 'Engine=InnoDB') );
-    $t1->column("user_id", "integer", array("primary_key" => true));
-    $actual = $t1->finish(true);
-    $this->remove_table('users');
-  }
+    /**
+     * test throwing exception on index too long
+     */
+    public function test_index_name_too_long_throws_exception()
+    {
+        $bm = new Ruckusing_BaseMigration();
+        $bm->set_adapter($this->adapter);
+        try {
+            srand();
+            $table_name = "users_" . rand(0, 1000000);
+            $table = $bm->create_table($table_name, array('id' => false));
+            $table->column('somecolumnthatiscrazylong', 'integer');
+            $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
+            $sql = $table->finish();
+            $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
+        } catch (Ruckusing_InvalidIndexNameException $exception) {
+            $bm->drop_table($table_name);
 
-  public function test_column_definition() {
-    $expected = "`age` varchar(255)";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "string"));
+            return;
+        }
+        $this->fail('Expected to raise & catch Ruckusing_InvalidIndexNameException');
+    }
 
-    $expected = "`age` varchar(32)";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "string", array('limit' => 32)));
+    /**
+     * test custom primary key
+     */
+    public function test_custom_primary_key_1()
+    {
+        $t1 = new Ruckusing_MySQLTableDefinition($this->adapter, "users", array('id' => true, 'options' => 'Engine=InnoDB') );
+        $t1->column("user_id", "integer", array("primary_key" => true));
+        $actual = $t1->finish(true);
+        $this->remove_table('users');
+    }
 
-    $expected = "`age` varchar(32) NOT NULL";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "string", 
-    										array('limit' => 32, 'null' => false)));
+    /**
+     * test column definition
+     */
+    public function test_column_definition()
+    {
+        $expected = "`age` varchar(255)";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "string"));
 
-    $expected = "`age` varchar(32) DEFAULT 'abc' NOT NULL";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "string", 
-    										array('limit' => 32, 'default' => 'abc', 'null' => false)));
+        $expected = "`age` varchar(32)";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "string", array('limit' => 32)));
 
-    $expected = "`age` varchar(32) DEFAULT 'abc'";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "string", 
-    										array('limit' => 32, 'default' => 'abc')));
+        $expected = "`age` varchar(32) NOT NULL";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "string",
+                        array('limit' => 32, 'null' => false)));
 
-    $expected = "`age` int(11)";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "integer"));
+        $expected = "`age` varchar(32) DEFAULT 'abc' NOT NULL";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "string",
+                        array('limit' => 32, 'default' => 'abc', 'null' => false)));
 
-    $expected = "`active` tinyint(1)";
-    $this->assertEquals($expected, $this->adapter->column_definition("active", "boolean"));	
+        $expected = "`age` varchar(32) DEFAULT 'abc'";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "string",
+                        array('limit' => 32, 'default' => 'abc')));
 
-    $expected = "`weight` bigint(20)";
-    $this->assertEquals($expected, $this->adapter->column_definition("weight", "biginteger", array('limit' => 20)));
+        $expected = "`age` int(11)";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "integer"));
 
-    $expected = "`age` int(11) AFTER `height`";
-    $this->assertEquals($expected, $this->adapter->column_definition("age", "integer", array("after" => "height")));	
-  }//test_column_definition
+        $expected = "`active` tinyint(1)";
+        $this->assertEquals($expected, $this->adapter->column_definition("active", "boolean"));
 
-  public function test_column_info() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $expected = "`weight` bigint(20)";
+        $this->assertEquals($expected, $this->adapter->column_definition("weight", "biginteger", array('limit' => 20)));
 
-    $expected = array();
-    $actual = $this->adapter->column_info("users", "name");
-    $this->assertEquals('varchar(20)', $actual['type'] );
-    $this->assertEquals('name', $actual['field'] );
-    $this->remove_table('users');
-  }
+        $expected = "`age` int(11) AFTER `height`";
+        $this->assertEquals($expected, $this->adapter->column_definition("age", "integer", array("after" => "height")));
+    }//test_column_definition
 
-  public function test_rename_table() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
-    $this->assertEquals(true, $this->adapter->has_table('users') );
-    $this->assertEquals(false, $this->adapter->has_table('users_new') );
-    //rename it
-    $this->adapter->rename_table('users', 'users_new');
-    $this->assertEquals(false, $this->adapter->has_table('users') );
-    $this->assertEquals(true, $this->adapter->has_table('users_new') );
-    //clean up
-    $this->adapter->drop_table('users_new');
-  }
+    /**
+     * test column info
+     */
+    public function test_column_info()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
 
-  public function test_rename_column() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $expected = array();
+        $actual = $this->adapter->column_info("users", "name");
+        $this->assertEquals('varchar(20)', $actual['type'] );
+        $this->assertEquals('name', $actual['field'] );
+        $this->remove_table('users');
+    }
 
-    $before = $this->adapter->column_info("users", "name");
-    $this->assertEquals('varchar(20)', $before['type'] );
-    $this->assertEquals('name', $before['field'] );
+    /**
+     * test rename table
+     */
+    public function test_rename_table()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $this->assertEquals(true, $this->adapter->has_table('users') );
+        $this->assertEquals(false, $this->adapter->has_table('users_new') );
+        //rename it
+        $this->adapter->rename_table('users', 'users_new');
+        $this->assertEquals(false, $this->adapter->has_table('users') );
+        $this->assertEquals(true, $this->adapter->has_table('users_new') );
+        //clean up
+        $this->adapter->drop_table('users_new');
+    }
 
-    //rename the name column
-    $this->adapter->rename_column('users', 'name', 'new_name');
+    /**
+     * test rename column
+     */
+    public function test_rename_column()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
 
-    $after = $this->adapter->column_info("users", "new_name");
-    $this->assertEquals('varchar(20)', $after['type'] );
-    $this->assertEquals('new_name', $after['field'] );
-    $this->remove_table('users');
-  }
+        $before = $this->adapter->column_info("users", "name");
+        $this->assertEquals('varchar(20)', $before['type'] );
+        $this->assertEquals('name', $before['field'] );
 
-  public function test_add_column() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");	
+        //rename the name column
+        $this->adapter->rename_column('users', 'name', 'new_name');
 
-    $col = $this->adapter->column_info("users", "name");
-    $this->assertEquals("name", $col['field']);
+        $after = $this->adapter->column_info("users", "new_name");
+        $this->assertEquals('varchar(20)', $after['type'] );
+        $this->assertEquals('new_name', $after['field'] );
+        $this->remove_table('users');
+    }
 
-    //add column
-    $this->adapter->add_column("users", "fav_color", "string", array('limit' => 32));
-    $col = $this->adapter->column_info("users", "fav_color");
-    $this->assertEquals("fav_color", $col['field']);
-    $this->assertEquals('varchar(32)', $col['type'] );
+    /**
+     * test add column
+     */
+    public function test_add_column()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
 
-    //add column
-    $this->adapter->add_column("users", "latitude", "decimal", array('precision' => 10, 'scale' => 2));
-    $col = $this->adapter->column_info("users", "latitude");
-    $this->assertEquals("latitude", $col['field']);
-    $this->assertEquals('decimal(10,2)', $col['type'] );
+        $col = $this->adapter->column_info("users", "name");
+        $this->assertEquals("name", $col['field']);
 
-    //add column with unsigned parameter
-    $this->adapter->add_column("users", "age", "integer", array('unsigned' => true));
-    $col = $this->adapter->column_info("users", "age");
-    $this->assertEquals("age", $col['field']);
-    $this->assertEquals('int(11) unsigned', $col['type'] );
+        //add column
+        $this->adapter->add_column("users", "fav_color", "string", array('limit' => 32));
+        $col = $this->adapter->column_info("users", "fav_color");
+        $this->assertEquals("fav_color", $col['field']);
+        $this->assertEquals('varchar(32)', $col['type'] );
 
-    //add column with biginteger datatype
-    $this->adapter->add_column("users", "weight", "biginteger", array('limit' => 20));
-    $col = $this->adapter->column_info("users", "weight");
-    $this->assertEquals("weight", $col['field']);
-    $this->assertEquals('bigint(20)', $col['type'] );
+        //add column
+        $this->adapter->add_column("users", "latitude", "decimal", array('precision' => 10, 'scale' => 2));
+        $col = $this->adapter->column_info("users", "latitude");
+        $this->assertEquals("latitude", $col['field']);
+        $this->assertEquals('decimal(10,2)', $col['type'] );
 
-    // Test that the collate option works
-    $this->adapter->add_column('users', 'shortcode', 'string', array('collate' => 'utf8_bin'));
-    $col = $this->adapter->column_info('users', 'shortcode');
-    $this->assertEquals('utf8_bin', $col['collation']);
+        //add column with unsigned parameter
+        $this->adapter->add_column("users", "age", "integer", array('unsigned' => true));
+        $col = $this->adapter->column_info("users", "age");
+        $this->assertEquals("age", $col['field']);
+        $this->assertEquals('int(11) unsigned', $col['type'] );
 
-    $this->remove_table('users');
-  }
+        //add column with biginteger datatype
+        $this->adapter->add_column("users", "weight", "biginteger", array('limit' => 20));
+        $col = $this->adapter->column_info("users", "weight");
+        $this->assertEquals("weight", $col['field']);
+        $this->assertEquals('bigint(20)', $col['type'] );
 
-  public function test_remove_column() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+        // Test that the collate option works
+        $this->adapter->add_column('users', 'shortcode', 'string', array('collate' => 'utf8_bin'));
+        $col = $this->adapter->column_info('users', 'shortcode');
+        $this->assertEquals('utf8_bin', $col['collation']);
 
-    //verify it exists
-    $col = $this->adapter->column_info("users", "name");
-    $this->assertEquals("name", $col['field']);
+        $this->remove_table('users');
+    }
 
-    //drop it
-    $this->adapter->remove_column("users", "name");
+    /**
+     * test drop column
+     */
+    public function test_remove_column()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
 
-    //verify it does not exist
-    $col = $this->adapter->column_info("users", "name");
-    $this->assertEquals(null, $col);
-    $this->remove_table('users');
-  }
+        //verify it exists
+        $col = $this->adapter->column_info("users", "name");
+        $this->assertEquals("name", $col['field']);
 
+        //drop it
+        $this->adapter->remove_column("users", "name");
 
-  public function test_change_column() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+        //verify it does not exist
+        $col = $this->adapter->column_info("users", "name");
+        $this->assertEquals(null, $col);
+        $this->remove_table('users');
+    }
 
-    //verify its type
-    $col = $this->adapter->column_info("users", "name");
-    $this->assertEquals('varchar(20)', $col['type'] );
-    $this->assertEquals('', $col['default'] );
+    /**
+     * test change column
+     */
+    public function test_change_column()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
 
-    //change it, add a default too!
-    $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128));
+        //verify its type
+        $col = $this->adapter->column_info("users", "name");
+        $this->assertEquals('varchar(20)', $col['type'] );
+        $this->assertEquals('', $col['default'] );
 
-    $col = $this->adapter->column_info("users", "name");
-    $this->assertEquals('varchar(128)', $col['type'] );
-    $this->assertEquals('abc', $col['default'] );
+        //change it, add a default too!
+        $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128));
 
-    // Test collate option
-    $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128, 
-      'collate' => 'ascii_bin'));
-    $col = $this->adapter->column_info('users', 'name');
-    $this->assertEquals('ascii_bin', $col['collation']);
+        $col = $this->adapter->column_info("users", "name");
+        $this->assertEquals('varchar(128)', $col['type'] );
+        $this->assertEquals('abc', $col['default'] );
 
-    $this->remove_table('users');
-  }
+        // Test collate option
+        $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128,
+                        'collate' => 'ascii_bin'));
+        $col = $this->adapter->column_info('users', 'name');
+        $this->assertEquals('ascii_bin', $col['collation']);
 
-  public function test_add_index() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3), title varchar(20) );");
-    $this->adapter->add_index("users", "name");
+        $this->remove_table('users');
+    }
 
-    $this->assertEquals(true, $this->adapter->has_index("users", "name") );
-    $this->assertEquals(false, $this->adapter->has_index("users", "age") );
+    /**
+     * test add index
+     */
+    public function test_add_index()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3), title varchar(20) );");
+        $this->adapter->add_index("users", "name");
 
-    $this->adapter->add_index("users", "age", array('unique' => true));
-    $this->assertEquals(true, $this->adapter->has_index("users", "age") );
+        $this->assertEquals(true, $this->adapter->has_index("users", "name") );
+        $this->assertEquals(false, $this->adapter->has_index("users", "age") );
 
-    $this->adapter->add_index("users", "title", array('name' => 'index_on_super_title'));
-    $this->assertEquals(true, $this->adapter->has_index("users", "title", array('name' => 'index_on_super_title')));
-    $this->remove_table('users');
-  }
+        $this->adapter->add_index("users", "age", array('unique' => true));
+        $this->assertEquals(true, $this->adapter->has_index("users", "age") );
 
-  public function test_multi_column_index() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
-    $this->adapter->add_index("users", array("name", "age"));
+        $this->adapter->add_index("users", "title", array('name' => 'index_on_super_title'));
+        $this->assertEquals(true, $this->adapter->has_index("users", "title", array('name' => 'index_on_super_title')));
+        $this->remove_table('users');
+    }
 
-    $this->assertEquals(true, $this->adapter->has_index("users", array("name", "age") ));
+    /**
+     * test add multi column index
+     */
+    public function test_multi_column_index()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+        $this->adapter->add_index("users", array("name", "age"));
 
-    //drop it
-    $this->adapter->remove_index("users", array("name", "age"));
-    $this->assertEquals(false, $this->adapter->has_index("users", array("name", "age") ));
-    $this->remove_table('users');
-  }
+        $this->assertEquals(true, $this->adapter->has_index("users", array("name", "age") ));
 
-  public function test_remove_index_with_default_index_name() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
-    $this->adapter->add_index("users", "name");
+        //drop it
+        $this->adapter->remove_index("users", array("name", "age"));
+        $this->assertEquals(false, $this->adapter->has_index("users", array("name", "age") ));
+        $this->remove_table('users');
+    }
 
-    $this->assertEquals(true, $this->adapter->has_index("users", "name") );
+    /**
+     * test drop index with default index name
+     */
+    public function test_remove_index_with_default_index_name()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+        $this->adapter->add_index("users", "name");
 
-    //drop it
-    $this->adapter->remove_index("users", "name");
-    $this->assertEquals(false, $this->adapter->has_index("users", "name") );
-    $this->remove_table('users');
-  }
+        $this->assertEquals(true, $this->adapter->has_index("users", "name") );
 
-  public function test_remove_index_with_custom_index_name() {
-    //create it
-    $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
-    $this->adapter->add_index("users", "name", array('name' => 'my_special_index'));
+        //drop it
+        $this->adapter->remove_index("users", "name");
+        $this->assertEquals(false, $this->adapter->has_index("users", "name") );
+        $this->remove_table('users');
+    }
 
-    $this->assertEquals(true, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
+    /**
+     * test drop index with custom index name
+     */
+    public function test_remove_index_with_custom_index_name()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
+        $this->adapter->add_index("users", "name", array('name' => 'my_special_index'));
 
-    //drop it
-    $this->adapter->remove_index("users", "name", array('name' => 'my_special_index'));
-    $this->assertEquals(false, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
-    $this->remove_table('users');
-  }
+        $this->assertEquals(true, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
 
-  public function test_string_quoting() {
-    $unquoted = "Hello Sam's";
-    $quoted = "Hello Sam\'s";
-    $this->assertEquals($quoted, $this->adapter->quote_string($unquoted));
-  }
+        //drop it
+        $this->adapter->remove_index("users", "name", array('name' => 'my_special_index'));
+        $this->assertEquals(false, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
+        $this->remove_table('users');
+    }
+
+    /**
+     * test string quoting
+     */
+    public function test_string_quoting()
+    {
+        $unquoted = "Hello Sam's";
+        $quoted = "Hello Sam\'s";
+        $this->assertEquals($quoted, $this->adapter->quote_string($unquoted));
+    }
 }//class
-
-?>
