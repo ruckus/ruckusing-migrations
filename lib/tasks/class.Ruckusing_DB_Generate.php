@@ -132,11 +132,19 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
     public static function get_template($klass)
     {
         $template = <<<TPL
-<?php\n
-class $klass extends Ruckusing_BaseMigration {\n\n\tpublic function up() {\n\n\t}//up()
-\n\tpublic function down() {\n\n\t}//down()
+<?php
+
+class $klass extends Ruckusing_BaseMigration
+{
+    public function up()
+    {
+    }//up()
+
+    public function down()
+    {
+    }//down()
 }
-?>
+
 TPL;
 
         return $template;
