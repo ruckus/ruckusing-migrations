@@ -117,7 +117,7 @@ class Ruckusing_FrameworkRunner
      */
     public function migrations_directory()
     {
-        return $this->config['migrations_dir'];
+        return $this->config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->config['db'][$this->ENV]['database'];
     }
 
     /**
