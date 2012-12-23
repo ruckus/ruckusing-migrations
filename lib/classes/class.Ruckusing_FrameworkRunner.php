@@ -50,7 +50,7 @@ class Ruckusing_FrameworkRunner
                 die("\n\nCannot write to log directory: " . RUCKUSING_LOG_DIR . "\n\nCheck permissions.\n\n");
             } elseif (!is_dir(RUCKUSING_LOG_DIR)) {
                 //try and create the log directory
-                mkdir(RUCKUSING_LOG_DIR);
+                mkdir(RUCKUSING_LOG_DIR, 0755, true);
             }
             $log_name = sprintf("%s.log", $this->ENV);
             $this->logger = Ruckusing_Logger::instance(RUCKUSING_LOG_DIR . "/" . $log_name);

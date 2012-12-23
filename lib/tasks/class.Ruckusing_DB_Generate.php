@@ -52,7 +52,7 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
 
         if (!is_dir($migrations_dir)) {
             echo "\n\tMigrations directory (" . $migrations_dir . " doesn't exist, attempting to create.\n";
-            if (mkdir($migrations_dir) === FALSE) {
+            if (mkdir($migrations_dir, 0755, true) === FALSE) {
                 echo "\n\tUnable to create migrations directory at " . $migrations_dir . ", check permissions?\n";
             } else {
                 echo "\n\tCreated OK\n";
