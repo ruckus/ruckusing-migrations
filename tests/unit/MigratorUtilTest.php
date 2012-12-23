@@ -50,7 +50,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
         $framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test'));
         $this->migrations_dir = $framework->migrations_directory();
         if (!is_dir($this->migrations_dir)) {
-            mkdir($this->migrations_dir);
+            mkdir($this->migrations_dir, 0755, true);
         }
     }//setUp()
 
