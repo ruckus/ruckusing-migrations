@@ -35,22 +35,10 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
             echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
             echo "[db:schema]: \n";
 
-            if (!is_dir(RUCKUSING_DB_DIR)) {
-                echo "\n\tDB Schema directory (".RUCKUSING_DB_DIR." doesn't exist, attempting to create.\n";
-                if (mkdir(RUCKUSING_DB_DIR, 0755, true) === FALSE) {
-                    echo "\n\tUnable to create migrations directory at ".RUCKUSING_DB_DIR.", check permissions?\n";
-                } else {
-                    echo "\n\tCreated OK\n\n";
-                }
-            }
-
-            //check to make sure our destination directory is writable
-            if (!is_writable(RUCKUSING_DB_DIR)) {
-                throw new Exception("ERROR: migration directory '" . RUCKUSING_DB_DIR . "' is not writable by the current user. Check permissions and try again.\n");
-            }
+            $db_directory = $this->db_dir();
 
             //write to disk
-            $schema_file = RUCKUSING_DB_DIR . '/schema.txt';
+            $schema_file = $db_directory . '/schema.txt';
             $schema = $this->get_adapter()->schema($schema_file);
             echo "\tSchema written to: $schema_file\n\n";
             echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
@@ -58,5 +46,32 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
             throw $ex; //re-throw
         }
     }//execute
+
+
+    /**
+     * Get the db dir, check and create the db dir if it doesn't exists
+     *
+     * @return string
+     */
+    private function db_dir()
+    {
+        // create the db directory if it doesnt exist
+        $db_directory = $this->get_framework()->db_directory();
+        if (!is_dir($db_directory)) {
+            printf("\n\tDB Schema directory (%s doesn't exist, attempting to create.\n", $db_directory);
+            if (mkdir($db_directory, 0755, true) === FALSE) {
+                printf("\n\tUnable to create migrations directory at %s, check permissions?\n", $db_directory);
+            } else {
+                printf("\n\tCreated OK\n\n");
+            }
+        }
+
+        //check to make sure our destination directory is writable
+        if (!is_writable($db_directory)) {
+            throw new Exception("ERROR: DB Schema directory '" . $db_directory . "' is not writable by the current user. Check permissions and try again.\n");
+        }
+
+        return $db_directory;
+    }
 
 }//class
