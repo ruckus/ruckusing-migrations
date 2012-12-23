@@ -281,7 +281,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
         $migrations_directory = $this->get_framework()->migrations_directory();
         if (!is_dir($migrations_directory)) {
             printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $migrations_directory);
-            if (mkdir($migrations_directory) === FALSE) {
+            if (mkdir($migrations_directory, 0755, true) === FALSE) {
                 printf("\n\tUnable to create migrations directory at %s, check permissions?", $migrations_directory);
             } else {
                 printf("\n\tCreated OK");

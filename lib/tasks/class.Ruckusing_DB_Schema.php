@@ -37,7 +37,7 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
 
             if (!is_dir(RUCKUSING_DB_DIR)) {
                 echo "\n\tDB Schema directory (".RUCKUSING_DB_DIR." doesn't exist, attempting to create.\n";
-                if (mkdir(RUCKUSING_DB_DIR) === FALSE) {
+                if (mkdir(RUCKUSING_DB_DIR, 0755, true) === FALSE) {
                     echo "\n\tUnable to create migrations directory at ".RUCKUSING_DB_DIR.", check permissions?\n";
                 } else {
                     echo "\n\tCreated OK\n\n";
