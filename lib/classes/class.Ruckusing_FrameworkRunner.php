@@ -121,6 +121,16 @@ class Ruckusing_FrameworkRunner
     }
 
     /**
+     * Get the current db schema dir
+     *
+     * @return string
+     */
+    public function db_directory()
+    {
+        return RUCKUSING_DB_DIR . DIRECTORY_SEPARATOR . $this->config['db'][$this->ENV]['database'];
+    }
+
+    /**
      * Initialize the db
      */
     public function initialize_db()

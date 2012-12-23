@@ -1,6 +1,6 @@
 logs/*.log
 tests/logs/*.log
-tests/dummy/db/schema.txt
+tests/dummy/db/ruckusing_migrations_test/schema.txt
 .DS*
 .idea
 tmp/

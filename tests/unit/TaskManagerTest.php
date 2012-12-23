@@ -38,6 +38,12 @@ class TaskManagerTest extends PHPUnit_Framework_TestCase
         $this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T'));
 
+        $this->framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test'));
+        $this->db_dir = $this->framework->db_directory();
+        if (!is_dir($this->db_dir)) {
+            mkdir($this->db_dir, 0755, true);
+        }
+
     } //setUp()
 
     /**
@@ -46,7 +52,8 @@ class TaskManagerTest extends PHPUnit_Framework_TestCase
     public function test_db_schema_creation()
     {
         $schema = new Ruckusing_DB_Schema($this->adapter);
+        $schema->set_framework($this->framework);
         $schema->execute(array());
-        $this->assertEquals(true, file_exists(RUCKUSING_DB_DIR . '/schema.txt'));
+        $this->assertEquals(true, file_exists($this->db_dir . '/schema.txt'));
     }
 }
