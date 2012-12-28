@@ -2,7 +2,6 @@
 
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/config/config.inc.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 
 /**
@@ -32,12 +31,19 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
      */
     public function execute($args)
     {
-        $cargs = self::parse_args($_SERVER['argv']);
-        //input sanity check
-        if (!is_array($cargs) || !array_key_exists('name', $cargs)) {
-            self::print_help(true);
+        // Add support for old migration style
+        if (!is_array($args) || !array_key_exists('name', $args)) {
+            $cargs = self::parse_args($_SERVER['argv']);
+            //input sanity check
+            if (!is_array($cargs) || !array_key_exists('name', $cargs)) {
+                self::print_help(true);
+            }
+            $migration_name = $cargs['name'];
         }
-        $migration_name = $cargs['name'];
+        // Add NAME= parameter for db:generate
+        else {
+            $migration_name = $args['name'];
+        }
 
         //clear any filesystem stats cache
         clearstatcache();
