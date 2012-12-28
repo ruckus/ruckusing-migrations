@@ -175,8 +175,9 @@ class Ruckusing_FrameworkRunner
             $arg = $argv[$i];
             if (strpos($arg, '=') !== FALSE) {
                 list($key, $value) = explode("=", $arg);
+                $key = strtolower($key); // Allow both upper and lower case parameters
                 $options[$key] = $value;
-                if ($key == 'ENV') {
+                if ($key == 'env') {
                     $this->ENV = $value;
                 }
             }
