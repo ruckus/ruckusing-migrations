@@ -2,7 +2,6 @@
 
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/config/config.inc.php';
 
 /**
  * Implementation of the Ruckusing_DB_Setup.

@@ -2,7 +2,6 @@
 
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/config/config.inc.php';
 require_once RUCKUSING_BASE . '/lib/classes/Ruckusing_exceptions.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseMigration.php';
