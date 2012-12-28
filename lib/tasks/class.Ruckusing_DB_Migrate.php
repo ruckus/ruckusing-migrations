@@ -2,7 +2,6 @@
 
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
 require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/config/config.inc.php';
 require_once RUCKUSING_BASE . '/lib/classes/Ruckusing_exceptions.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseMigration.php';
@@ -61,8 +60,8 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
             $style = STYLE_REGULAR;
 
             //did the user specify an explicit version?
-            if (array_key_exists('VERSION', $this->task_args)) {
-                $target_version = trim($this->task_args['VERSION']);
+            if (array_key_exists('version', $this->task_args)) {
+                $target_version = trim($this->task_args['version']);
             }
 
             // did the user specify a relative offset, e.g. "-2" or "+3" ?

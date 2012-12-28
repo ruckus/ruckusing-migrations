@@ -12,6 +12,7 @@ if (file_exists($config_filename)) {
     $db_config = include RUCKUSING_BASE . '/config/database.inc.php';
 }
 
+require_once RUCKUSING_BASE . '/config/config.inc.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_FrameworkRunner.php';
 
