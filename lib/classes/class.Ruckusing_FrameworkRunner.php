@@ -32,6 +32,14 @@ class Ruckusing_FrameworkRunner
     );
 
     /**
+     * Flag to display help of task
+     * @see Ruckusing_FrameworkRunner::parse_args
+     *
+     * @var boolean
+     */
+    private $_showhelp = false;
+
+    /**
      * Creates an instance of Ruckusing_BaseAdapter
      *
      * @param array $config The current config
@@ -79,14 +87,28 @@ class Ruckusing_FrameworkRunner
     */
     public function execute()
     {
-        if ($this->task_mgr->has_task($this->cur_task_name)) {
-            $output = $this->task_mgr->execute($this, $this->cur_task_name, $this->task_options);
-            $this->display_results($output);
-            exit(0); // 0 is success
+        if (empty($this->cur_task_name)) {
+            if (isset($_SERVER["argv"][1])) {
+                echo sprintf("\n\tWrong Task format: %s\n", $_SERVER["argv"][1]);
+            }
+            echo $this->help();
         } else {
-            trigger_error(sprintf("Task not found: %s", $this->cur_task_name));
-            exit(1);
+            if ($this->task_mgr->has_task($this->cur_task_name)) {
+                if ($this->_showhelp) {
+                    echo $this->task_mgr->help($this->cur_task_name);
+                } else {
+                    $output = $this->task_mgr->execute($this, $this->cur_task_name, $this->task_options);
+                    //$this->display_results($output);
+
+                }
+                //return 0; // 0 is success
+            } else {
+                echo sprintf("\n\tTask not found: %s\n", $this->cur_task_name);
+                echo $this->help();
+                //return 1;
+            }
         }
+
         if ($this->logger) {
             $this->logger->close();
         }
@@ -166,15 +188,16 @@ class Ruckusing_FrameworkRunner
     {
         $num_args = count($argv);
 
-        if ($num_args >= 2) {
-            $this->cur_task_name = $argv[1];
-        }
-
         $options = array();
-        for ($i = 0; $i < $num_args;$i++) {
+        for ($i = 0; $i < $num_args; $i++) {
             $arg = $argv[$i];
-            if (strpos($arg, '=') !== FALSE) {
-                list($key, $value) = explode("=", $arg);
+            if (stripos($arg, ':') !== false) {
+                $this->cur_task_name = $arg;
+            } elseif ($arg == 'help') {
+                $this->_showhelp = true;
+                continue;
+            } elseif (stripos($arg, '=') !== false) {
+                list($key, $value) = explode('=', $arg);
                 $key = strtolower($key); // Allow both upper and lower case parameters
                 $options[$key] = $value;
                 if ($key == 'env') {
@@ -344,6 +367,51 @@ class Ruckusing_FrameworkRunner
             }
             require_once $adapter_dir . '/' . $f;
         }
+    }
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        // TODO: dynamically list all available tasks
+        $output =<<<USAGE
+
+\tUsage: php {$_SERVER['argv'][0]} <task> [help] [task parameters] [ENV=environment]
+
+\thelp: Display this message
+
+\tENV: The ENV command line parameter can be used to specify a different
+\tdatabase to run against, as specific in the configuration file
+\t(config/database.inc.php).
+\tBy default, ENV is "development"
+
+\ttask: In a nutshell, task names are pseudo-namespaced. The tasks that come
+\twith the framework are namespaced to "db" (e.g. the tasks are "db:migrate",
+\t"db:setup", etc).
+\tAll tasks available actually :
+
+\t- db:setup : A basic task to initialize your DB for migrations is
+\tavailable. One should always run this task when first starting out.
+
+\t- db:generate : A generic task which acts as a Generator for migrations.
+
+\t- db:migrate : The primary purpose of the framework is to run migrations,
+\tand the execution of migrations is all handled by just a regular ol' task.
+
+\t- db:version : It is always possible to ask the framework (really the DB)
+\twhat version it is currently at.
+
+\t- db:status : With this taks you'll get an overview of the already
+\texecuted migrations and which will be executed when running db:migrate
+
+\t- db:schema : It can be beneficial to get a dump of the DB in raw SQL
+\tformat which represents the current version.
+
+USAGE;
+        return $output;
     }
 
 }//class

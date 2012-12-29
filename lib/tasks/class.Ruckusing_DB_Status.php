@@ -58,4 +58,24 @@ class Ruckusing_DB_Status extends Ruckusing_Task implements Ruckusing_iTask
 
         echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
     }
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: db:status
+
+\tWith this task you'll get an overview of the already executed migrations and
+\twhich will be executed when running db:migrate.
+
+\tThis task does not take arguments.
+
+USAGE;
+        return $output;
+    }
 }
