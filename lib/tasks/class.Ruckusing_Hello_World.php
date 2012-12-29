@@ -28,4 +28,23 @@ class Ruckusing_Hello_World extends Ruckusing_Task implements Ruckusing_iTask
     {
         echo "\nHello, World\n";
     }
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: hello:world
+
+\tHello World.
+
+\tThis task does not take arguments.
+
+USAGE;
+        return $output;
+    }
 }

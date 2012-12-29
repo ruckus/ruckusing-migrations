@@ -33,10 +33,10 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
     {
         // Add support for old migration style
         if (!is_array($args) || !array_key_exists('name', $args)) {
-            $cargs = self::parse_args($_SERVER['argv']);
+            $cargs = $this->parse_args($_SERVER['argv']);
             //input sanity check
             if (!is_array($cargs) || !array_key_exists('name', $cargs)) {
-                self::print_help(true);
+                $this->print_help(true);
             }
             $migration_name = $cargs['name'];
         }
@@ -87,7 +87,7 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
      * @param  array $argv The current supplied command line arguments.
      * @return array ('name' => 'name')
      */
-    public static function parse_args($argv)
+    public function parse_args($argv)
     {
         foreach ($argv as $i => $arg) {
             if (strpos($arg, '=') !== FALSE) {
@@ -96,7 +96,7 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
         }
         $num_args = count($argv);
         if ($num_args < 3) {
-            self::print_help(true);
+            $this->print_help(true);
         }
         $migration_name = $argv[2];
 
@@ -109,11 +109,9 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
      *
      * @param boolean $exit should die after or not
      */
-    public static function print_help($exit = false)
+    public function print_help($exit = false)
     {
-        echo "\nusage: php main.php db:generate <migration name>\n\n";
-        echo "\tWhere <migration name> is a descriptive name of the migration, joined with underscores.\n";
-        echo "\tExamples: add_index_to_users | create_users_table | remove_pending_users\n\n";
+        echo $this->help();
         if ($exit) {
             die;
         }
@@ -154,6 +152,30 @@ class $klass extends Ruckusing_BaseMigration
 TPL;
 
         return $template;
+    }
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: db:generate <migration name>
+
+\tGenerator for migrations.
+
+\t<migration name> is a descriptive name of the migration,
+\tjoined with underscores. e.g.: add_index_to_users | create_users_table
+
+\tExample :
+
+\t\tphp {$_SERVER['argv'][0]} db:generate add_index_to_users
+
+USAGE;
+        return $output;
     }
 
 }

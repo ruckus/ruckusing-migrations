@@ -10,5 +10,19 @@
  */
 interface Ruckusing_iTask
 {
+    /**
+     * execute the task
+     *
+     * @param array $args Argument to the task
+     *
+     * @return string
+     */
     public function execute($args);
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help();
 }

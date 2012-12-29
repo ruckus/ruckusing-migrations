@@ -305,4 +305,42 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
         }
     }
 
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: db:migrate [VERSION]
+
+\tThe primary purpose of the framework is to run migrations, and the
+\texecution of migrations is all handled by just a regular ol' task.
+
+\tVERSION can be specified to go up (or down) to a specific
+\tversion, based on the current version. If not specified,
+\tall migrations greater than the current database version
+\twill be executed.
+
+\tExample A: The database is fresh and empty, assuming there
+\tare 5 actual migrations, but only the first two should be run.
+
+\t\tphp {$_SERVER['argv'][0]} db:migrate VERSION=20101006114707
+
+\tExample B: The current version of the DB is 20101006114707
+\tand we want to go down to 20100921114643
+
+\t\tphp {$_SERVER['argv'][0]} db:migrate VERSION=20100921114643
+
+\tExample C: You can also use relative number of revisions
+\t(positive migrate up, negative migrate down).
+
+\t\tphp {$_SERVER['argv'][0]} db:migrate VERSION=-2
+
+USAGE;
+        return $output;
+    }
+
 }//class

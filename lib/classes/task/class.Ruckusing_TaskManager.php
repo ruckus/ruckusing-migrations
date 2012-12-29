@@ -179,4 +179,17 @@ class Ruckusing_TaskManager
         return "";
     }
 
+    /**
+     * Get display help of task
+     *
+     * @param string $task_name The task name
+     *
+     * @return string
+     */
+    public function help($task_name)
+    {
+        $task = $this->get_task($task_name);
+        return $task->help();
+    }
+
 }

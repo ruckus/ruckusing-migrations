@@ -57,4 +57,24 @@ class Ruckusing_DB_Version extends Ruckusing_Task implements Ruckusing_iTask
         }
         echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
     }
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: db:version
+
+\tIt is always possible to ask the framework (really the DB) what version it is
+\tcurrently at.
+
+\tThis task does not take arguments.
+
+USAGE;
+        return $output;
+    }
 }
