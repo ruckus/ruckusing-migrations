@@ -44,4 +44,24 @@ class Ruckusing_DB_Setup extends Ruckusing_Task implements Ruckusing_iTask
         }
         echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
     }
+
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: db:setup
+
+\tA basic task to initialize your DB for migrations is available. One should
+\talways run this task when first starting out.
+
+\tThis task does not take arguments.
+
+USAGE;
+        return $output;
+    }
 }

@@ -73,4 +73,28 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
         return $db_directory;
     }
 
+    /**
+     * Return the usage of the task
+     *
+     * @return string
+     */
+    public function help()
+    {
+        $output =<<<USAGE
+
+\tTask: db:schema
+
+\tIt can be beneficial to get a dump of the DB in raw SQL format which represents
+\tthe current version.
+
+\tNote: This dump only contains the actual schema (e.g. the DML needed to
+\treconstruct the DB), but not any actual data.
+
+\tIn MySQL terms, this task would not be the same as running the mysqldump command
+\t(which by defaults does include any data in the tables).
+
+USAGE;
+        return $output;
+    }
+
 }//class
