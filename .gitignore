@@ -6,3 +6,4 @@ tests/dummy/db/ruckusing_migrations_test/schema.txt
 tmp/
 ruckusing.conf.php
 tests/dummy/db/schema.txt
+tests/dummy/db/db

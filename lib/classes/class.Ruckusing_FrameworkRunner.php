@@ -36,7 +36,7 @@ class Ruckusing_FrameworkRunner
      * @see Ruckusing_FrameworkRunner::parse_args
      *
      * @var boolean
-     */
+    */
     private $_showhelp = false;
 
     /**
@@ -44,7 +44,7 @@ class Ruckusing_FrameworkRunner
      *
      * @param array $config The current config
      * @param array $argv   the supplied command line arguments
-    */
+     */
     public function __construct($config, $argv)
     {
         try {
@@ -53,22 +53,21 @@ class Ruckusing_FrameworkRunner
             //parse arguments
             $this->parse_args($argv);
 
+            //set config variables
+            $this->config = $config;
+
+            //verify config array
+            $this->verify_db_config();
+
             //initialize logger
-            if (is_dir(RUCKUSING_LOG_DIR) && !is_writable(RUCKUSING_LOG_DIR)) {
-                die("\n\nCannot write to log directory: " . RUCKUSING_LOG_DIR . "\n\nCheck permissions.\n\n");
-            } elseif (!is_dir(RUCKUSING_LOG_DIR)) {
-                //try and create the log directory
-                mkdir(RUCKUSING_LOG_DIR, 0755, true);
-            }
-            $log_name = sprintf("%s.log", $this->ENV);
-            $this->logger = Ruckusing_Logger::instance(RUCKUSING_LOG_DIR . "/" . $log_name);
+            $this->initialize_logger();
 
             //include all adapters
             $this->load_all_adapters(RUCKUSING_BASE . '/lib/classes/adapters');
-            $this->config = $config;
             $this->initialize_db();
             $this->init_tasks();
         } catch (Exception $e) {
+            trigger_error($e->getMessage());
         }
     }//constructor
 
@@ -149,7 +148,7 @@ class Ruckusing_FrameworkRunner
      */
     public function db_directory()
     {
-        return RUCKUSING_DB_DIR . DIRECTORY_SEPARATOR . $this->config['db'][$this->ENV]['database'];
+        return $this->config['db_dir'] . DIRECTORY_SEPARATOR . $this->config['db'][$this->ENV]['database'];
     }
 
     /**
@@ -158,7 +157,6 @@ class Ruckusing_FrameworkRunner
     public function initialize_db()
     {
         try {
-            $this->verify_db_config();
             $db = $this->config['db'][$this->ENV];
             $adapter = $this->get_adapter_class($db['type']);
 
@@ -170,6 +168,21 @@ class Ruckusing_FrameworkRunner
         } catch (Exception $ex) {
             trigger_error(sprintf("\n%s\n",$ex->getMessage()));
         }
+    }
+
+    /**
+     * Initialize the logger
+     */
+    public function initialize_logger()
+    {
+        if (is_dir($this->config['log_dir']) && !is_writable($this->config['log_dir'])) {
+            die("\n\nCannot write to log directory: " . $this->config['log_dir'] . "\n\nCheck permissions.\n\n");
+        } elseif (!is_dir($this->config['log_dir'])) {
+            //try and create the log directory
+            mkdir($this->config['log_dir'], 0755, true);
+        }
+        $log_name = sprintf("%s.log", $this->ENV);
+        $this->logger = Ruckusing_Logger::instance($this->config['log_dir'] . "/" . $log_name);
     }
 
     /**
@@ -299,24 +312,33 @@ class Ruckusing_FrameworkRunner
     private function verify_db_config()
     {
         if ( !array_key_exists($this->ENV, $this->config['db'])) {
-            throw new Exception(sprintf("Error: '%s' DB is not configured",$this->ENV));
+            throw new Exception(sprintf("Error: '%s' DB is not configured", $this->ENV));
         }
         $env = $this->ENV;
         $this->active_db_config = $this->config['db'][$this->ENV];
         if (!array_key_exists("type",$this->active_db_config)) {
-            throw new Exception(sprintf("Error: 'type' is not set for '%s' DB",$this->ENV));
+            throw new Exception(sprintf("Error: 'type' is not set for '%s' DB", $this->ENV));
         }
         if (!array_key_exists("host",$this->active_db_config)) {
-            throw new Exception(sprintf("Error: 'host' is not set for '%s' DB",$this->ENV));
+            throw new Exception(sprintf("Error: 'host' is not set for '%s' DB", $this->ENV));
         }
         if (!array_key_exists("database",$this->active_db_config)) {
-            throw new Exception(sprintf("Error: 'database' is not set for '%s' DB",$this->ENV));
+            throw new Exception(sprintf("Error: 'database' is not set for '%s' DB", $this->ENV));
         }
         if (!array_key_exists("user",$this->active_db_config)) {
-            throw new Exception(sprintf("Error: 'user' is not set for '%s' DB",$this->ENV));
+            throw new Exception(sprintf("Error: 'user' is not set for '%s' DB", $this->ENV));
         }
         if (!array_key_exists("password",$this->active_db_config)) {
-            throw new Exception(sprintf("Error: 'password' is not set for '%s' DB",$this->ENV));
+            throw new Exception(sprintf("Error: 'password' is not set for '%s' DB", $this->ENV));
+        }
+        if (empty($this->config['migrations_dir'])) {
+            throw new Exception("Error: 'migrations_dir' is not set in config.");
+        }
+        if (empty($this->config['db_dir'])) {
+            throw new Exception("Error: 'db_dir' is not set in config.");
+        }
+        if (empty($this->config['log_dir'])) {
+            throw new Exception("Error: 'log_dir' is not set in config.");
         }
     }//verify_db_config
 
