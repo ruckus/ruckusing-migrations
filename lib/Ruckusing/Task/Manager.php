@@ -1,34 +1,57 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Task
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
 
-define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/tasks');
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Naming.php';
+
+define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/Tasks');
 
 /**
- * Implementation of Ruckusing_TaskManager
+ * Ruckusing_Task_Manager
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing_Task
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_TaskManager
+class Ruckusing_Task_Manager
 {
+    /**
+     * adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
     private $adapter;
+
+    /**
+     * tasks
+     *
+     * @var array
+     */
     private $tasks = array();
 
     /**
-     * Creates an instance of Ruckusing_TaskManager
+     * Creates an instance of Ruckusing_Task_Manager
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adpater_Base $adapter The current adapter being used
+     *
+     * @return Ruckusing_Task_Manager
      */
     public function __construct($adapter)
     {
         $this->set_adapter($adapter);
         $this->load_all_tasks(RUCKUSING_TASK_DIR);
-    }//__construct
+    }
 
     /**
-     * Creates an instance of Ruckusing_TaskManager
+     * Creates an instance of Ruckusing_Task_Manager
      *
      * @param object $adapter The current adapter being used
      */
@@ -82,7 +105,7 @@ class Ruckusing_TaskManager
 
     /**
      * Register a new task name under the specified key.
-     * $obj is a class which implements the iTask interface
+     * $obj is a class which implements the ITask interface
      * and has an execute() method defined.
      *
      * @param string $key the task name
@@ -133,18 +156,18 @@ class Ruckusing_TaskManager
             return false;
         }
         $files = scandir($task_dir);
-        $regex = '/^class\.(\w+)\.php$/';
+        $regex = '/^(\w+)\.php$/';
         foreach ($files as $f) {
             //skip over invalid files
-            if ($f == '.' || $f == ".." || !preg_match($regex,$f, $matches) ) {
+            if ($f == '.' || $f == ".." || !preg_match($regex, $f, $matches) ) {
                 continue;
             }
             require_once $task_dir . '/' . $f;
-            $task_name = Ruckusing_NamingUtil::task_from_class_name($matches[1]);
-            $klass = Ruckusing_NamingUtil::class_from_file_name($f);
+            $task_name = Ruckusing_Util_Naming::task_from_class_name($matches[1]);
+            $klass = Ruckusing_Util_Naming::class_from_file_name($f);
             $this->register_task($task_name, new $klass($this->get_adapter()));
         }
-    }//require_tasks
+    }
 
     /**
      * Execute the supplied Task object
@@ -189,6 +212,7 @@ class Ruckusing_TaskManager
     public function help($task_name)
     {
         $task = $this->get_task($task_name);
+
         return $task->help();
     }
 

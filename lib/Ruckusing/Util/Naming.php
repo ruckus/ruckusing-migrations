@@ -1,7 +1,16 @@
 <?php
 
 /**
- * Implementation of Ruckusing_NamingUtil
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Util
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
+/**
+ * Ruckusing_Util_Naming
  * This utility class maps class names between their task names, back and forth.
  *
  * This framework relies on conventions which allow us to make certain
@@ -14,12 +23,18 @@
  *
  * Using this convention one can easily go back and forth between task names and PHP Class names.
  *
- * @category Ruckusing_Utils
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing_Util
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_NamingUtil
+class Ruckusing_Util_Naming
 {
+    /**
+     * prefix of class name
+     *
+     * @var string
+     */
     const class_ns_prefix = 'Ruckusing_';
 
     /**
@@ -70,7 +85,7 @@ class Ruckusing_NamingUtil
         if (is_file($file_name)) {
             $file_name = basename($file_name);
         }
-        $regex = '/^class\.(\w+)\.php$/';
+        $regex = '/^(\w+)\.php$/';
         if (preg_match($regex, $file_name, $matches)) {
             if (count($matches) == 2) {
                 return $matches[1];

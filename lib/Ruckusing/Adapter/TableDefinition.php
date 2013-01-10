@@ -1,21 +1,44 @@
 <?php
 
 /**
- * Implementation of Ruckusing_TableDefinition
+ * Ruckusing
  *
- * @category Ruckusing_Classes
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category  Ruckusing
+ * @package   Ruckusing_Adapter
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_TableDefinition
+
+/**
+ * Ruckusing_Adapter_TableDefinition
+ *
+ * @category Ruckusing
+ * @package  Ruckusing_Adapter
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+class Ruckusing_Adapter_TableDefinition
 {
+    /**
+     * columns
+     *
+     * @var array
+     */
     private $columns = array();
+
+    /**
+     * adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
     private $adapter;
 
     /**
-     * Creates an instance of Ruckusing_TableDefinition
+     * Creates an instance of Ruckusing_Adapter_TableDefinition
      *
-     * @param object $adapter The current adapter
+     * @param Ruckusing_Adapter_Base $adapter the current adapter
+     *
+     * @return Ruckusing_Adapter_TableDefinition
      */
     public function __construct($adapter)
     {
@@ -27,7 +50,7 @@ class Ruckusing_TableDefinition
      * table definition.
      *
      * This method is lax enough that it can take either a string column name
-     * or a Ruckusing_ColumnDefinition object.
+     * or a Ruckusing_Adapters_ColumnDefinition object.
      *
      * @param string $column the name of the column
      *
@@ -41,7 +64,7 @@ class Ruckusing_TableDefinition
             if (is_string($column) && $col->name == $column) {
                 return true;
             }
-            if (($column instanceof Ruckusing_ColumnDefinition) && $col->name == $column->name) {
+            if (($column instanceof Ruckusing_Adapter_ColumnDefinition) && $col->name == $column->name) {
                 return true;
             }
         }

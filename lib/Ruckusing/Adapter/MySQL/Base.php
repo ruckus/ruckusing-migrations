@@ -1,35 +1,78 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseAdapter.php';
-require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_iAdapter.php';
-require_once RUCKUSING_BASE . '/lib/classes/adapters/class.Ruckusing_MySQLTableDefinition.php';
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
-require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_TableDefinition.php';
-require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_ColumnDefinition.php';
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Adapter
+ * @subpackage MySQL
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/Base.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/Interface.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/MySQL/TableDefinition.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Naming.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/TableDefinition.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/ColumnDefinition.php';
 
 // max length of an identifier like a column or index name
 define('MYSQL_MAX_IDENTIFIER_LENGTH', 64);
 
 /**
- * Implementation of Ruckusing_MySQLAdapter
+ * Ruckusing_Adapter_MySQL_Base
  *
- * @category Ruckusing_Adapters
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing_Adapter
+ * @subpackage Mysql
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
 */
-class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_iAdapter
+class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruckusing_Adapter_Interface
 {
+    /**
+     * Name of adapter
+     *
+     * @var string
+     */
     private $name = "MySQL";
+
+    /**
+     * tables
+     *
+     * @var array
+     */
     private $tables = array();
+
+    /**
+     * tables_loaded
+     *
+     * @var boolean
+     */
     private $tables_loaded = false;
+
+    /**
+     * version
+     *
+     * @var string
+     */
     private $version = '1.0';
+
+    /**
+     * Indicate if is in transaction
+     *
+     * @var boolean
+     */
     private $in_trx = false;
 
     /**
-     * Creates an instance of Ruckusing_MySQLAdapter
+     * Creates an instance of Ruckusing_Adapter_MySQL_Base
      *
-     * @param object $dsn    The current dsn being used
-     * @param object $logger the current logger
+     * @param array                 $dsn    The current dsn
+     * @param Ruckusing_Util_Logger $logger the current logger
+     *
+     * @return Ruckusing_Adapter_MySQL_Base
      */
     public function __construct($dsn, $logger)
     {
@@ -162,7 +205,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
      */
     public function column_definition($column_name, $type, $options = null)
     {
-        $col = new Ruckusing_ColumnDefinition($this, $column_name, $type, $options);
+        $col = new Ruckusing_Adapter_ColumnDefinition($this, $column_name, $type, $options);
 
         return $col->__toString();
     }//column_definition
@@ -408,7 +451,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
      */
     public function create_table($table_name, $options = array())
     {
-        return new Ruckusing_MySQLTableDefinition($this, $table_name, $options);
+        return new Ruckusing_Adapter_MySQL_TableDefinition($this, $table_name, $options);
     }
 
     /**
@@ -646,7 +689,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
         if (is_array($options) && array_key_exists('name', $options)) {
             $index_name = $options['name'];
         } else {
-            $index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
+            $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
         }
 
         if (strlen($index_name) > MYSQL_MAX_IDENTIFIER_LENGTH) {
@@ -695,7 +738,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
         if (is_array($options) && array_key_exists('name', $options)) {
             $index_name = $options['name'];
         } else {
-            $index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
+            $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
         }
         $sql = sprintf("DROP INDEX %s ON %s", $this->identifier($index_name), $this->identifier($table_name));
 
@@ -723,7 +766,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
         if (is_array($options) && array_key_exists('name', $options)) {
             $index_name = $options['name'];
         } else {
-            $index_name = Ruckusing_NamingUtil::index_name($table_name, $column_name);
+            $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
         }
         $indexes = $this->indexes($table_name);
         foreach ($indexes as $idx) {
@@ -951,7 +994,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
      */
     public function __toString()
     {
-        return "Ruckusing_MySQLAdapter, version " . $this->version;
+        return "Ruckusing_Adapters_MySQL_Adapter, version " . $this->version;
     }
 
     //-----------------------------------

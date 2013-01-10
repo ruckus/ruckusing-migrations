@@ -1,21 +1,43 @@
 <?php
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Util
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
 
 /**
- * Implementation of Ruckusing_MigratorUtil
+ * Implementation of Ruckusing_Util_Migrator
  *
- * @category Ruckusing_Utils
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing_Util
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_MigratorUtil
+class Ruckusing_Util_Migrator
 {
+    /**
+     * adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
     private $adapter = null;
+
+    /**
+     * migrations
+     *
+     * @var array
+     */
     private $migrations = array();
 
     /**
-     * Creates an instance of Ruckusing_MigratorUtil
+     * Creates an instance of Ruckusing_Util_Migrator
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     *
+     * @return Ruckusing_Util_Migrator
      */
     public function __construct($adapter)
     {
@@ -169,7 +191,7 @@ class Ruckusing_MigratorUtil
     {
         $valid_files = array();
         if (!is_dir($directory)) {
-            die("\nRuckusing_MigratorUtil - ({$directory}) is not a directory.\n");
+            die("\nRuckusing_Util_Migrator - ({$directory}) is not a directory.\n");
         }
         $files = scandir($directory);
         $file_cnt = count($files);
@@ -178,10 +200,10 @@ class Ruckusing_MigratorUtil
                 if (preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
                     if (count($matches) == 3) {
                         $valid_files[] = $files[$i];
-                    }//if-matches
-                }//if-preg-match
-            }//for
-        }//if-file-cnt
+                    }
+                }
+            }
+        }
         sort($valid_files); //sorts in place
         if ($direction == 'down') {
             $valid_files = array_reverse($valid_files);

@@ -1,36 +1,103 @@
 <?php
 
 /**
- * Implementation of Ruckusing_MySQLTableDefinition
+ * Ruckusing
  *
- * @category Ruckusing_Adapters
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category  Ruckusing
+ * @package   Ruckusing_Adapter
+ * @subpackage   PgSQL
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_MySQLTableDefinition
+
+/**
+ * Ruckusing_Adapter_PgSQL_TableDefinition
+ *
+ * @category Ruckusing
+ * @package  Ruckusing_Adapter
+ * @subpackage   PgSQL
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+class Ruckusing_Adapter_PgSQL_TableDefinition extends Ruckusing_Adapter_TableDefinition
 {
+   /**
+     * adapter PgSQL
+     *
+     * @var Phigrate_Adapter_Pgsql_Adapter
+     */
     private $adapter;
+
+    /**
+     * Name
+     *
+     * @var string
+     */
     private $name;
+
+    /**
+     * options
+     *
+     * @var array
+     */
     private $options;
+
+    /**
+     * sql
+     *
+     * @var string
+     */
     private $sql = "";
+
+    /**
+     * initialized
+     *
+     * @var boolean
+     */
     private $initialized = false;
+
+    /**
+     * Columns
+     *
+     * @var array
+     */
     private $columns = array();
+
+    /**
+     * Table definition
+     *
+     * @var array
+     */
     private $table_def;
+
+    /**
+     * primary keys
+     *
+     * @var array
+     */
     private $primary_keys = array();
+
+    /**
+     * auto generate id
+     *
+     * @var boolean
+     */
     private $auto_generate_id = true;
 
     /**
-     * Creates an instance of Ruckusing_MySQLAdapter
+     * Creates an instance of Ruckusing_PostgresTableDefinition
      *
-     * @param object $adapter the current adapter
-     * @param string $name    the table name
-     * @param array  $options
+     * @param Ruckusing_Adapter_Base $adapter the current adapter
+     * @param string                 $name    the table name
+     * @param array                  $options
+     *
+     * @return Ruckusing_Adapter_MySQL_TableDefinition
      */
     public function __construct($adapter, $name, $options = array())
     {
         //sanity check
-        if ( !($adapter instanceof Ruckusing_BaseAdapter)) {
-            throw new Ruckusing_MissingAdapterException("Invalid MySQL Adapter instance.");
+        if ( !($adapter instanceof Ruckusing_Adapter_Base)) {
+            throw new Ruckusing_MissingAdapterException("Invalid Postgres Adapter instance.");
         }
         if (!$name) {
             throw new Ruckusing_ArgumentException("Invalid 'name' parameter");
@@ -40,28 +107,19 @@ class Ruckusing_MySQLTableDefinition
         $this->name = $name;
         $this->options = $options;
         $this->init_sql($name, $options);
-        $this->table_def = new Ruckusing_TableDefinition($this->adapter, $this->options);
+        $this->table_def = new Ruckusing_Adapter_TableDefinition($this->adapter, $this->options);
 
         if (array_key_exists('id', $options)) {
             if (is_bool($options['id']) && $options['id'] == false) {
                 $this->auto_generate_id = false;
             }
-            //if its a string then we want to auto-generate an integer-based
-            //primary key with this name
+            //if its a string then we want to auto-generate an integer-based primary key with this name
             if (is_string($options['id'])) {
                 $this->auto_generate_id = true;
                 $this->primary_keys[] = $options['id'];
             }
         }
-    }//__construct
-
-    /*
-     public function primary_key($name, $auto_increment)
-     {
-    $options = array('auto_increment' => $auto_increment);
-    $this->column($name, "primary_key", $options);
     }
-    */
 
     /**
      * Create a column
@@ -72,8 +130,7 @@ class Ruckusing_MySQLTableDefinition
      */
     public function column($column_name, $type, $options = array())
     {
-        //if there is already a column by the same name then silently fail
-        //and continue
+        //if there is already a column by the same name then silently fail and continue
         if ($this->table_def->included($column_name) == true) {
             return;
         }
@@ -85,14 +142,15 @@ class Ruckusing_MySQLTableDefinition
                 $this->primary_keys[] = $column_name;
             }
         }
-
-        if (array_key_exists('auto_increment', $options)) {
-            if ($options['auto_increment'] == true) {
-                $column_options['auto_increment'] = true;
-            }
+        /*
+         if (array_key_exists('auto_increment', $options)) {
+        if ($options['auto_increment'] == true) {
+        $column_options['auto_increment'] = true;
         }
+        }
+        */
         $column_options = array_merge($column_options, $options);
-        $column = new Ruckusing_ColumnDefinition($this->adapter, $column_name, $type, $column_options);
+        $column = new Ruckusing_Adapter_ColumnDefinition($this->adapter, $column_name, $type, $column_options);
 
         $this->columns[] = $column;
     }//column
@@ -141,9 +199,7 @@ class Ruckusing_MySQLTableDefinition
 
         if ($this->auto_generate_id === true) {
             $this->primary_keys[] = 'id';
-            $primary_id = new Ruckusing_ColumnDefinition($this->adapter, 'id', 'integer',
-                            array('unsigned' => true, 'null' => false, 'auto_increment' => true));
-
+            $primary_id = new Ruckusing_Adapter_ColumnDefinition($this->adapter, 'id', 'primary_key');
             $create_table_sql .= $primary_id->to_sql() . ",\n";
         }
 
@@ -155,7 +211,7 @@ class Ruckusing_MySQLTableDefinition
         } else {
             return $this->adapter->execute_ddl($create_table_sql);
         }
-    }//finish
+    }
 
     /**
      * get all columns
@@ -192,12 +248,9 @@ class Ruckusing_MySQLTableDefinition
             }
         }
         $temp = "";
-        if (array_key_exists('temporary', $options)) {
-            $temp = " TEMPORARY";
-        }
         $create_sql = sprintf("CREATE%s TABLE ", $temp);
         $create_sql .= sprintf("%s (\n", $this->adapter->identifier($name));
         $this->sql .= $create_sql;
         $this->initialized = true;
-    }//init_sql
+    }
 }

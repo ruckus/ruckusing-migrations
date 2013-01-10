@@ -1,7 +1,7 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 
 /**
  * Implementation of the Ruckusing_DB_Schema which is a generic task which dumps the schema of the DB
@@ -11,7 +11,7 @@ require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
  */
-class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
+class Ruckusing_DB_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
      * Creates an instance of Ruckusing_DB_Schema
@@ -45,7 +45,6 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
             throw $ex; //re-throw
         }
     }//execute
-
 
     /**
      * Get the db dir, check and create the db dir if it doesn't exists
@@ -94,6 +93,7 @@ class Ruckusing_DB_Schema extends Ruckusing_Task implements Ruckusing_iTask
 \t(which by defaults does include any data in the tables).
 
 USAGE;
+
         return $output;
     }
 

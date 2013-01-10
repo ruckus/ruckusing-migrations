@@ -1,18 +1,18 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
 
 /**
  * Implementation of the Ruckusing_DB_Generate generic task which acts as a Generator for migrations.
  *
  * @category Ruckusing_Tasks
  * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
- * @author   (c) Salimane Adjao Moustapha <me@salimane.com>
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @author   Salimane Adjao Moustapha <me@salimane.com>
  */
-class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
+class Ruckusing_DB_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
      * Creates an instance of Ruckusing_DB_Generate
@@ -49,8 +49,8 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
         clearstatcache();
 
         //generate a complete migration file
-        $next_version = Ruckusing_MigratorUtil::generate_timestamp();
-        $class = Ruckusing_NamingUtil::camelcase($migration_name);
+        $next_version = Ruckusing_Util_Migrator::generate_timestamp();
+        $class = Ruckusing_Util_Naming::camelcase($migration_name);
         $file_name = $next_version . '_' . $class . '.php';
 
         $framework = $this->get_framework();
@@ -138,7 +138,7 @@ class Ruckusing_DB_Generate extends Ruckusing_Task implements Ruckusing_iTask
         $template = <<<TPL
 <?php
 
-class $klass extends Ruckusing_BaseMigration
+class $klass extends Ruckusing_Migration_Base
 {
     public function up()
     {
@@ -175,6 +175,7 @@ TPL;
 \t\tphp {$_SERVER['argv'][0]} db:generate add_index_to_users
 
 USAGE;
+
         return $output;
     }
 

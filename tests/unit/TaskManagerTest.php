@@ -5,9 +5,9 @@ if (!defined('BASE')) {
 }
 
 require_once BASE  . '/test_helper.php';
-require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/task/class.Ruckusing_TaskManager.php';
-require_once RUCKUSING_BASE  . '/lib/tasks/class.Ruckusing_DB_Schema.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Manager.php';
+require_once RUCKUSING_BASE  . '/lib/Tasks/Ruckusing_DB_Schema.php';
 
 /**
  * Implementation of TaskManagerTest.
@@ -33,9 +33,9 @@ class TaskManagerTest extends PHPUnit_Framework_TestCase
 
         $test_db = $ruckusing_config['db']['mysql_test'];
         //setup our log
-        $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
+        $logger = Ruckusing_Util_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
-        $this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
+        $this->adapter = new Ruckusing_Adapter_MySQL_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T'));
 
         $this->framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test'));

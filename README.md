@@ -51,7 +51,7 @@ Created migration: 20121112163653_CreateUsersTable.php
 The generated file is in the `migrations` directory. Open up that file and you'll see it looks like:
 
 ```
-class CreateUsersTable extends Ruckusing_BaseMigration {
+class CreateUsersTable extends Ruckusing_Migrations_Base {
 
 	public function up() {
 
