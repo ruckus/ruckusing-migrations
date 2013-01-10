@@ -5,9 +5,9 @@
  *
  * @category Ruckusing_Tasks
  * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
  */
-class Ruckusing_Hello_World extends Ruckusing_Task implements Ruckusing_iTask
+class Ruckusing_Hello_World extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
      * Creates an instance of Ruckusing_DB_Migrate
@@ -45,6 +45,7 @@ class Ruckusing_Hello_World extends Ruckusing_Task implements Ruckusing_iTask
 \tThis task does not take arguments.
 
 USAGE;
+
         return $output;
     }
 }

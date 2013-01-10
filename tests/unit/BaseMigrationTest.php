@@ -5,11 +5,11 @@ if (!defined('BASE')) {
 }
 
 require_once BASE  . '/test_helper.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/Ruckusing_exceptions.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exceptions.php';
 
 /**
  * Implementation of BaseMigrationTest.
@@ -37,9 +37,9 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase
         $test_db = $ruckusing_config['db']['mysql_test'];
 
         //setup our log
-        $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
+        $logger = Ruckusing_Util_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
-        $this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
+        $this->adapter = new Ruckusing_Adapter_MySQL_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );
     }//setUp()
 
@@ -65,7 +65,7 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase
     {
         //create it
         $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
-        $base = new Ruckusing_BaseMigration();
+        $base = new Ruckusing_Migration_Base();
         $base->set_adapter($this->adapter);
         $base->add_index("users", "name", array('name' => 'my_special_index'));
 

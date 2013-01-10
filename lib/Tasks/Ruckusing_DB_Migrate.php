@@ -1,10 +1,10 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/lib/classes/Ruckusing_exceptions.php';
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
-require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseMigration.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Exceptions.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Migration/Base.php';
 
 define('STYLE_REGULAR', 1);
 define('STYLE_OFFSET', 2);
@@ -18,7 +18,7 @@ define('STYLE_OFFSET', 2);
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
 */
-class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
+class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     private $migrator_util = null;
     private $task_args = array();
@@ -35,7 +35,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
     public function __construct($adapter)
     {
         parent::__construct($adapter);
-        $this->migrator_util = new Ruckusing_MigratorUtil($adapter);
+        $this->migrator_util = new Ruckusing_Util_Migrator($adapter);
     }
 
     /**
@@ -199,7 +199,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
             $full_path = $this->get_framework()->migrations_directory()  . '/' . $file['file'];
             if (is_file($full_path) && is_readable($full_path) ) {
                 require_once $full_path;
-                $klass = Ruckusing_NamingUtil::class_from_migration_file($file['file']);
+                $klass = Ruckusing_Util_Naming::class_from_migration_file($file['file']);
                 $obj = new $klass();
                 $refl = new ReflectionObject($obj);
                 if ($refl->hasMethod($target_method)) {
@@ -340,6 +340,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task implements Ruckusing_iTask
 \t\tphp {$_SERVER['argv'][0]} db:migrate VERSION=-2
 
 USAGE;
+
         return $output;
     }
 

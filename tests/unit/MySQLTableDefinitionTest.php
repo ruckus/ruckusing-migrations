@@ -5,11 +5,11 @@ if (!defined('BASE')) {
 }
 
 require_once BASE  . '/test_helper.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLTableDefinition.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/TableDefinition.php';
 
 /**
  * Implementation of MySQLTableDefinitionTest
@@ -35,9 +35,9 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         $test_db = $ruckusing_config['db']['mysql_test'];
         //setup our log
-        $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
+        $logger = Ruckusing_Util_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
-        $this->adapter = new Ruckusing_MySQLAdapter($test_db, $logger);
+        $this->adapter = new Ruckusing_Adapter_MySQL_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );
     }//setUp()
 
@@ -94,19 +94,19 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition()
     {
-        $c = new Ruckusing_ColumnDefinition($this->adapter, "last_name", "string", array('limit' => 32));
+        $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "last_name", "string", array('limit' => 32));
         $this->assertEquals("`last_name` varchar(32)", trim($c));
 
-        $c = new Ruckusing_ColumnDefinition($this->adapter, "last_name", "string", array('null' => false));
+        $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "last_name", "string", array('null' => false));
         $this->assertEquals("`last_name` varchar(255) NOT NULL", trim($c));
 
-        $c = new Ruckusing_ColumnDefinition($this->adapter, "last_name", "string", array('default' => 'abc', 'null' => false));
+        $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "last_name", "string", array('default' => 'abc', 'null' => false));
         $this->assertEquals("`last_name` varchar(255) DEFAULT 'abc' NOT NULL", trim($c));
 
-        $c = new Ruckusing_ColumnDefinition($this->adapter, "created_at", "datetime", array('null' => false));
+        $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "created_at", "datetime", array('null' => false));
         $this->assertEquals("`created_at` datetime NOT NULL", trim($c));
 
-        $c = new Ruckusing_ColumnDefinition($this->adapter, "id", "integer", array("primary_key" => true, "unsigned" => true));
+        $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "id", "integer", array("primary_key" => true, "unsigned" => true));
         $this->assertEquals("`id` int(11) UNSIGNED", trim($c));
     }//test_column_definition
 
@@ -115,7 +115,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition_with_limit()
     {
-        $bm = new Ruckusing_BaseMigration();
+        $bm = new Ruckusing_Migration_Base();
         $bm->set_adapter($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
@@ -133,7 +133,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition_with_not_null()
     {
-        $bm = new Ruckusing_BaseMigration();
+        $bm = new Ruckusing_Migration_Base();
         $bm->set_adapter($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
@@ -152,7 +152,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition_with_default_value()
     {
-        $bm = new Ruckusing_BaseMigration();
+        $bm = new Ruckusing_Migration_Base();
         $bm->set_adapter($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
@@ -171,7 +171,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_multiple_primary_keys()
     {
-        $bm = new Ruckusing_BaseMigration();
+        $bm = new Ruckusing_Migration_Base();
         $bm->set_adapter($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
@@ -196,7 +196,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_custom_primary_key_with_auto_increment()
     {
-        $bm = new Ruckusing_BaseMigration();
+        $bm = new Ruckusing_Migration_Base();
         $bm->set_adapter($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
@@ -219,7 +219,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_generate_table_without_primary_key()
     {
-        $t1 = new Ruckusing_MySQLTableDefinition($this->adapter, "users", array('id' => false, 'options' => 'Engine=InnoDB') );
+        $t1 = new Ruckusing_Adapter_MySQL_TableDefinition($this->adapter, "users", array('id' => false, 'options' => 'Engine=InnoDB') );
         $t1->column("first_name", "string");
         $t1->column("last_name", "string", array('limit' => 32));
         $actual = $t1->finish();

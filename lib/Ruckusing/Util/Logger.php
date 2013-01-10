@@ -1,26 +1,42 @@
 <?php
 
 /**
- * Implementation of Ruckusing_Logger
+ * Ruckusing
  *
- * @category Ruckusing_Utils
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category  Ruckusing
+ * @package   Ruckusing_Util
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_Logger
+
+/**
+ * Ruckusing_Util_Logger
+ *
+ * @category Ruckusing
+ * @package  Ruckusing_Util
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+class Ruckusing_Util_Logger
 {
+    /**
+     * the log file
+     *
+     * @var string
+     */
     private $file = '';
 
     /**
-     * Creates an instance of Ruckusing_Logger
+     * Creates an instance of Ruckusing_Util_Logger
      *
      * @param string $file the path to log to
+     *
+     * @return Ruckusing_Util_Logger
      */
     public function __construct($file)
     {
         $this->file = $file;
         $this->fp = fopen($file, "a+");
-        //register_shutdown_function(array("Logger", "close_log"));
     }
 
     /**
@@ -36,7 +52,7 @@ class Ruckusing_Logger
         if ($instance !== NULL) {
             return $instance;
         }
-        $instance = new Ruckusing_Logger($logfile);
+        $instance = new Ruckusing_Util_Logger($logfile);
 
         return $instance;
     }
@@ -68,4 +84,4 @@ class Ruckusing_Logger
         }
     }
 
-}//class()
+}

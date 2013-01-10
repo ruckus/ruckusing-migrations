@@ -12,4 +12,4 @@ if (!defined('RUCKUSING_TS_SCHEMA_TBL_NAME')) {
     define('RUCKUSING_TS_SCHEMA_TBL_NAME', 'schema_migrations');
 }
 
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Logger.php';

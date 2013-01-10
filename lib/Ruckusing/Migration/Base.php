@@ -1,22 +1,37 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_iAdapter.php';
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Migration
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/Interface.php';
 
 /**
- * Implementation of Ruckusing_BaseMigration.
+ * Ruckusing_Migration_Base
  *
- * @category Ruckusing_Classes
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing_Migration
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_BaseMigration
+class Ruckusing_Migration_Base
 {
+    /**
+     * adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
     private $adapter;
 
     /**
      * Set an adapter
      *
-     * @param object $a the adapater
+     * @param object $a the adapter to set
      */
     public function set_adapter($a)
     {
@@ -242,4 +257,17 @@ class Ruckusing_BaseMigration
         return $this->adapter->quote_string($str);
     }
 
-}//Ruckusing_BaseMigration
+}
+
+/**
+ * Implementation of Ruckusing_BaseMigration.
+ * Fix for backward compatibility, take care of old migrations files
+ * before switch to new structure
+ *
+ * @category Ruckusing_Classes
+ * @package  Ruckusing_Migrations
+ * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ */
+class Ruckusing_BaseMigration extends Ruckusing_Migration_Base
+{
+}

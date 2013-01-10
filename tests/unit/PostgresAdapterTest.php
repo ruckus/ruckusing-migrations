@@ -5,11 +5,11 @@ if (!defined('BASE')) {
 }
 
 require_once BASE  . '/test_helper.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_BaseMigration.php';
-require_once RUCKUSING_BASE  . '/lib/classes/class.Ruckusing_iAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_PostgresAdapter.php';
-require_once RUCKUSING_BASE  . '/lib/classes/Ruckusing_exceptions.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/PgSQL/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exceptions.php';
 
 /**
  * Implementation of PostgresAdapterTest.
@@ -36,9 +36,9 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
         $test_db = $ruckusing_config['db']['pg_test'];
 
         //setup our log
-        $logger = Ruckusing_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
+        $logger = Ruckusing_Util_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
-        $this->adapter = new Ruckusing_PostgresAdapter($test_db, $logger);
+        $this->adapter = new Ruckusing_Adapter_PgSQL_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T') );
     }//setUp()
 
@@ -123,7 +123,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
         //first make sure the table does not exist
         $users = $this->adapter->has_table('users', true);
         $this->assertEquals(false, $users);
-        $t1 = new Ruckusing_PostgresTableDefinition($this->adapter, "users");
+        $t1 = new Ruckusing_Adapter_PgSQL_TableDefinition($this->adapter, "users");
         $t1->column("email", "string", array('limit' => 20));
         $sql = $t1->finish();
 
@@ -175,7 +175,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function test_index_name_too_long_throws_exception()
     {
-        $bm = new Ruckusing_BaseMigration();
+        $bm = new Ruckusing_Migration_Base();
         $bm->set_adapter($this->adapter);
         try {
             srand();
@@ -199,7 +199,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
     public function test_custom_primary_key_1()
     {
         $this->drop_table('users');
-        $t1 = new Ruckusing_PostgresTableDefinition($this->adapter, "users", array('id' => true) );
+        $t1 = new Ruckusing_Adapter_PgSQL_TableDefinition($this->adapter, "users", array('id' => true) );
         $t1->column("user_id", "integer", array("primary_key" => true));
         $table_create_sql = $t1->finish(true);
         $this->drop_table('users');
