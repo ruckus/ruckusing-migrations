@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Adapter
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
 define('SQL_UNKNOWN_QUERY_TYPE', 1);
 define('SQL_SELECT', 2);
 define('SQL_INSERT', 4);
@@ -13,22 +22,41 @@ define('SQL_RENAME', 512);
 define('SQL_SET', 1024);
 
 /**
- * Implementation of Ruckusing_BaseAdapter.
+ * Ruckusing_Adapter_Base
  *
- * @category Ruckusing_Classes
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing_Adapter
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_BaseAdapter
+class Ruckusing_Adapter_Base
 {
+    /**
+     * dsn
+     *
+     * @var array
+     */
     private $dsn;
+
+    /**
+     * db
+     *
+     */
     private $db;
+
+    /**
+     * connection to db
+     *
+     * @var object
+     */
     private $conn;
 
     /**
-     * Creates an instance of Ruckusing_BaseAdapter
+     * Creates an instance of Ruckusing_Adapter_Base
      *
-     * @param object $dsn The current dsn
+     * @param array $dsn The current dsn
+     *
+     * @return Ruckusing_Adapter_Base
      */
     public function __construct($dsn)
     {
@@ -48,7 +76,7 @@ class Ruckusing_BaseAdapter
     /**
      * Get the current dsn
      *
-     * @return object
+     * @return array
      */
     public function get_dsn()
     {
@@ -78,7 +106,7 @@ class Ruckusing_BaseAdapter
     /**
      * Set a logger
      *
-     * @param object $logger The current logger
+     * @param Ruckusing_Util_Logger $logger The current logger
      */
     public function set_logger($logger)
     {
@@ -88,7 +116,7 @@ class Ruckusing_BaseAdapter
     /**
      * Get the current logger
      *
-     * @return object
+     * @return Ruckusing_Util_Logger
      */
     public function get_logger($logger)
     {
@@ -97,6 +125,8 @@ class Ruckusing_BaseAdapter
 
     /**
      * Check table exists
+     *
+     * @param string $tbl the table name
      *
      * @return boolean
      */

@@ -1,8 +1,8 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_Task.php';
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
-require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
 
 /**
  * Implementation of the Ruckusing_DB_Status.
@@ -12,7 +12,7 @@ require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.ph
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
  */
-class Ruckusing_DB_Status extends Ruckusing_Task implements Ruckusing_iTask
+class Ruckusing_DB_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     private $create_ddl = "";
 
@@ -35,7 +35,7 @@ class Ruckusing_DB_Status extends Ruckusing_Task implements Ruckusing_iTask
     {
         echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
         echo "[db:status]: \n";
-        $util = new Ruckusing_MigratorUtil($this->get_adapter());
+        $util = new Ruckusing_Util_Migrator($this->get_adapter());
         $migrations = $util->get_executed_migrations();
         $files = $util->get_migration_files($this->get_framework()->migrations_directory(), 'up');
         $applied = array();
@@ -76,6 +76,7 @@ class Ruckusing_DB_Status extends Ruckusing_Task implements Ruckusing_iTask
 \tThis task does not take arguments.
 
 USAGE;
+
         return $output;
     }
 }

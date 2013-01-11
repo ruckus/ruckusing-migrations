@@ -1,32 +1,92 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_TaskManager.php';
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Manager.php';
 
 /**
- * Implementation of Ruckusing_FrameworkRunner.
+ * Ruckusing_FrameworkRunner
+ *
  * Primary work-horse class. This class bootstraps the framework by loading
  * all adapters and tasks.
  *
- * @category Ruckusing_Classes
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Ruckusing
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link     https://github.com/ruckus/ruckusing-migrations
  */
 class Ruckusing_FrameworkRunner
 {
-    //reference to our DB connection
+    /**
+     * reference to our DB connection
+     *
+     * @var array
+     */
     private $db = null;
-    //the currently active config
+
+    /**
+     * The currently active config
+     *
+     * @var array
+     */
     private $active_db_config;
-    //all available DB configs (e.g. test,development, production)
+
+    /**
+     * Available DB config (e.g. test,development, production)
+     *
+     * @var array
+     */
     private $config = array();
+
+    /**
+     * Task manager
+     *
+     * @var Ruckusing_Task_Manager
+     */
     private $task_mgr = null;
+
+    /**
+     * adapter
+     *
+     * @var Ruckusing_Adapters_Base
+     */
     private $adapter = null;
+
+    /**
+     * current task name
+     *
+     * @var string
+     */
     private $cur_task_name = "";
+
+    /**
+     * task options
+     *
+     * @var string
+     */
     private $task_options = "";
-    //default (can also be one 'test', 'production')
+
+    /**
+     * Environment
+     * default is development
+     * but can also be one 'test', 'production', etc...
+     *
+     * @var string
+     */
     private $ENV = "development";
 
-    //set up some defaults
+    /**
+     * set up some defaults
+     *
+     * @var array
+     */
     private $opt_map = array(
                     'ENV' => 'development'
     );
@@ -40,10 +100,12 @@ class Ruckusing_FrameworkRunner
     private $_showhelp = false;
 
     /**
-     * Creates an instance of Ruckusing_BaseAdapter
+     * Creates an instance of Ruckusing_Adapters_Base
      *
      * @param array $config The current config
      * @param array $argv   the supplied command line arguments
+     *
+     * @return Ruckusing_FrameworkRunner
      */
     public function __construct($config, $argv)
     {
@@ -63,27 +125,21 @@ class Ruckusing_FrameworkRunner
             $this->initialize_logger();
 
             //include all adapters
-            $this->load_all_adapters(RUCKUSING_BASE . '/lib/classes/adapters');
+            $this->load_all_adapters(RUCKUSING_BASE . '/lib/Ruckusing/Adapter');
+
+            //initialize logger
             $this->initialize_db();
+
+            //initialize tasks
             $this->init_tasks();
         } catch (Exception $e) {
             trigger_error($e->getMessage());
         }
-    }//constructor
-
-    /**
-     * Destructor
-     */
-    public function __destruct()
-    {
     }
 
-    //-------------------------
-    // PUBLIC METHODS
-    //-------------------------
     /**
-    * Execute the current task
-    */
+     * Execute the current task
+     */
     public function execute()
     {
         if (empty($this->cur_task_name)) {
@@ -97,14 +153,11 @@ class Ruckusing_FrameworkRunner
                     echo $this->task_mgr->help($this->cur_task_name);
                 } else {
                     $output = $this->task_mgr->execute($this, $this->cur_task_name, $this->task_options);
-                    //$this->display_results($output);
 
                 }
-                //return 0; // 0 is success
             } else {
                 echo sprintf("\n\tTask not found: %s\n", $this->cur_task_name);
                 echo $this->help();
-                //return 1;
             }
         }
 
@@ -128,7 +181,7 @@ class Ruckusing_FrameworkRunner
      */
     public function init_tasks()
     {
-        $this->task_mgr = new Ruckusing_TaskManager($this->adapter);
+        $this->task_mgr = new Ruckusing_Task_Manager($this->adapter);
     }
 
     /**
@@ -182,7 +235,7 @@ class Ruckusing_FrameworkRunner
             mkdir($this->config['log_dir'], 0755, true);
         }
         $log_name = sprintf("%s.log", $this->ENV);
-        $this->logger = Ruckusing_Logger::instance($this->config['log_dir'] . "/" . $log_name);
+        $this->logger = Ruckusing_Util_Logger::instance($this->config['log_dir'] . "/" . $log_name);
     }
 
     /**
@@ -220,7 +273,7 @@ class Ruckusing_FrameworkRunner
         }
         $this->task_options = $options;
 
-    }//parse_args()
+    }
 
     /**
      * Global error handler to process all errors
@@ -248,10 +301,10 @@ class Ruckusing_FrameworkRunner
         //only create the table if it doesnt already exist
         $this->adapter->create_schema_version_table();
         //insert all existing records into our new table
-        $migrator_util = new Ruckusing_MigratorUtil($this->adapter);
+        $migrator_util = new Ruckusing_Util_Migrator($this->adapter);
         $files = $migrator_util->get_migration_files($this->migrations_directory(), 'up');
         foreach ($files as $file) {
-            if ( (int) $file['version'] >= PHP_INT_MAX) {
+            if ((int) $file['version'] >= PHP_INT_MAX) {
                 //its new style like '20081010170207' so its not a candidate
                 continue;
             }
@@ -269,27 +322,7 @@ class Ruckusing_FrameworkRunner
                     $this->adapter->query($insert_sql);
                 }
             }
-        }//foreach
-    } // update_schema_for_timestamps()
-
-    //-------------------------
-    // PRIVATE METHODS
-    //-------------------------
-    /**
-    * Update the local schema to handle multiple records versus the prior architecture
-    * of storing a single version. In addition take all existing migration files
-    * and register them in our new table, as they have already been executed.
-    *
-    * @param string $output the message to output
-    */
-    private function display_results($output)
-    {
-        return;
-        //deprecated
-        echo "\nStarted: " . date('Y-m-d g:ia T') . "\n\n";
-        echo "\n\n";
-        echo "\n$output\n";
-        echo "\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+        }
     }
 
     /**
@@ -340,25 +373,27 @@ class Ruckusing_FrameworkRunner
         if (empty($this->config['log_dir'])) {
             throw new Exception("Error: 'log_dir' is not set in config.");
         }
-    }//verify_db_config
+    }
 
     /**
      * Get the adapter class
      *
      * @param string $db_type the database type
+     *
+     * @return string
      */
     private function get_adapter_class($db_type)
     {
         $adapter_class = null;
         switch ($db_type) {
             case 'mysql':
-                $adapter_class = "Ruckusing_MySQLAdapter";
+                $adapter_class = "Ruckusing_Adapter_MySQL_Base";
                 break;
             case 'mssql':
-                $adapter_class = "Ruckusing_MSSQLAdapter";
+                $adapter_class = "Ruckusing_Adapter_MSSQL_Base";
                 break;
             case 'pgsql':
-                $adapter_class = "Ruckusing_PostgresAdapter";
+                $adapter_class = "Ruckusing_Adapter_PgSQL_Base";
                 break;
         }
 
@@ -366,8 +401,8 @@ class Ruckusing_FrameworkRunner
     }
 
     /**
-     * DB adapters are classes in lib/classes/adapters
-     * and they follow the file name syntax of "class.<DB Name>Adapter.php".
+     * DB adapters are classes in lib/Ruckusing/Adapter
+     * and they follow the file name syntax of "<DB Name>/Base.php".
      *
      * See the function "get_adapter_class" in this class for examples.
      *
@@ -381,13 +416,12 @@ class Ruckusing_FrameworkRunner
             return false;
         }
         $files = scandir($adapter_dir);
-        $regex = '/^class\.(\w+)Adapter\.php$/';
         foreach ($files as $f) {
             //skip over invalid files
-            if ($f == '.' || $f == ".." || !preg_match($regex,$f) ) {
+            if ($f == '.' || $f == ".." || !is_dir($adapter_dir . '/' . $f)) {
                 continue;
             }
-            require_once $adapter_dir . '/' . $f;
+            require_once $adapter_dir . '/' . $f . '/Base.php';
         }
     }
 
@@ -433,7 +467,8 @@ class Ruckusing_FrameworkRunner
 \tformat which represents the current version.
 
 USAGE;
+
         return $output;
     }
 
-}//class
+}

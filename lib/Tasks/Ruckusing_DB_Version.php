@@ -1,6 +1,6 @@
 <?php
 
-require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 
 /**
  * Implementation of the Ruckusing_DB_Version.
@@ -10,7 +10,7 @@ require_once RUCKUSING_BASE . '/lib/classes/task/class.Ruckusing_iTask.php';
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
  */
-class Ruckusing_DB_Version extends Ruckusing_Task implements Ruckusing_iTask
+class Ruckusing_DB_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     private $create_ddl = "";
 
@@ -75,6 +75,7 @@ class Ruckusing_DB_Version extends Ruckusing_Task implements Ruckusing_iTask
 \tThis task does not take arguments.
 
 USAGE;
+
         return $output;
     }
 }
