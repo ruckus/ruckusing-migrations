@@ -147,8 +147,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function test_index_name_too_long_throws_exception()
     {
-        $bm = new Ruckusing_Migration_Base();
-        $bm->set_adapter($this->adapter);
+        $bm = new Ruckusing_Migration_Base($this->adapter);
         try {
             srand();
             $table_name = "users_" . rand(0, 1000000);
