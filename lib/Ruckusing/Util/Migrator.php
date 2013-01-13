@@ -23,14 +23,14 @@ class Ruckusing_Util_Migrator
      *
      * @var Ruckusing_Adapter_Base
      */
-    private $adapter = null;
+    private $_adapter = null;
 
     /**
      * migrations
      *
      * @var array
      */
-    private $migrations = array();
+    private $_migrations = array();
 
     /**
      * Creates an instance of Ruckusing_Util_Migrator
@@ -41,7 +41,24 @@ class Ruckusing_Util_Migrator
      */
     public function __construct($adapter)
     {
-        $this->adapter = $adapter;
+        $this->setAdapter($adapter);
+    }
+
+    /**
+     * set adapter
+     *
+     * @param Ruckusing_Adapter_Base $adapter the current adapter
+     *
+     * @return Ruckusing_Util_Migrator
+     */
+    public function setAdapter($adapter)
+    {
+        if (!($adapter instanceof Ruckusing_Adapter_Base)) {
+            throw new Ruckusing_Exception('Adapter must be implement Ruckusing_Adapter_Base!', Ruckusing_Exception::INVALID_ADAPTER);
+        }
+        $this->_adapter = $adapter;
+
+        return $this;
     }
 
     /**
@@ -55,7 +72,7 @@ class Ruckusing_Util_Migrator
         // We only want one row but we cannot assume that we are using MySQL and use a LIMIT statement
         // as it is not part of the SQL standard. Thus we have to select all rows and use PHP to return
         // the record we need
-        $versions_nested = $this->adapter->select_all(sprintf("SELECT version FROM %s", RUCKUSING_TS_SCHEMA_TBL_NAME));
+        $versions_nested = $this->_adapter->select_all(sprintf("SELECT version FROM %s", RUCKUSING_TS_SCHEMA_TBL_NAME));
         $versions = array();
         foreach ($versions_nested as $v) {
             $versions[] = $v['version'];
@@ -88,18 +105,18 @@ class Ruckusing_Util_Migrator
         // cache migration lookups and early return if we've seen this requested set
         if ($use_cache == true) {
             $key = $direction . '-' . $destination;
-            if (array_key_exists($key, $this->migrations)) {
-                return($this->migrations[$key]);
+            if (array_key_exists($key, $this->_migrations)) {
+                return($this->_migrations[$key]);
             }
         }
 
         $runnable = array();
         $migrations = array();
         $migrations = $this->get_migration_files($directory, $direction);
-        $current = $this->find_version($migrations, $this->get_max_version() );
+        $current = $this->find_version($migrations, $this->get_max_version());
         $target = $this->find_version($migrations, $destination);
         if (is_null($target) && !is_null($destination) && $destination > 0) {
-            trigger_error("Could not find target version {$destination} in set of migrations.");
+            throw new Ruckusing_Exception("Could not find target version {$destination} in set of migrations.", Ruckusing_Exception::INVALID_TARGET_MIGRATION);
         }
         $start = $direction == 'up' ? 0 : array_search($current, $migrations);
         $start = $start !== false ? $start : 0;
@@ -129,7 +146,7 @@ class Ruckusing_Util_Migrator
             $to_execute[] = $migration;
         }
         if ($use_cache == true) {
-            $this->migrations[$key] = $to_execute;
+            $this->_migrations[$key] = $to_execute;
         }
 
         return($to_execute);
@@ -158,10 +175,10 @@ class Ruckusing_Util_Migrator
     public function resolve_current_version($version, $direction)
     {
         if ($direction === 'up') {
-            $this->adapter->set_current_version($version);
+            $this->_adapter->set_current_version($version);
         }
         if ($direction === 'down') {
-            $this->adapter->remove_version($version);
+            $this->_adapter->remove_version($version);
         }
 
         return $version;
@@ -191,7 +208,7 @@ class Ruckusing_Util_Migrator
     {
         $valid_files = array();
         if (!is_dir($directory)) {
-            die("\nRuckusing_Util_Migrator - ({$directory}) is not a directory.\n");
+            throw new Ruckusing_Exception("\nRuckusing_Util_Migrator - ({$directory}) is not a directory.\n", Ruckusing_Exception::INVALID_MIGRATION_DIR);
         }
         $files = scandir($directory);
         $file_cnt = count($files);
@@ -221,10 +238,10 @@ class Ruckusing_Util_Migrator
                         'file'		=> $matches[0]
                 );
             }
-        }//for
+        }
 
         return $files;
-    }//get_migration_files
+    }
 
     //== Private methods
 
@@ -280,7 +297,7 @@ class Ruckusing_Util_Migrator
     private function executed_migrations()
     {
         $query_sql = sprintf('SELECT version FROM %s', RUCKUSING_TS_SCHEMA_TBL_NAME);
-        $versions = $this->adapter->select_all($query_sql);
+        $versions = $this->_adapter->select_all($query_sql);
         $executed = array();
         foreach ($versions as $v) {
             $executed[] = $v['version'];

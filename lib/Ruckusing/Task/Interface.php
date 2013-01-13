@@ -12,8 +12,8 @@
  * Ruckusing_Task_Interface
  * Interface that all tasks must implement.
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
+ * @category Ruckusing
+ * @package  Ruckusing_Task
  * @author   Cody Caughlan <codycaughlan % gmail . com>
  * @link      https://github.com/ruckus/ruckusing-migrations
  */

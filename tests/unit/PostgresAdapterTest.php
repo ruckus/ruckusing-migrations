@@ -9,7 +9,7 @@ require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/PgSQL/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exceptions.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exception.php';
 
 /**
  * Implementation of PostgresAdapterTest.
@@ -185,12 +185,14 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
             $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
             $sql = $table->finish();
             $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
-        } catch (Ruckusing_InvalidIndexNameException $exception) {
-            $bm->drop_table($table_name);
+        } catch (Ruckusing_Exception $exception) {
+            if (Ruckusing_Exception::INVALID_INDEX_NAME == $exception->getCode()) {
+                $bm->drop_table($table_name);
 
-            return;
+                return;
+            }
         }
-        $this->fail('Expected to raise & catch Ruckusing_InvalidIndexNameException');
+        $this->fail('Expected to raise & catch Ruckusing_Exception::INVALID_INDEX_NAME');
     }
 
     /**

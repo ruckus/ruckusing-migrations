@@ -36,20 +36,27 @@ class Ruckusing_Adapter_Base
      *
      * @var array
      */
-    private $dsn;
+    private $_dsn;
 
     /**
      * db
      *
      */
-    private $db;
+    private $_db;
 
     /**
      * connection to db
      *
      * @var object
      */
-    private $conn;
+    private $_conn;
+
+    /**
+     * logger
+     *
+     * @var Ruckusing_Util_Logger
+     */
+    public $logger;
 
     /**
      * Creates an instance of Ruckusing_Adapter_Base
@@ -70,7 +77,7 @@ class Ruckusing_Adapter_Base
      */
     public function set_dsn($dsn)
     {
-        $this->dsn = $dsn;
+        $this->_dsn = $dsn;
     }
 
     /**
@@ -80,7 +87,7 @@ class Ruckusing_Adapter_Base
      */
     public function get_dsn()
     {
-        return $this->dsn;
+        return $this->_dsn;
     }
 
     /**
@@ -90,7 +97,7 @@ class Ruckusing_Adapter_Base
      */
     public function set_db($db)
     {
-        $this->db = $db;
+        $this->_db = $db;
     }
 
     /**
@@ -100,7 +107,7 @@ class Ruckusing_Adapter_Base
      */
     public function get_db()
     {
-        return $this->db;
+        return $this->_db;
     }
 
     /**
@@ -110,6 +117,12 @@ class Ruckusing_Adapter_Base
      */
     public function set_logger($logger)
     {
+        if (!($logger instanceof Ruckusing_Util_Logger)) {
+            throw new Ruckusing_Exception(
+                    'Logger parameter must be instance of Ruckusing_Util_Logger',
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
         $this->logger = $logger;
     }
 
