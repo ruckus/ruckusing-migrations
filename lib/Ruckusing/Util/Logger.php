@@ -20,11 +20,25 @@
 class Ruckusing_Util_Logger
 {
     /**
-     * the log file
+     * Instance of logger
+     *
+     * @var Ruckusing_Util_Logger
+     */
+    private static $_instance;
+
+    /**
+     * file
      *
      * @var string
      */
-    private $file = '';
+    private $_file = '';
+
+    /**
+     * File descriptor
+     *
+     * @var resource
+     */
+    private $_fp;
 
     /**
      * Creates an instance of Ruckusing_Util_Logger
@@ -35,8 +49,18 @@ class Ruckusing_Util_Logger
      */
     public function __construct($file)
     {
-        $this->file = $file;
-        $this->fp = fopen($file, "a+");
+        $this->_file = $file;
+        $this->_fp = fopen($this->_file, "a+");
+    }
+
+    /**
+     * Close the file descriptor
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        $this->close();
     }
 
     /**
@@ -48,8 +72,7 @@ class Ruckusing_Util_Logger
      */
     public static function instance($logfile)
     {
-        static $instance;
-        if ($instance !== NULL) {
+        if (self::$_instance !== NULL) {
             return $instance;
         }
         $instance = new Ruckusing_Util_Logger($logfile);
@@ -64,12 +87,12 @@ class Ruckusing_Util_Logger
      */
     public function log($msg)
     {
-        if ($this->fp) {
+        if ($this->_fp) {
             $ts = date('M d H:i:s', time());
             $line = sprintf("%s [info] %s\n", $ts, $msg);
-            fwrite($this->fp, $line);
+            fwrite($this->_fp, $line);
         } else {
-            throw new Exception(sprintf("Error: logfile '%s' not open for writing!", $this->file));
+            throw new Ruckusing_Exception(sprintf("Error: logfile '%s' not open for writing!", $this->_file), Ruckusing_Exception::INVALID_LOG);
         }
 
     }
@@ -79,8 +102,14 @@ class Ruckusing_Util_Logger
      */
     public function close()
     {
-        if ($this->fp) {
-            fclose($this->fp);
+        if ($this->_fp) {
+            $closed = fclose($this->_fp);
+            if ($closed) {
+                $this->_fp = null;
+                self::$_instance = null;
+            } else {
+                echo 'Error closing the log file';
+            }
         }
     }
 

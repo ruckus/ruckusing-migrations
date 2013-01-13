@@ -9,15 +9,15 @@ require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exceptions.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exception.php';
 
 /**
  * Implementation of BaseMigrationTest.
  * To run these unit-tests an empty test database needs to be setup in database.inc.php
  * and of course, it has to really exist.
  *
- * @category Ruckusing_Tests
- * @package  Ruckusing_Migrations
+ * @category Ruckusing
+ * @package  Ruckusing
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
  */
 class BaseMigrationTest extends PHPUnit_Framework_TestCase

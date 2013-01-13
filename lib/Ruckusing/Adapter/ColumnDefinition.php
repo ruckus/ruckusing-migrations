@@ -19,7 +19,14 @@
  */
 class Ruckusing_Adapter_ColumnDefinition
 {
-    private $adapter;
+    /**
+     * adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+
+    private $_adapter;
+
     /**
      * name
      *
@@ -46,7 +53,7 @@ class Ruckusing_Adapter_ColumnDefinition
      *
      * @var array
      */
-    private $options = array();
+    private $_options = array();
 
     /**
      * Creates an instance of Ruckusing_Adapter_ColumnDefinition
@@ -60,10 +67,29 @@ class Ruckusing_Adapter_ColumnDefinition
     */
     public function __construct($adapter, $name, $type, $options = array())
     {
-        $this->adapter = $adapter;
+        if (!($adapter instanceof Ruckusing_Adapter_Base)) {
+            throw new Ruckusing_Exception(
+                    'Invalid Adapter instance.',
+                    Ruckusing_Exception::INVALID_ADAPTER
+            );
+        }
+        if (empty($name) || !is_string($name)) {
+            throw new Ruckusing_Exception(
+                    "Invalid 'name' parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+                    );
+        }
+        if (empty($type) || !is_string($type)) {
+            throw new Ruckusing_Exception(
+                    "Invalid 'type' parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+                    );
+        }
+
+        $this->_adapter = $adapter;
         $this->name = $name;
         $this->type = $type;
-        $this->options = $options;
+        $this->_options = $options;
     }
 
     /**
@@ -73,8 +99,8 @@ class Ruckusing_Adapter_ColumnDefinition
      */
     public function to_sql()
     {
-        $column_sql = sprintf("%s %s", $this->adapter->identifier($this->name), $this->sql_type());
-        $column_sql .= $this->adapter->add_column_options($this->type, $this->options);
+        $column_sql = sprintf("%s %s", $this->_adapter->identifier($this->name), $this->sql_type());
+        $column_sql .= $this->_adapter->add_column_options($this->type, $this->_options);
 
         return $column_sql;
     }
@@ -96,6 +122,6 @@ class Ruckusing_Adapter_ColumnDefinition
      */
     private function sql_type()
     {
-        return $this->adapter->type_to_sql($this->type, $this->options);
+        return $this->_adapter->type_to_sql($this->type, $this->_options);
     }
 }

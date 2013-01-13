@@ -24,14 +24,14 @@ class Ruckusing_Adapter_TableDefinition
      *
      * @var array
      */
-    private $columns = array();
+    private $_columns = array();
 
     /**
      * adapter
      *
      * @var Ruckusing_Adapter_Base
      */
-    private $adapter;
+    private $_adapter;
 
     /**
      * Creates an instance of Ruckusing_Adapter_TableDefinition
@@ -42,7 +42,13 @@ class Ruckusing_Adapter_TableDefinition
      */
     public function __construct($adapter)
     {
-        $this->adapter = $adapter;
+        if (!($adapter instanceof Ruckusing_Adapter_Base)) {
+            throw new Ruckusing_Exception(
+                    'Invalid Adapter instance.',
+                    Ruckusing_Exception::INVALID_ADAPTER
+            );
+        }
+        $this->_adapter = $adapter;
     }
 
     /**
@@ -50,17 +56,17 @@ class Ruckusing_Adapter_TableDefinition
      * table definition.
      *
      * This method is lax enough that it can take either a string column name
-     * or a Ruckusing_Adapters_ColumnDefinition object.
+     * or a Ruckusing_Adapter_ColumnDefinition object.
      *
-     * @param string $column the name of the column
+     * @param string $_column the name of the column
      *
      * @return boolean
      */
     public function included($column)
     {
-        $k = count($this->columns);
+        $k = count($this->_columns);
         for ($i = 0; $i < $k; $i++) {
-            $col = $this->columns[$i];
+            $col = $this->_columns[$i];
             if (is_string($column) && $col->name == $column) {
                 return true;
             }
@@ -79,6 +85,6 @@ class Ruckusing_Adapter_TableDefinition
      */
     public function to_sql()
     {
-        return join(",", $this->columns);
+        return join(",", $this->_columns);
     }
 }
