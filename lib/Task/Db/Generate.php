@@ -1,23 +1,37 @@
 <?php
 
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Task
+ * @subpackage Db
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
 
 /**
- * Implementation of the Ruckusing_DB_Generate generic task which acts as a Generator for migrations.
+ * Task_DB_Generate
+ * generic task which acts as a Generator for migrations.
  *
  * @category Ruckusing
- * @package  Ruckusing
+ * @package  Task
+ * @subpackage Db
  * @author   Cody Caughlan <codycaughlan % gmail . com>
  * @author   Salimane Adjao Moustapha <me@salimane.com>
  */
-class Ruckusing_DB_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
+class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
-     * Creates an instance of Ruckusing_DB_Generate
+     * Creates an instance of Task_DB_Generate
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     *
+     * @return Task_DB_Generate
      */
     public function __construct($adapter)
     {
@@ -84,7 +98,8 @@ class Ruckusing_DB_Generate extends Ruckusing_Task_Base implements Ruckusing_Tas
     /**
      * Parse command line arguments.
      *
-     * @param  array $argv The current supplied command line arguments.
+     * @param array $argv The current supplied command line arguments.
+     *
      * @return array ('name' => 'name')
      */
     public function parse_args($argv)

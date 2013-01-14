@@ -11,7 +11,7 @@
 
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Naming.php';
 
-define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/Tasks');
+define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/Task');
 
 /**
  * Ruckusing_Task_Manager
@@ -168,17 +168,26 @@ class Ruckusing_Task_Manager
 
             return false;
         }
-        $files = scandir($task_dir);
-        $regex = '/^(\w+)\.php$/';
-        foreach ($files as $f) {
-            //skip over invalid files
-            if ($f == '.' || $f == ".." || !preg_match($regex, $f, $matches) ) {
+        $namespaces = scandir($task_dir);
+        foreach ($namespaces as $namespace) {
+            if ($namespace == '.' || $namespace == '..'
+                    || ! is_dir($task_dir . '/' . $namespace)
+            ) {
                 continue;
             }
-            require_once $task_dir . '/' . $f;
-            $task_name = Ruckusing_Util_Naming::task_from_class_name($matches[1]);
-            $klass = Ruckusing_Util_Naming::class_from_file_name($f);
-            $this->register_task($task_name, new $klass($this->get_adapter()));
+            $files = scandir($task_dir . '/' . $namespace);
+            $regex = '/^(\w+)\.php$/';
+            foreach ($files as $file) {
+                //skip over invalid files
+                if ($file == '.' || $file == ".." || !preg_match($regex, $file, $matches) ) {
+                    continue;
+                }
+                require_once $task_dir . '/' . $namespace . '/' . $file;
+                $klass = Ruckusing_Util_Naming::class_from_file_name($task_dir . '/' . $namespace . '/' . $file);
+                $task_name = Ruckusing_Util_Naming::task_from_class_name($klass);
+
+                $this->register_task($task_name, new $klass($this->get_adapter()));
+            }
         }
     }
 

@@ -1,23 +1,35 @@
 <?php
 
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Task
+ * @subpackage Db
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 
 /**
- * Implementation of the Ruckusing_DB_Version.
+ * Task_DB_Version.
  * This task retrieves the current version of the schema.
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Task
+ * @subpackage Db
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_DB_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
+class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
-    private $create_ddl = "";
-
     /**
-     * Creates an instance of Ruckusing_DB_Migrate
+     * Creates an instance of Task_DB_Version
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     *
+     * @return Task_DB_Version
      */
     public function __construct($adapter)
     {

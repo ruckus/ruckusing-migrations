@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Task
+ * @subpackage Db
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Exception.php';
@@ -10,32 +20,50 @@ define('STYLE_REGULAR', 1);
 define('STYLE_OFFSET', 2);
 
 /**
- * Implementation of the Ruckusing_DB_Migrate.
+ * Task_DB_Migrate.
  * This is the primary work-horse method, it runs all migrations available,
  * up to the current version.
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Task
+ * @subpackage Db
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
+class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
-    private $migrator_util = null;
-    private $task_args = array();
-    private $regexp = '/^(\d+)\_/';
-    private $debug = false;
-    private $migrations_directory;
-    private $framework;
+    /**
+     * migrator util
+     *
+     * @var Ruckusing_Util_Migrator
+     */
+    private $_migrator_util = null;
 
     /**
-     * Creates an instance of Ruckusing_DB_Migrate
+     * The task arguments
      *
-     * @param object $adapter The current adapter being used
+     * @var array
+     */
+    private $_task_args = array();
+
+    /**
+     * debug
+     *
+     * @var boolean
+     */
+    private $_debug = false;
+
+    /**
+     * Creates an instance of Task_DB_Migrate
+     *
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     *
+     * @return Task_DB_Migrate
      */
     public function __construct($adapter)
     {
         parent::__construct($adapter);
-        $this->migrator_util = new Ruckusing_Util_Migrator($adapter);
+        $this->_migrator_util = new Ruckusing_Util_Migrator($adapter);
     }
 
     /**
@@ -49,7 +77,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
         if (!$this->get_adapter()->supports_migrations()) {
             die("This database does not support migrations.");
         }
-        $this->task_args = $args;
+        $this->_task_args = $args;
         echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
         echo "[db:migrate]: \n";
         try {
@@ -60,8 +88,8 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
             $style = STYLE_REGULAR;
 
             //did the user specify an explicit version?
-            if (array_key_exists('version', $this->task_args)) {
-                $target_version = trim($this->task_args['version']);
+            if (array_key_exists('version', $this->_task_args)) {
+                $target_version = trim($this->_task_args['version']);
             }
 
             // did the user specify a relative offset, e.g. "-2" or "+3" ?
@@ -75,7 +103,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
                 }
             }
             //determine our direction and target version
-            $current_version = $this->migrator_util->get_max_version();
+            $current_version = $this->_migrator_util->get_max_version();
             if ($style == STYLE_REGULAR) {
                 if (is_null($target_version)) {
                     $this->prepare_to_migrate($target_version, 'up');
@@ -113,7 +141,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
      */
     private function migrate_from_offset($offset, $current_version, $direction)
     {
-        $migrations = $this->migrator_util->get_migration_files($this->get_framework()->migrations_directory(), $direction);
+        $migrations = $this->_migrator_util->get_migration_files($this->get_framework()->migrations_directory(), $direction);
         $versions = array();
         $current_index = -1;
         for ($i = 0; $i < count($migrations); $i++) {
@@ -123,7 +151,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
                 $current_index = $i;
             }
         }
-        if ($this->debug == true) {
+        if ($this->_debug == true) {
             print_r($migrations);
             echo "\ncurrent_index: " . $current_index . "\n";
             echo "\ncurrent_version: " . $current_version . "\n";
@@ -152,7 +180,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
         } else {
             // run em
             $target = end($available);
-            if ($this->debug == true) {
+            if ($this->_debug == true) {
                 echo "\n------------- TARGET ------------------\n";
                 print_r($target);
             }
@@ -175,7 +203,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
             } else {
                 echo ":\n";
             }
-            $migrations = $this->migrator_util->get_runnable_migrations($this->get_framework()->migrations_directory(), $direction, $destination);
+            $migrations = $this->_migrator_util->get_runnable_migrations($this->get_framework()->migrations_directory(), $direction, $destination);
             if (count($migrations) == 0) {
                 return "\nNo relevant migrations to run. Exiting...\n";
             }
@@ -212,7 +240,7 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
                         $this->get_adapter()->start_transaction();
                         $result =  $obj->$target_method();
                         //successfully ran migration, update our version and commit
-                        $this->migrator_util->resolve_current_version($file['version'], $target_method);
+                        $this->_migrator_util->resolve_current_version($file['version'], $target_method);
                         $this->get_adapter()->commit_transaction();
                     } catch (Exception $e) {
                         $this->get_adapter()->rollback_transaction();
