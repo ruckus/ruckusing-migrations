@@ -12,9 +12,10 @@ require_once RUCKUSING_BASE . '/config/config.inc.php';
 $composer_found = false;
 if (version_compare(PHP_VERSION, '5.3.2', '>=')) {
     $files = array(
-            __DIR__ . 'vendor/autoload.php',
+            __DIR__ . '/vendor/autoload.php',
             __DIR__ . '/../vendor/autoload.php',
             __DIR__ . '/../../vendor/autoload.php',
+            __DIR__ . '/../../../vendor/autoload.php',
             __DIR__ . '/../../../../autoload.php',
     );
 
