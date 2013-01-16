@@ -35,7 +35,7 @@ class Ruckusing_Util_Naming
      *
      * @var string
      */
-    const class_ns_prefix = 'Ruckusing_';
+    const CLASS_NS_PREFIX = 'Ruckusing_';
 
     /**
      * Get the corresponding task from a class name
@@ -46,8 +46,14 @@ class Ruckusing_Util_Naming
      */
     public static function task_from_class_name($klass)
     {
+        if (! preg_match('/'.self::CLASS_NS_PREFIX.'/', $klass)) {
+            throw new Ruckusing_Exception(
+                    'The class name must start with ' . self::CLASS_NS_PREFIX,
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
         //strip namespace
-        $klass = str_replace(self::class_ns_prefix, '', $klass);
+        $klass = str_replace(self::CLASS_NS_PREFIX, '', $klass);
         $klass = strtolower($klass);
         $klass = str_replace("_", ":", $klass);
 
@@ -63,12 +69,16 @@ class Ruckusing_Util_Naming
      */
     public static function task_to_class_name($task)
     {
-        $parts = explode(":", $task);
-        if (count($parts) < 2) {
-            throw new Exception("Task name invalid: $task");
+        if (false === stripos($task, ':')) {
+            throw new Ruckusing_Exception(
+                    'Task name (' . $task . ') must be contains ":"',
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
         }
 
-        return self::class_ns_prefix . strtoupper($parts[0]) . '_' . ucfirst($parts[1]);
+        $parts = explode(":", $task);
+
+        return self::CLASS_NS_PREFIX . strtoupper($parts[0]) . '_' . ucfirst($parts[1]);
     }
 
     /**
@@ -104,11 +114,14 @@ class Ruckusing_Util_Naming
      */
     public static function class_from_migration_file($file_name)
     {
+        $className = false;
         if (preg_match('/^(\d+)_(.*)\.php$/', $file_name, $matches)) {
             if ( count($matches) == 3) {
-                return $matches[2];
+                $className = $matches[2];
             }
-        }//if-preg-match
+        }
+
+        return $className;
     }
 
     /**

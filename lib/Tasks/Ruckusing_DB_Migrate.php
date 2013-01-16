@@ -2,7 +2,7 @@
 
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Exceptions.php';
+require_once RUCKUSING_BASE . '/lib/Ruckusing/Exception.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Migration/Base.php';
 
@@ -17,7 +17,7 @@ define('STYLE_OFFSET', 2);
  * @category Ruckusing_Tasks
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
-*/
+ */
 class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     private $migrator_util = null;
@@ -94,10 +94,12 @@ class Ruckusing_DB_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task
             if (!empty($output)) {
                 echo $output . "\n\n";
             }
-        } catch (Ruckusing_MissingSchemaInfoTableException $ex) {
-            echo "\tSchema info table does not exist. I tried creating it but failed. Check permissions.";
         } catch (Ruckusing_Exception $ex) {
-            die("\n\n" . $ex->getMessage() . "\n\n");
+            if ($ex->getCode() == Ruckusing_Exception::MISSING_SCHEMA_INFO_TABLE) {
+                echo "\tSchema info table does not exist. I tried creating it but failed. Check permissions.";
+            } else {
+                die("\n\n" . $ex->getMessage() . "\n\n");
+            }
         }
         echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
     }

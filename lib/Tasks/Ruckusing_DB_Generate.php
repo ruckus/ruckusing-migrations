@@ -7,8 +7,8 @@ require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
 /**
  * Implementation of the Ruckusing_DB_Generate generic task which acts as a Generator for migrations.
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
+ * @category Ruckusing
+ * @package  Ruckusing
  * @author   Cody Caughlan <codycaughlan % gmail . com>
  * @author   Salimane Adjao Moustapha <me@salimane.com>
  */

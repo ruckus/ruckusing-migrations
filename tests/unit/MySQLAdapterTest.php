@@ -9,7 +9,7 @@ require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exceptions.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exception.php';
 
 /**
  * Implementation of MySQLAdapterTest
@@ -157,12 +157,14 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
             $table->column('anothercolumnthatiscrazylongrodeclown', 'integer');
             $sql = $table->finish();
             $bm->add_index($table_name, array('somecolumnthatiscrazylong', 'anothercolumnthatiscrazylongrodeclown'));
-        } catch (Ruckusing_InvalidIndexNameException $exception) {
-            $bm->drop_table($table_name);
+        } catch (Ruckusing_Exception $exception) {
+            if (Ruckusing_Exception::INVALID_INDEX_NAME == $exception->getCode()) {
+                $bm->drop_table($table_name);
 
-            return;
+                return;
+            }
         }
-        $this->fail('Expected to raise & catch Ruckusing_InvalidIndexNameException');
+        $this->fail('Expected to raise & catch Ruckusing_Exception::INVALID_INDEX_NAME');
     }
 
     /**
@@ -189,15 +191,15 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
 
         $expected = "`age` varchar(32) NOT NULL";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "string",
-                        array('limit' => 32, 'null' => false)));
+                array('limit' => 32, 'null' => false)));
 
         $expected = "`age` varchar(32) DEFAULT 'abc' NOT NULL";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "string",
-                        array('limit' => 32, 'default' => 'abc', 'null' => false)));
+                array('limit' => 32, 'default' => 'abc', 'null' => false)));
 
         $expected = "`age` varchar(32) DEFAULT 'abc'";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "string",
-                        array('limit' => 32, 'default' => 'abc')));
+                array('limit' => 32, 'default' => 'abc')));
 
         $expected = "`age` int(11)";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "integer"));
@@ -351,7 +353,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
 
         // Test collate option
         $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128,
-                        'collate' => 'ascii_bin'));
+                'collate' => 'ascii_bin'));
         $col = $this->adapter->column_info('users', 'name');
         $this->assertEquals('ascii_bin', $col['collation']);
 

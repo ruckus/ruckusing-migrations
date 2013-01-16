@@ -28,14 +28,14 @@ class Ruckusing_Task_Manager
      *
      * @var Ruckusing_Adapter_Base
      */
-    private $adapter;
+    private $_adapter;
 
     /**
      * tasks
      *
      * @var array
      */
-    private $tasks = array();
+    private $_tasks = array();
 
     /**
      * Creates an instance of Ruckusing_Task_Manager
@@ -46,18 +46,28 @@ class Ruckusing_Task_Manager
      */
     public function __construct($adapter)
     {
-        $this->set_adapter($adapter);
+        $this->setAdapter($adapter);
         $this->load_all_tasks(RUCKUSING_TASK_DIR);
     }
 
     /**
-     * Creates an instance of Ruckusing_Task_Manager
+     * set adapter
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter the current adapter
+     *
+     * @return Ruckusing_Util_Migrator
      */
-    public function set_adapter($adapter)
+    public function setAdapter($adapter)
     {
-        $this->adapter = $adapter;
+        if (!($adapter instanceof Ruckusing_Adapter_Base)) {
+            throw new Ruckusing_Exception(
+                    'Adapter must be implement Ruckusing_Adapter_Base!',
+                    Ruckusing_Exception::INVALID_ADAPTER
+            );
+        }
+        $this->_adapter = $adapter;
+
+        return $this;
     }
 
     /**
@@ -67,7 +77,7 @@ class Ruckusing_Task_Manager
      */
     public function get_adapter()
     {
-        return $this->adapter;
+        return $this->_adapter;
     }
 
     /**
@@ -80,11 +90,14 @@ class Ruckusing_Task_Manager
      */
     public function get_task($key)
     {
-        if ( array_key_exists($key, $this->tasks)) {
-            return $this->tasks[$key];
-        } else {
-            return null;
+        if (!$this->has_task($key)) {
+            throw new Ruckusing_Exception(
+                    "Task '$key' is not registered.",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
         }
+
+        return $this->_tasks[$key];
     }
 
     /**
@@ -96,11 +109,11 @@ class Ruckusing_Task_Manager
      */
     public function has_task($key)
     {
-        if ( array_key_exists($key, $this->tasks)) {
+        if (array_key_exists($key, $this->_tasks)) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -115,29 +128,26 @@ class Ruckusing_Task_Manager
      */
     public function register_task($key, $obj)
     {
-        if ( array_key_exists($key, $this->tasks)) {
-            trigger_error(sprintf("Task key '%s' is already defined!", $key));
+        if (array_key_exists($key, $this->_tasks)) {
+            throw new Ruckusing_Exception(
+                    sprintf("Task key '%s' is already defined!", $key),
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
 
             return false;
         }
 
-        //Reflect on the object and make sure it has an "execute()" method
-        $refl = new ReflectionObject($obj);
-        if ( !$refl->hasMethod('execute')) {
-            trigger_error(sprintf("Task '%s' does not have an 'execute' method defined", $key));
+        if (!($obj instanceof Ruckusing_Task_Interface)) {
+            throw new Ruckusing_Exception(
+                    sprintf('Task (' . $key . ') does not implement Ruckusing_Task_Interface', $key),
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
 
             return false;
         }
-        $this->tasks[$key] = $obj;
+        $this->_tasks[$key] = $obj;
 
         return true;
-    }
-
-    /**
-     * Get name
-     */
-    public function get_name()
-    {
     }
 
     //---------------------
@@ -151,7 +161,10 @@ class Ruckusing_Task_Manager
     private function load_all_tasks($task_dir)
     {
         if (!is_dir($task_dir)) {
-            throw new Exception(sprintf("Task dir: %s does not exist", $task_dir));
+            throw new Ruckusing_Exception(
+                    sprintf("Task dir: %s does not exist", $task_dir),
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
 
             return false;
         }
@@ -170,15 +183,6 @@ class Ruckusing_Task_Manager
     }
 
     /**
-     * Execute the supplied Task object
-     *
-     * @param object $task_obj The task object
-     */
-    private function execute_task($task_obj)
-    {
-    }
-
-    /**
      * Execute a task
      *
      * @param object $framework The current framework
@@ -189,17 +193,10 @@ class Ruckusing_Task_Manager
      */
     public function execute($framework, $task_name, $options)
     {
-        if ( !$this->has_task($task_name)) {
-            throw new Exception("Task '$task_name' is not registered.");
-        }
         $task = $this->get_task($task_name);
-        if ($task) {
-            $task->set_framework($framework);
+        $task->set_framework($framework);
 
-            return $task->execute($options);
-        }
-
-        return "";
+        return $task->execute($options);
     }
 
     /**
