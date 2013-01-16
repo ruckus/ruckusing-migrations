@@ -1,6 +1,10 @@
 {
-	"name":"ruckusing/ruckusing-migrations",
-	"description":"Framework for generating and managing database migrations",
+    "name":			"ruckusing/ruckusing-migrations",
+    "type":         "library",
+	"description":	"Framework for generating and managing database migrations",
+	"keywords":		["ruckusing", "rake", "migrations", "database", "mysql", "postgres", "task"],
+	"homepage":		"https://github.com/ruckus/ruckusing-migrations",
+    "license":		"MIT",
 	"authors":[
 		{
 			"name":"Cody Caughlan",
@@ -9,18 +13,24 @@
 			"role":"Project lead / Developer"
 		}
 	],
-	"license":"LGPL-2.1+",
-	"keywords":[
-		"ruckusing",
-		"database",
-		"migrations"
-	],
+	"support": {
+        "email":    "codycaughlan@gmail.com",
+        "issues":   "https://github.com/ruckus/ruckusing-migrations/issues",
+        "source":   "https://github.com/ruckus/ruckusing-migrations"
+    },	
 	"require":{
-		"PHP":">=5"
+		"php": ">=5.2.0"
 	},
+	"require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Ruckusing": "lib/",
+            "Task": "lib/"
+        }
+    },
 	"bin":[
-		"generate.php",
-		"main.php",
-		"update_ruckusing_database.php"
+		"main.php"
 	]
 }
