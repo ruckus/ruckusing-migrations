@@ -52,6 +52,22 @@ class Ruckusing_Adapter_TableDefinition
     }
 
     /**
+     * __call
+     *
+     * @param string $name The method name
+     * @param array  $args The parameters of method called
+     *
+     * @throws Ruckusing_Exception
+     */
+    public function __call($name, $args)
+    {
+        throw new Ruckusing_Exception(
+                'Method unknown (' . $name . ')',
+                Ruckusing_Exception::INVALID_MIGRATION_METHOD
+        );
+    }
+
+    /**
      * Determine whether or not the given column already exists in our
      * table definition.
      *
