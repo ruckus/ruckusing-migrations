@@ -1,22 +1,37 @@
 <?php
 
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Task
+ * @subpackage Db
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
 require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 
 /**
- * Implementation of the Ruckusing_DB_Schema which is a generic task which dumps the schema of the DB
+ * Task_DB_Schema
+ * generic task which dumps the schema of the DB
  * as a text file.
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
- * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
+ * @category Ruckusing
+ * @package  Task
+ * @subpackage Db
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_DB_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
+class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
-     * Creates an instance of Ruckusing_DB_Schema
+     * Creates an instance of Task_DB_Schema
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     *
+     * @return Task_DB_Schema
      */
     public function __construct($adapter)
     {
@@ -44,7 +59,7 @@ class Ruckusing_DB_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_
         } catch (Exception $ex) {
             throw $ex; //re-throw
         }
-    }//execute
+    }
 
     /**
      * Get the db dir, check and create the db dir if it doesn't exists
@@ -97,4 +112,4 @@ USAGE;
         return $output;
     }
 
-}//class
+}

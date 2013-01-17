@@ -26,7 +26,7 @@ class NamingUtilTest extends PHPUnit_Framework_TestCase
      */
     public function test_task_from_class_method()
     {
-        $klass = "Ruckusing_DB_Schema";
+        $klass = "Task_Db_Schema";
         $this->assertEquals('db:schema', Ruckusing_Util_Naming::task_from_class_name($klass) );
     }
 
@@ -36,7 +36,7 @@ class NamingUtilTest extends PHPUnit_Framework_TestCase
     public function test_task_to_class_method()
     {
         $task_name = "db:schema";
-        $this->assertEquals('Ruckusing_DB_Schema', Ruckusing_Util_Naming::task_to_class_name($task_name) );
+        $this->assertEquals('Task_Db_Schema', Ruckusing_Util_Naming::task_to_class_name($task_name) );
     }
 
     /**
@@ -44,8 +44,8 @@ class NamingUtilTest extends PHPUnit_Framework_TestCase
      */
     public function test_class_name_from_file_name()
     {
-        $klass = RUCKUSING_TEST_HOME . '/dummy/Ruckusing_DB_Setup.php';
-        $this->assertEquals('Ruckusing_DB_Setup', Ruckusing_Util_Naming::class_from_file_name($klass) );
+        $klass = RUCKUSING_TEST_HOME . '/dummy/Task/Db/Setup.php';
+        $this->assertEquals('Task_Db_Setup', Ruckusing_Util_Naming::class_from_file_name($klass));
     }
 
     /**
@@ -53,8 +53,8 @@ class NamingUtilTest extends PHPUnit_Framework_TestCase
      */
     public function test_class_name_from_string()
     {
-        $klass = 'Ruckusing_DB_Schema.php';
-        $this->assertEquals('Ruckusing_DB_Schema', Ruckusing_Util_Naming::class_from_file_name($klass));
+        $klass = 'Task/Db/Schema.php';
+        $this->assertEquals('Task_Db_Schema', Ruckusing_Util_Naming::class_from_file_name($klass));
     }
 
     /**
