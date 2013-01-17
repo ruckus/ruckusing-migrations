@@ -29,6 +29,18 @@ class Ruckusing_Migration_Base
     private $_adapter;
 
     /**
+     * __construct
+     *
+     * @param Ruckusing_Adapter_Base $adapter the current adapter
+     *
+     * @return void
+     */
+    public function __construct($adapter)
+    {
+        $this->set_adapter($adapter);
+    }
+
+    /**
      * __call
      *
      * @param string $name The method name
@@ -58,6 +70,7 @@ class Ruckusing_Migration_Base
             );
         }
         $this->_adapter = $adapter;
+        return $this;
     }
 
     /**
