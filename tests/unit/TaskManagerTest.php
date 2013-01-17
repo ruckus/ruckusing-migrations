@@ -7,7 +7,7 @@ if (!defined('BASE')) {
 require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Manager.php';
-require_once RUCKUSING_BASE  . '/lib/Tasks/Ruckusing_DB_Schema.php';
+require_once RUCKUSING_BASE  . '/lib/Task/Db/Schema.php';
 
 /**
  * Implementation of TaskManagerTest.
@@ -51,7 +51,7 @@ class TaskManagerTest extends PHPUnit_Framework_TestCase
      */
     public function test_db_schema_creation()
     {
-        $schema = new Ruckusing_DB_Schema($this->adapter);
+        $schema = new Task_DB_Schema($this->adapter);
         $schema->set_framework($this->framework);
         $schema->execute(array());
         $this->assertEquals(true, file_exists($this->db_dir . '/schema.txt'));

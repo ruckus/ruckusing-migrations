@@ -35,7 +35,7 @@ class Ruckusing_Util_Naming
      *
      * @var string
      */
-    const CLASS_NS_PREFIX = 'Ruckusing_';
+    const CLASS_NS_PREFIX = 'Task_';
 
     /**
      * Get the corresponding task from a class name
@@ -78,7 +78,7 @@ class Ruckusing_Util_Naming
 
         $parts = explode(":", $task);
 
-        return self::CLASS_NS_PREFIX . strtoupper($parts[0]) . '_' . ucfirst($parts[1]);
+        return self::CLASS_NS_PREFIX . ucfirst($parts[0]) . '_' . ucfirst($parts[1]);
     }
 
     /**
@@ -92,17 +92,11 @@ class Ruckusing_Util_Naming
     {
         //we could be given either a string or an absolute path
         //deal with it appropriately
-        if (is_file($file_name)) {
-            $file_name = basename($file_name);
-        }
-        $regex = '/^(\w+)\.php$/';
-        if (preg_match($regex, $file_name, $matches)) {
-            if (count($matches) == 2) {
-                return $matches[1];
-            }
-        }
+        $parts = explode(DIRECTORY_SEPARATOR, $file_name);
+        $namespace = $parts[count($parts)-2];
+        $file_name = substr($parts[count($parts)-1], 0, -4);
 
-        return "";
+        return self::CLASS_NS_PREFIX . ucfirst($namespace) . '_' . ucfirst($file_name);
     }
 
     /**
@@ -180,7 +174,9 @@ class Ruckusing_Util_Naming
      */
     public static function underscore($str)
     {
-        return preg_replace('/\W/', '_', $str);
+        $underscored = preg_replace('/\W/', '_', $str);
+
+        return preg_replace('/\_{2,}/', '_', $underscored);
     }
 
 }

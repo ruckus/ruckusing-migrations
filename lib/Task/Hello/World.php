@@ -1,18 +1,32 @@
 <?php
 
 /**
- * Implementation of the Ruckusing_Hello_World.
+ * Ruckusing
  *
- * @category Ruckusing_Tasks
- * @package  Ruckusing_Migrations
- * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @category  Ruckusing
+ * @package   Task
+ * @subpackage Hello
+ * @author    Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
-class Ruckusing_Hello_World extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
+
+/**
+ * Task_Hello_World
+ *
+ * @category Ruckusing
+ * @package  Task
+ * @subpackage Hello
+ * @author   Cody Caughlan <codycaughlan % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
+class Task_Hello_World extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
-     * Creates an instance of Ruckusing_DB_Migrate
+     * Creates an instance of Task_Hello_World
      *
-     * @param object $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     *
+     * @return Task_Hello_World
      */
     public function __construct($adapter)
     {
