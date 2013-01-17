@@ -230,10 +230,9 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             if (is_file($full_path) && is_readable($full_path) ) {
                 require_once $full_path;
                 $klass = Ruckusing_Util_Naming::class_from_migration_file($file['file']);
-                $obj = new $klass();
+                $obj = new $klass($this->get_adapter());
                 $refl = new ReflectionObject($obj);
                 if ($refl->hasMethod($target_method)) {
-                    $obj->set_adapter($this->get_adapter());
                     $start = $this->start_timer();
                     try {
                         //start transaction
