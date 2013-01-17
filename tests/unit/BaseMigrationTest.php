@@ -65,8 +65,7 @@ class BaseMigrationTest extends PHPUnit_Framework_TestCase
     {
         //create it
         $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), age int(3) );");
-        $base = new Ruckusing_Migration_Base();
-        $base->set_adapter($this->adapter);
+        $base = new Ruckusing_Migration_Base($this->adapter);
         $base->add_index("users", "name", array('name' => 'my_special_index'));
 
         //ensure it exists

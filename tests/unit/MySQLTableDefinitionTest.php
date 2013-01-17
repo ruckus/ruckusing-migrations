@@ -115,8 +115,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition_with_limit()
     {
-        $bm = new Ruckusing_Migration_Base();
-        $bm->set_adapter($this->adapter);
+        $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
         $table = $bm->create_table($table_name);
@@ -133,8 +132,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition_with_not_null()
     {
-        $bm = new Ruckusing_Migration_Base();
-        $bm->set_adapter($this->adapter);
+        $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
         $table = $bm->create_table($table_name);
@@ -152,8 +150,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_column_definition_with_default_value()
     {
-        $bm = new Ruckusing_Migration_Base();
-        $bm->set_adapter($this->adapter);
+        $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
         $table = $bm->create_table($table_name);
@@ -171,8 +168,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_multiple_primary_keys()
     {
-        $bm = new Ruckusing_Migration_Base();
-        $bm->set_adapter($this->adapter);
+        $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
         $table = $bm->create_table($table_name, array('id' => false));
@@ -196,8 +192,7 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     public function test_custom_primary_key_with_auto_increment()
     {
-        $bm = new Ruckusing_Migration_Base();
-        $bm->set_adapter($this->adapter);
+        $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
         $table_name = "users_${ts}";
         $table = $bm->create_table($table_name, array('id' => false));
