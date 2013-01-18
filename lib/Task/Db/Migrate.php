@@ -333,10 +333,20 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
         if (!is_dir($this->_migratorDir)) {
             printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $this->_migratorDir);
             if (mkdir($this->_migratorDir, 0755, true) === FALSE) {
-                printf("\n\tUnable to create migrations directory at %s, check permissions?", $migrations_directory);
+                printf("\n\tUnable to create migrations directory at %s, check permissions?", $this->_migratorDir);
             } else {
                 printf("\n\tCreated OK");
             }
+        }
+
+        //check to make sure our destination directory is writable
+        if (!is_writable($this->_migratorDir)) {
+            throw new Ruckusing_Exception(
+                            "ERROR: Migrations directory '"
+                            . $this->_migratorDir
+                            . "' is not writable by the current user. Check permissions and try again.\n",
+                            Ruckusing_Exception::INVALID_MIGRATION_DIR
+            );
         }
     }
 
