@@ -72,11 +72,6 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         //clear any filesystem stats cache
         clearstatcache();
 
-        //generate a complete migration file
-        $next_version = Ruckusing_Util_Migrator::generate_timestamp();
-        $class = Ruckusing_Util_Naming::camelcase($migration_name);
-        $file_name = $next_version . '_' . $class . '.php';
-
         $framework = $this->get_framework();
         $migrations_dir = $framework->migrations_directory();
 
@@ -88,6 +83,19 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
                 echo "\n\tCreated OK\n";
             }
         }
+
+        //generate a complete migration file
+        $next_version = Ruckusing_Util_Migrator::generate_timestamp();
+        $class = Ruckusing_Util_Naming::camelcase($migration_name);
+
+        if (self::classNameIsDuplicated($class, $migrations_dir)) {
+            throw new Ruckusing_Exception(
+                            'This migration name is already used. Please, choose another name.',
+                            Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+
+        $file_name = $next_version . '_' . $class . '.php';
 
         //check to make sure our destination directory is writable
         if (!is_writable($migrations_dir)) {
@@ -136,6 +144,27 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         $migration_name = $argv[2];
 
         return array('name' => $migration_name);
+    }
+
+    /**
+     * Indicate if a class name is already used
+     *
+     * @param string $classname    The class name to test
+     * @param string $migrationDir The directory of migration files
+     *
+     * @return bool
+     */
+    public static function classNameIsDuplicated($classname, $migrationDir)
+    {
+        $migrationFiles = Ruckusing_Util_Migrator::get_migration_files($migrationDir, 'up');
+        $classname = strtolower($classname);
+        foreach ($migrationFiles as $file) {
+            if (strtolower($file['class']) == $classname) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
