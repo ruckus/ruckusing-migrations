@@ -25,6 +25,13 @@ require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
+     * Current Adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+    private $_adapter = null;
+
+    /**
      * Creates an instance of Task_DB_Version
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -34,6 +41,7 @@ class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     public function __construct($adapter)
     {
         parent::__construct($adapter);
+        $this->_adapter = $adapter;
     }
 
     /**
@@ -45,7 +53,7 @@ class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
         echo "[db:version]: \n";
-        if (!$this->get_adapter()->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
+        if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
             //it doesnt exist, create it
             echo "\tSchema version table (" . RUCKUSING_TS_SCHEMA_TBL_NAME . ") does not exist. Do you need to run 'db:setup'?";
         } else {
@@ -53,7 +61,7 @@ class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             // We only want one row but we cannot assume that we are using MySQL and use a LIMIT statement
             // as it is not part of the SQL standard. Thus we have to select all rows and use PHP to return
             // the record we need
-            $versions_nested = $this->get_adapter()->select_all(sprintf("SELECT version FROM %s", RUCKUSING_TS_SCHEMA_TBL_NAME));
+            $versions_nested = $this->_adapter->select_all(sprintf("SELECT version FROM %s", RUCKUSING_TS_SCHEMA_TBL_NAME));
             $versions = array();
             foreach ($versions_nested as $v) {
                 $versions[] = $v['version'];

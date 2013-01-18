@@ -29,7 +29,7 @@ define('STYLE_OFFSET', 2);
  * @subpackage Db
  * @author   Cody Caughlan <codycaughlan % gmail . com>
  * @link      https://github.com/ruckus/ruckusing-migrations
- */
+*/
 class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
@@ -38,6 +38,20 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      * @var Ruckusing_Util_Migrator
      */
     private $_migrator_util = null;
+
+    /**
+     * Current Adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+    private $_adapter = null;
+
+    /**
+     * migrator directory
+     *
+     * @var string
+     */
+    private $_migratorDir = null;
 
     /**
      * The task arguments
@@ -50,7 +64,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      * debug
      *
      * @var boolean
-     */
+    */
     private $_debug = false;
 
     /**
@@ -63,7 +77,8 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     public function __construct($adapter)
     {
         parent::__construct($adapter);
-        $this->_migrator_util = new Ruckusing_Util_Migrator($adapter);
+        $this->_adapter = $adapter;
+        $this->_migrator_util = new Ruckusing_Util_Migrator($this->_adapter);
     }
 
     /**
@@ -74,8 +89,11 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     public function execute($args)
     {
         $output = "";
-        if (!$this->get_adapter()->supports_migrations()) {
-            die("This database does not support migrations.");
+        if (!$this->_adapter->supports_migrations()) {
+            throw new Ruckusing_Exception(
+                            "This database does not support migrations.",
+                            Ruckusing_Exception::MIGRATION_NOT_SUPPORTED
+            );
         }
         $this->_task_args = $args;
         echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
@@ -126,7 +144,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             if ($ex->getCode() == Ruckusing_Exception::MISSING_SCHEMA_INFO_TABLE) {
                 echo "\tSchema info table does not exist. I tried creating it but failed. Check permissions.";
             } else {
-                die("\n\n" . $ex->getMessage() . "\n\n");
+                throw $ex;
             }
         }
         echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
@@ -141,7 +159,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      */
     private function migrate_from_offset($offset, $current_version, $direction)
     {
-        $migrations = $this->_migrator_util->get_migration_files($this->get_framework()->migrations_directory(), $direction);
+        $migrations = $this->_migrator_util->get_migration_files($this->_migratorDir, $direction);
         $versions = array();
         $current_index = -1;
         for ($i = 0; $i < count($migrations); $i++) {
@@ -203,7 +221,11 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             } else {
                 echo ":\n";
             }
-            $migrations = $this->_migrator_util->get_runnable_migrations($this->get_framework()->migrations_directory(), $direction, $destination);
+            $migrations = $this->_migrator_util->get_runnable_migrations(
+                            $this->_migratorDir,
+                            $direction,
+                            $destination
+            );
             if (count($migrations) == 0) {
                 return "\nNo relevant migrations to run. Exiting...\n";
             }
@@ -211,6 +233,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
         } catch (Exception $ex) {
             throw $ex;
         }
+
     }
 
     /**
@@ -226,42 +249,40 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         $last_version = -1;
         foreach ($migrations as $file) {
-            $full_path = $this->get_framework()->migrations_directory()  . '/' . $file['file'];
+            $full_path = $this->_migratorDir  . '/' . $file['file'];
             if (is_file($full_path) && is_readable($full_path) ) {
                 require_once $full_path;
                 $klass = Ruckusing_Util_Naming::class_from_migration_file($file['file']);
-                $obj = new $klass($this->get_adapter());
-                $refl = new ReflectionObject($obj);
-                if ($refl->hasMethod($target_method)) {
-                    $start = $this->start_timer();
-                    try {
-                        //start transaction
-                        $this->get_adapter()->start_transaction();
-                        $result =  $obj->$target_method();
-                        //successfully ran migration, update our version and commit
-                        $this->_migrator_util->resolve_current_version($file['version'], $target_method);
-                        $this->get_adapter()->commit_transaction();
-                    } catch (Exception $e) {
-                        $this->get_adapter()->rollback_transaction();
-                        //wrap the caught exception in our own
-                        $ex = new Exception(sprintf("%s - %s", $file['class'], $e->getMessage()));
-                        throw $ex;
-                    }
-                    $end = $this->end_timer();
-                    $diff = $this->diff_timer($start, $end);
-                    printf("========= %s ======== (%.2f)\n", $file['class'], $diff);
-                    $last_version = $file['version'];
-                    $exec = true;
-                } else {
-                    trigger_error("ERROR: {$klass} does not have a '{$target_method}' method defined!");
+                $obj = new $klass($this->_adapter);
+                $start = $this->start_timer();
+                try {
+                    //start transaction
+                    $this->_adapter->start_transaction();
+                    $result =  $obj->$target_method();
+                    //successfully ran migration, update our version and commit
+                    $this->_migrator_util->resolve_current_version($file['version'], $target_method);
+                    $this->_adapter->commit_transaction();
+                } catch (Ruckusing_Exception $e) {
+                    $this->_adapter->rollback_transaction();
+                    //wrap the caught exception in our own
+                    throw new Ruckusing_Exception(
+                                    sprintf("%s - %s", $file['class'], $e->getMessage()),
+                                    Ruckusing_Exception::MIGRATION_FAILED
+                    );
                 }
-            }//is_file
-        }//foreach
+                $end = $this->end_timer();
+                $diff = $this->diff_timer($start, $end);
+                printf("========= %s ======== (%.2f)\n", $file['class'], $diff);
+                $last_version = $file['version'];
+                $exec = true;
+            }
+        }
+
         //update the schema info
         $result = array('last_version' => $last_version);
 
         return $result;
-    }//run_migrations
+    }
 
     /**
      * Start Timer
@@ -301,15 +322,17 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      */
     private function verify_environment()
     {
-        if (!$this->get_adapter()->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
+        if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
             echo "\n\tSchema version table does not exist. Auto-creating.";
             $this->auto_create_schema_info_table();
         }
+
+        $this->_migratorDir = $this->get_framework()->migrations_directory();
+
         // create the migrations directory if it doesnt exist
-        $migrations_directory = $this->get_framework()->migrations_directory();
-        if (!is_dir($migrations_directory)) {
-            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $migrations_directory);
-            if (mkdir($migrations_directory, 0755, true) === FALSE) {
+        if (!is_dir($this->_migratorDir)) {
+            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $this->_migratorDir);
+            if (mkdir($this->_migratorDir, 0755, true) === FALSE) {
                 printf("\n\tUnable to create migrations directory at %s, check permissions?", $migrations_directory);
             } else {
                 printf("\n\tCreated OK");
@@ -326,11 +349,14 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         try {
             echo sprintf("\n\tCreating schema version table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME . "\n\n");
-            $this->get_adapter()->create_schema_version_table();
+            $this->_adapter->create_schema_version_table();
 
             return true;
         } catch (Exception $e) {
-            die("\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n");
+            throw new Ruckusing_Exception(
+                            "\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n",
+                            Ruckusing_Exception::MIGRATION_FAILED
+            );
         }
     }
 
@@ -373,4 +399,4 @@ USAGE;
         return $output;
     }
 
-}//class
+}

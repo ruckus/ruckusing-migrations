@@ -35,6 +35,9 @@ class Ruckusing_Exception extends Exception
     const INVALID_FRAMEWORK = 111;
     const QUERY_ERROR = 112;
     const INVALID_MIGRATION_METHOD = 113;
+    const MIGRATION_FAILED = 114;
+    const MIGRATION_NOT_SUPPORTED = 115;
+    const INVALID_DB_DIR = 116;
 
     /**
      * Redefine the exception so message isn't optional

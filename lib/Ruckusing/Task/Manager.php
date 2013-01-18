@@ -47,7 +47,6 @@ class Ruckusing_Task_Manager
     public function __construct($adapter)
     {
         $this->setAdapter($adapter);
-        $this->load_all_tasks(RUCKUSING_TASK_DIR);
     }
 
     /**
@@ -109,6 +108,9 @@ class Ruckusing_Task_Manager
      */
     public function has_task($key)
     {
+        if (empty($this->_tasks)) {
+            $this->load_all_tasks(RUCKUSING_TASK_DIR);
+        }
         if (array_key_exists($key, $this->_tasks)) {
             return true;
         }

@@ -27,6 +27,13 @@ require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
 class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
+     * Current Adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+    private $_adapter = null;
+
+    /**
      * Creates an instance of Task_DB_Generate
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -36,6 +43,7 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
     public function __construct($adapter)
     {
         parent::__construct($adapter);
+        $this->_adapter = $adapter;
     }
 
     /**
@@ -50,7 +58,9 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
             $cargs = $this->parse_args($_SERVER['argv']);
             //input sanity check
             if (!is_array($cargs) || !array_key_exists('name', $cargs)) {
-                $this->print_help(true);
+                echo $this->help();
+
+                return;
             }
             $migration_name = $cargs['name'];
         }
@@ -81,7 +91,12 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
 
         //check to make sure our destination directory is writable
         if (!is_writable($migrations_dir)) {
-            self::die_with_error("ERROR: migration directory '" . $migrations_dir . "' is not writable by the current user. Check permissions and try again.");
+            throw new Ruckusing_Exception(
+                            "ERROR: migration directory '"
+                            . $migrations_dir
+                            . "' is not writable by the current user. Check permissions and try again.",
+                            Ruckusing_Exception::INVALID_MIGRATION_DIR
+            );
         }
 
         //write it out!
@@ -89,7 +104,10 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         $template_str = self::get_template($class);
         $file_result = file_put_contents($full_path, $template_str);
         if ($file_result === FALSE) {
-            self::die_with_error("Error writing to migrations directory/file. Do you have sufficient privileges?");
+            throw new Ruckusing_Exception(
+                            "Error writing to migrations directory/file. Do you have sufficient privileges?",
+                            Ruckusing_Exception::INVALID_MIGRATION_DIR
+            );
         } else {
             echo "\n\tCreated migration: {$file_name}\n\n";
         }
@@ -111,35 +129,13 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         }
         $num_args = count($argv);
         if ($num_args < 3) {
-            $this->print_help(true);
+            echo $this->help();
+
+            return;
         }
         $migration_name = $argv[2];
 
         return array('name' => $migration_name);
-    }
-
-    /**
-     * Print a usage scenario for this script.
-     * Optionally take a boolean on whether to immediately die or not.
-     *
-     * @param boolean $exit should die after or not
-     */
-    public function print_help($exit = false)
-    {
-        echo $this->help();
-        if ($exit) {
-            die;
-        }
-    }
-
-    /**
-     * Print an error and die.
-     *
-     * @param string $str message to print
-     */
-    public static function die_with_error($str)
-    {
-        die("\n{$str}\n");
     }
 
     /**

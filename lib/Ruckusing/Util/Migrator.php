@@ -38,7 +38,7 @@ class Ruckusing_Util_Migrator
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
      *
      * @return Ruckusing_Util_Migrator
-     */
+    */
     public function __construct($adapter)
     {
         $this->setAdapter($adapter);
@@ -116,7 +116,10 @@ class Ruckusing_Util_Migrator
         $current = $this->find_version($migrations, $this->get_max_version());
         $target = $this->find_version($migrations, $destination);
         if (is_null($target) && !is_null($destination) && $destination > 0) {
-            throw new Ruckusing_Exception("Could not find target version {$destination} in set of migrations.", Ruckusing_Exception::INVALID_TARGET_MIGRATION);
+            throw new Ruckusing_Exception(
+                            "Could not find target version {$destination} in set of migrations.",
+                            Ruckusing_Exception::INVALID_TARGET_MIGRATION
+            );
         }
         $start = $direction == 'up' ? 0 : array_search($current, $migrations);
         $start = $start !== false ? $start : 0;
@@ -150,7 +153,7 @@ class Ruckusing_Util_Migrator
         }
 
         return($to_execute);
-    }//get_relevant_files
+    }
 
     /**
      * Generate a timestamp for the current time in UTC format
@@ -233,9 +236,9 @@ class Ruckusing_Util_Migrator
             $migration = $valid_files[$i];
             if (preg_match('/^(\d+)_(.*)\.php$/', $migration, $matches)) {
                 $files[] = array(
-                        'version' => $matches[1],
-                        'class' 	=> $matches[2],
-                        'file'		=> $matches[0]
+                                'version' => $matches[1],
+                                'class' 	=> $matches[2],
+                                'file'		=> $matches[0]
                 );
             }
         }
