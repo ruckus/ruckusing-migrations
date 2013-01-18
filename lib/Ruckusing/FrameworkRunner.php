@@ -142,7 +142,7 @@ class Ruckusing_FrameworkRunner
     public function execute()
     {
         if (empty($this->_cur_task_name)) {
-            if (isset($_SERVER["argv"][1])) {
+            if (isset($_SERVER["argv"][1]) && stripos($_SERVER["argv"][1], '=') === false) {
                 echo sprintf("\n\tWrong Task format: %s\n", $_SERVER["argv"][1]);
             }
             echo $this->help();
@@ -451,14 +451,14 @@ class Ruckusing_FrameworkRunner
         // TODO: dynamically list all available tasks
         $output =<<<USAGE
 
-\tUsage: php {$_SERVER['argv'][0]} <task> [help] [task parameters] [ENV=environment]
+\tUsage: php {$_SERVER['argv'][0]} <task> [help] [task parameters] [env=environment]
 
 \thelp: Display this message
 
-\tENV: The ENV command line parameter can be used to specify a different
+\tenv: The env command line parameter can be used to specify a different
 \tdatabase to run against, as specific in the configuration file
 \t(config/database.inc.php).
-\tBy default, ENV is "development"
+\tBy default, env is "development"
 
 \ttask: In a nutshell, task names are pseudo-namespaced. The tasks that come
 \twith the framework are namespaced to "db" (e.g. the tasks are "db:migrate",

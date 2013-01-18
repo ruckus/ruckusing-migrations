@@ -28,6 +28,13 @@ require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 class Task_Db_Setup extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
+     * Current Adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+    private $_adapter = null;
+
+    /**
      * Creates an instance of Task_DB_Setup
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -37,6 +44,7 @@ class Task_Db_Setup extends Ruckusing_Task_Base implements Ruckusing_Task_Interf
     public function __construct($adapter)
     {
         parent::__construct($adapter);
+        $this->_adapter = $adapter;
     }
 
     /**
@@ -49,9 +57,9 @@ class Task_Db_Setup extends Ruckusing_Task_Base implements Ruckusing_Task_Interf
         echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
         echo "[db:setup]: \n";
         //it doesnt exist, create it
-        if (!$this->get_adapter()->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
+        if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
             echo sprintf("\tCreating table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME);
-            $this->get_adapter()->create_schema_version_table();
+            $this->_adapter->create_schema_version_table();
             echo "\n\tDone.\n";
         } else {
             echo sprintf("\tNOTICE: table '%s' already exists. Nothing to do.", RUCKUSING_TS_SCHEMA_TBL_NAME);
