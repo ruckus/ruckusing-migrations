@@ -70,6 +70,7 @@ class Ruckusing_Migration_Base
             );
         }
         $this->_adapter = $adapter;
+
         return $this;
     }
 

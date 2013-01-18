@@ -26,7 +26,12 @@ require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
  */
 class Task_Db_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
-    private $create_ddl = "";
+    /**
+     * Current Adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+    private $_adapter = null;
 
     /**
      * Creates an instance of Task_DB_Status
@@ -38,6 +43,7 @@ class Task_Db_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
     public function __construct($adapter)
     {
         parent::__construct($adapter);
+        $this->_adapter = $adapter;
     }
 
     /**
@@ -49,7 +55,7 @@ class Task_Db_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
     {
         echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
         echo "[db:status]: \n";
-        $util = new Ruckusing_Util_Migrator($this->get_adapter());
+        $util = new Ruckusing_Util_Migrator($this->_adapter);
         $migrations = $util->get_executed_migrations();
         $files = $util->get_migration_files($this->get_framework()->migrations_directory(), 'up');
         $applied = array();

@@ -27,6 +27,13 @@ require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
 class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
+     * Current Adapter
+     *
+     * @var Ruckusing_Adapter_Base
+     */
+    private $_adapter = null;
+
+    /**
      * Creates an instance of Task_DB_Schema
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -36,6 +43,7 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
     public function __construct($adapter)
     {
         parent::__construct($adapter);
+        $this->_adapter = $adapter;
     }
 
     /**
@@ -45,20 +53,14 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
      */
     public function execute($args)
     {
-        try {
-            echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
-            echo "[db:schema]: \n";
+        echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
+        echo "[db:schema]: \n";
 
-            $db_directory = $this->db_dir();
-
-            //write to disk
-            $schema_file = $db_directory . '/schema.txt';
-            $schema = $this->get_adapter()->schema($schema_file);
-            echo "\tSchema written to: $schema_file\n\n";
-            echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
-        } catch (Exception $ex) {
-            throw $ex; //re-throw
-        }
+        //write to disk
+        $schema_file = $this->db_dir() . '/schema.txt';
+        $schema = $this->_adapter->schema($schema_file);
+        echo "\tSchema written to: $schema_file\n\n";
+        echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
     }
 
     /**
@@ -81,7 +83,12 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
 
         //check to make sure our destination directory is writable
         if (!is_writable($db_directory)) {
-            throw new Exception("ERROR: DB Schema directory '" . $db_directory . "' is not writable by the current user. Check permissions and try again.\n");
+            throw new Ruckusing_Exception(
+                            "ERROR: DB Schema directory '"
+                            . $db_directory
+                            . "' is not writable by the current user. Check permissions and try again.\n",
+                            Ruckusing_Exception::INVALID_DB_DIR
+            );
         }
 
         return $db_directory;
