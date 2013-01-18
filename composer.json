@@ -31,6 +31,6 @@
         }
     },
 	"bin":[
-		"main.php"
+		"ruckus.php"
 	]
 }

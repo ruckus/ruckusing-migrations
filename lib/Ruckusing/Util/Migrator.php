@@ -54,7 +54,10 @@ class Ruckusing_Util_Migrator
     public function setAdapter($adapter)
     {
         if (!($adapter instanceof Ruckusing_Adapter_Base)) {
-            throw new Ruckusing_Exception('Adapter must be implement Ruckusing_Adapter_Base!', Ruckusing_Exception::INVALID_ADAPTER);
+            throw new Ruckusing_Exception(
+                            'Adapter must be implement Ruckusing_Adapter_Base!',
+                            Ruckusing_Exception::INVALID_ADAPTER
+            );
         }
         $this->_adapter = $adapter;
 
@@ -211,7 +214,15 @@ class Ruckusing_Util_Migrator
     {
         $valid_files = array();
         if (!is_dir($directory)) {
-            throw new Ruckusing_Exception("\nRuckusing_Util_Migrator - ({$directory}) is not a directory.\n", Ruckusing_Exception::INVALID_MIGRATION_DIR);
+            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $directory);
+            if (mkdir($directory, 0755, true) === FALSE) {
+                throw new Ruckusing_Exception(
+                                "\n\tUnable to create migrations directory at %s, check permissions?", $directory,
+                                Ruckusing_Exception::INVALID_MIGRATION_DIR
+                );
+            } else {
+                printf("\n\tCreated OK");
+            }
         }
         $files = scandir($directory);
         $file_cnt = count($files);

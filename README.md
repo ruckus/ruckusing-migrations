@@ -29,20 +29,24 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 # Limitations
 
-* PHP5 is a hard requirement. The framework employes extensive use of object-oriented features of PHP5. There are no plans to make the framework backwards compatible.
+* PHP 5.2 is a hard requirement. The framework employes extensive use of object-oriented features of PHP5. There are no plans to make the framework backwards compatible.
 
 ## Configuration
 
-* Copy `/path/to/ruckusing-migrations/config/database.inc.php` to `/path/to/ruckusing-migrations/ruckusing.conf.php` and update the `development` key with your DB credentials:
+* Copy `/path/to/ruckusing-migrations/config/database.inc.php` to `/path/to/mycodebase/ruckusing.conf.php` and update the `development` key with your DB credentials:
+
+`type` is one of `pgsql` or `mysql` depending on your database, as well `migrations_dir`, `db_dir`, `log_dir`, `ruckusing_base` paths.
+
+* Copy `/path/to/ruckusing-migrations/ruckus.php` to `/path/to/mycodebase/ruckus.php` and edit the `development` key with your DB credentials:
 
 `type` is one of `pgsql` or `mysql` depending on your database.
 
 ## Generating Skeleton Migration files
 
-From the top-level of the package run:
+From the top-level of your code base, run:
 
 ```
-$ php main.php db:generate create_users_table
+$ php ruckus.php db:generate create_users_table
 
 Created OK
 Created migration: 20121112163653_CreateUsersTable.php
@@ -51,7 +55,7 @@ Created migration: 20121112163653_CreateUsersTable.php
 The generated file is in the `migrations` directory. Open up that file and you'll see it looks like:
 
 ```
-class CreateUsersTable extends Ruckusing_Migrations_Base {
+class CreateUsersTable extends Ruckusing_Migration_Base {
 
 	public function up() {
 
@@ -70,19 +74,19 @@ All of the methods below are to be implemented in the `up()` and `down()` method
 Run all pending migrations:
 
 ```
-$ php main.php db:migrate
+$ php ruckus.php db:migrate
 ```
 
 Rollback the most recent migration:
 
 ```
-$ php main.php db:migrate VERSION=-1
+$ php ruckus.php db:migrate VERSION=-1
 ```
 
 Rollback to a specific migration (specify the timestamp in the filename of the migration to rollback to):
 
 ```
-$ php main.php db:migrate VERSION=20121114001742
+$ php ruckus.php db:migrate VERSION=20121114001742
 ```
 
 ## Overview of the migration methods available
