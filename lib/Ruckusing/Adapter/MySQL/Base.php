@@ -123,7 +123,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'time'          => array('name' => "time"),
                 'date'          => array('name' => "date"),
                 'binary'        => array('name' => "blob"),
-                'boolean'       => array('name' => "tinyint", 'limit' => 1)
+                'boolean'       => array('name' => "tinyint", 'limit' => 1),
+				'enum'          => array('name' => "enum", 'values' => array())
         );
 
         return $types;
@@ -903,6 +904,9 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         if (isset($options['limit'])) {
             $limit = $options['limit'];
         }
+	    if (isset($options['values'])) {
+            $values = $options['values'];
+        }
 
         $native_type = $natives[$type];
         if ( is_array($native_type) && array_key_exists('name', $native_type)) {
@@ -954,6 +958,17 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                             );
                 }
             }//precision
+        }
+        elseif ($type == "enum") {
+            if (empty($values)) {
+                throw new Ruckusing_Exception(
+                        "Error adding enum column: there must be at least one value defined",
+                        Ruckusing_Exception::INVALID_ARGUMENT
+                        );
+            }
+            else {
+                $column_type_sql .= sprintf("('%s')", implode("','", $values));
+            }
         }  {
             //not a decimal column
             if ($limit == null && array_key_exists('limit', $native_type)) {
