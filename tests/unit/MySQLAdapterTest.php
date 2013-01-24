@@ -212,8 +212,8 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $expected = "`age` int(11) AFTER `height`";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "integer", array("after" => "height")));
 
-		$expected = "`adapter` enum('mysql','pgsql')";
-        $this->assertEquals($expected, $this->adapter->column_definition("adapter", "enum", array('values' => array('mysql', 'pgsql'))));
+		$expected = "`adapter` enum('mysql','pgsql','ha\'xor')";
+        $this->assertEquals($expected, $this->adapter->column_definition("adapter", "enum", array('values' => array('mysql', 'pgsql', "ha'xor"))));
     }//test_column_definition
 
     /**
