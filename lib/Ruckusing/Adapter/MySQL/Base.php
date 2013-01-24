@@ -338,14 +338,14 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         $query_type = $this->determine_query_type($query);
         $data = array();
         if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
-            $res = mysql_query($query, $this->conn);
+            $res = $this->conn->query($query);
             if ($this->isError($res)) {
                 throw new Ruckusing_Exception(
-                        sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, mysql_error($this->conn)),
+                        sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->conn->error),
                         Ruckusing_Exception::QUERY_ERROR
                 );
             }
-            while ($row = mysql_fetch_assoc($res)) {
+            while ($row = $res->fetch_assoc()) {
                 $data[] = $row;
             }
 
@@ -353,16 +353,16 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
 
         } else {
             // INSERT, DELETE, etc...
-            $res = mysql_query($query, $this->conn);
+            $res = $this->conn->query($query);
             if ($this->isError($res)) {
                 throw new Ruckusing_Exception(
-                        sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, mysql_error($this->conn)),
+                        sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->conn->error),
                         Ruckusing_Exception::QUERY_ERROR
                 );
             }
 
             if ($query_type == SQL_INSERT) {
-                return mysql_insert_id($this->conn);
+                return $this->conn->insert_id;
             }
 
             return true;
@@ -381,15 +381,15 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         $this->logger->log($query);
         $query_type = $this->determine_query_type($query);
         if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
-            $res = mysql_query($query, $this->conn);
+            $res = $this->conn->query($query);
             if ($this->isError($res)) {
                 throw new Ruckusing_Exception(
-                        sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, mysql_error($this->conn)),
+                        sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->conn->error),
                         Ruckusing_Exception::QUERY_ERROR
                 );
             }
 
-            return mysql_fetch_assoc($res);
+            return $res->fetch_assoc();
         } else {
             throw new Ruckusing_Exception(
                     "Query for select_one() is not one of SELECT or SHOW: $query",
@@ -463,7 +463,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      */
     public function quote_string($str)
     {
-        return mysql_real_escape_string($str);
+        return $this->conn->real_escape_string($str);
     }
 
     /**
@@ -1092,19 +1092,17 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         if ($db_info) {
             $this->db_info = $db_info;
             //we might have a port
-            if (!empty($db_info['port'])) {
-                $host = $db_info['host'] . ':' . $db_info['port'];
-            } else {
-                $host = $db_info['host'];
+            if (empty($db_info['port'])) {
+                $db_info['port'] = 3306;
             }
-            $this->conn = mysql_connect($host, $db_info['user'], $db_info['password']);
-            if (!$this->conn) {
+            $this->conn = new mysqli($db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port']); //db name leaved for selection
+            if ($this->conn->connect_error) {
                 throw new Ruckusing_Exception(
                         "\n\nCould not connect to the DB, check host / user / password\n\n",
                         Ruckusing_Exception::INVALID_CONFIG
                 );
             }
-            if (!mysql_select_db($db_info['database'], $this->conn)) {
+            if (!$this->conn->select_db($db_info['database'])) {
                 throw new Ruckusing_Exception(
                         "\n\nCould not select the DB " . $db_info['database'] . ", check permissions on host $host \n\n",
                         Ruckusing_Exception::INVALID_CONFIG
@@ -1141,9 +1139,9 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     {
         if ($this->_tables_loaded == false || $reload) {
             $this->_tables = array(); //clear existing structure
-            $qry = "SHOW TABLES";
-            $res = mysql_query($qry, $this->conn);
-            while ($row = mysql_fetch_row($res)) {
+            $query = "SHOW TABLES";
+            $res = $this->conn->query($query);
+            while ($row = $res->fetch_row()) {
                 $table = $row[0];
                 $this->_tables[$table] = true;
             }
@@ -1245,7 +1243,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                     Ruckusing_Exception::QUERY_ERROR
             );
         }
-        mysql_query("BEGIN", $this->conn);
+        $this->conn->autocommit(FALSE);
         $this->_in_trx = true;
     }
 
@@ -1260,7 +1258,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                     Ruckusing_Exception::QUERY_ERROR
             );
         }
-        mysql_query("COMMIT", $this->conn);
+        $this->conn->commit();
         $this->_in_trx = false;
     }
 
@@ -1275,7 +1273,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                     Ruckusing_Exception::QUERY_ERROR
             );
         }
-        mysql_query("ROLLBACK", $this->conn);
+        $this->conn->rollback();
         $this->_in_trx = false;
     }
 
