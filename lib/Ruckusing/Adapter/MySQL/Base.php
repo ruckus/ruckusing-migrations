@@ -967,7 +967,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                         );
             }
             else {
-                $column_type_sql .= sprintf("('%s')", implode("','", $values));
+                $column_type_sql .= sprintf("('%s')", implode("','", array_map(array($this, 'quote_string'), $values)));
             }
         }  {
             //not a decimal column
