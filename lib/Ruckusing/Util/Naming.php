@@ -92,6 +92,10 @@ class Ruckusing_Util_Naming
     {
         //we could be given either a string or an absolute path
         //deal with it appropriately
+
+        // normalize directory separators first
+        $file_name = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $file_name);
+
         $parts = explode(DIRECTORY_SEPARATOR, $file_name);
         $namespace = $parts[count($parts)-2];
         $file_name = substr($parts[count($parts)-1], 0, -4);
