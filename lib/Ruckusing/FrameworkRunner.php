@@ -116,6 +116,9 @@ class Ruckusing_FrameworkRunner
         //parse arguments
         $this->parse_args($argv);
 
+        //process arguments
+        $this->process_args();
+
         //set config variables
         $this->_config = $config;
 
@@ -188,9 +191,34 @@ class Ruckusing_FrameworkRunner
      *
      * @return string
      */
-    public function migrations_directory()
+    public function migrations_directory($key = false)
     {
-        return $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+        if ($key) {
+            return $this->_config['migrations_dir'][$key] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];    
+        } elseif (is_array($this->_config['migrations_dir'])) {
+            $keys = array_keys($this->_config['migrations_dir']);
+            return $this->_config['migrations_dir'][$keys[0]] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];    
+        } else {
+            return $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];    
+        }
+    }
+
+    /**
+     * Get all migrations directory
+     *
+     * @return string
+     */
+    public function migrations_directories()
+    {
+        $result = array();
+        if (is_array($this->_config['migrations_dir'])) {
+            foreach ($this->_config['migrations_dir'] as $name => $path) {
+                $result[$name] = $path . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+            }
+        } else {
+            $result['main'] = $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database']; 
+        }
+        return $result;
     }
 
     /**
@@ -274,7 +302,17 @@ class Ruckusing_FrameworkRunner
             }
         }
         $this->_task_options = $options;
+    }
 
+    /**
+    *
+    *
+    *
+    */
+    private function process_args()
+    {
+        // will be useful in future
+        // for default params
     }
 
     /**
@@ -288,7 +326,7 @@ class Ruckusing_FrameworkRunner
         $this->_adapter->create_schema_version_table();
         //insert all existing records into our new table
         $migrator_util = new Ruckusing_Util_Migrator($this->_adapter);
-        $files = $migrator_util->get_migration_files($this->migrations_directory(), 'up');
+        $files = $migrator_util->get_migration_files($this->migrations_directories(), 'up');
         foreach ($files as $file) {
             if ((int) $file['version'] >= PHP_INT_MAX) {
                 //its new style like '20081010170207' so its not a candidate
@@ -374,6 +412,12 @@ class Ruckusing_FrameworkRunner
                     Ruckusing_Exception::INVALID_CONFIG
             );
         }
+        if (isset($this->_task_options['dir']) && !isset($this->_config['migrations_dir'][$this->_task_options['dir']])) {
+            throw new Ruckusing_Exception(
+                    "Error: such dir is not set in 'migrations_dir' option in config.",
+                    Ruckusing_Exception::INVALID_CONFIG
+            );
+        }
         if (empty($this->_config['db_dir'])) {
             throw new Ruckusing_Exception(
                     "Error: 'db_dir' is not set in config.",
@@ -434,10 +478,10 @@ class Ruckusing_FrameworkRunner
         $files = scandir($adapter_dir);
         foreach ($files as $f) {
             //skip over invalid files
-            if ($f == '.' || $f == ".." || !is_dir($adapter_dir . '/' . $f)) {
+            if ($f[0] == '.' || !is_dir($adapter_dir . '/' . $f)) {
                 continue;
             }
-            require_once $adapter_dir . '/' . $f . '/Base.php';
+            require_once $adapter_dir . DIRECTORY_SEPARATOR . $f . DIRECTORY_SEPARATOR . 'Base.php';
         }
     }
 

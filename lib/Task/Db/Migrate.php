@@ -47,11 +47,11 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     private $_adapter = null;
 
     /**
-     * migrator directory
+     * migrator directories
      *
      * @var string
      */
-    private $_migratorDir = null;
+    private $_migratorDirs = null;
 
     /**
      * The task arguments
@@ -159,7 +159,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      */
     private function migrate_from_offset($offset, $current_version, $direction)
     {
-        $migrations = $this->_migrator_util->get_migration_files($this->_migratorDir, $direction);
+        $migrations = $this->_migrator_util->get_migration_files($this->_migratorDirs, $direction);
         $versions = array();
         $current_index = -1;
         for ($i = 0; $i < count($migrations); $i++) {
@@ -222,7 +222,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                 echo ":\n";
             }
             $migrations = $this->_migrator_util->get_runnable_migrations(
-                            $this->_migratorDir,
+                            $this->_migratorDirs,
                             $direction,
                             $destination
             );
@@ -249,7 +249,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         $last_version = -1;
         foreach ($migrations as $file) {
-            $full_path = $this->_migratorDir  . '/' . $file['file'];
+            $full_path = $this->_migratorDirs[$file['path']] . DIRECTORY_SEPARATOR . $file['file'];
             if (is_file($full_path) && is_readable($full_path) ) {
                 require_once $full_path;
                 $klass = Ruckusing_Util_Naming::class_from_migration_file($file['file']);
@@ -327,26 +327,27 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             $this->auto_create_schema_info_table();
         }
 
-        $this->_migratorDir = $this->get_framework()->migrations_directory();
+        $this->_migratorDirs = $this->get_framework()->migrations_directories();
 
         // create the migrations directory if it doesnt exist
-        if (!is_dir($this->_migratorDir)) {
-            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $this->_migratorDir);
-            if (mkdir($this->_migratorDir, 0755, true) === FALSE) {
-                printf("\n\tUnable to create migrations directory at %s, check permissions?", $this->_migratorDir);
-            } else {
-                printf("\n\tCreated OK");
+        foreach ($this->_migratorDirs as $name => $path) {
+            if (!is_dir($path)) {
+                printf("\n\tMigrations directory (%s) doesn't exist, attempting to create.", $path);
+                if (mkdir($this->_migratorDirs, 0755, true) === FALSE) {
+                    printf("\n\tUnable to create migrations directory at %s, check permissions?", $path);
+                } else {
+                    printf("\n\tCreated OK");
+                }
             }
-        }
-
-        //check to make sure our destination directory is writable
-        if (!is_writable($this->_migratorDir)) {
-            throw new Ruckusing_Exception(
-                            "ERROR: Migrations directory '"
-                            . $this->_migratorDir
-                            . "' is not writable by the current user. Check permissions and try again.\n",
-                            Ruckusing_Exception::INVALID_MIGRATION_DIR
-            );
+            //check to make sure our destination directory is writable
+            if (!is_writable($path)) {
+                throw new Ruckusing_Exception(
+                    "ERROR: Migrations directory '"
+                    . $path
+                    . "' is not writable by the current user. Check permissions and try again.\n",
+                    Ruckusing_Exception::INVALID_MIGRATION_DIR
+                );
+            }
         }
     }
 
