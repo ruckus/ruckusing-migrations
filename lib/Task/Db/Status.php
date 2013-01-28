@@ -57,7 +57,7 @@ class Task_Db_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
         echo "[db:status]: \n";
         $util = new Ruckusing_Util_Migrator($this->_adapter);
         $migrations = $util->get_executed_migrations();
-        $files = $util->get_migration_files($this->get_framework()->migrations_directory(), 'up');
+        $files = $util->get_migration_files($this->get_framework()->migrations_directories(), 'up');
         $applied = array();
         $not_applied = array();
         foreach ($files as $file) {

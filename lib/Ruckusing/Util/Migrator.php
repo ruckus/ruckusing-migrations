@@ -96,14 +96,14 @@ class Ruckusing_Util_Migrator
      * skip migrations that have not been executed, when going down this method will only include migrations
      * that have been executed.
      *
-     * @param string  $directory   the migration dir
+     * @param array   $directories the migration dirs
      * @param string  $direction   up/down
      * @param string  $destination the version to migrate to
      * @param boolean $use_cache   the current logger
      *
      * @return array
      */
-    public function get_runnable_migrations($directory, $direction, $destination = null, $use_cache = true)
+    public function get_runnable_migrations($directories, $direction, $destination = null, $use_cache = true)
     {
         // cache migration lookups and early return if we've seen this requested set
         if ($use_cache == true) {
@@ -115,7 +115,7 @@ class Ruckusing_Util_Migrator
 
         $runnable = array();
         $migrations = array();
-        $migrations = $this->get_migration_files($directory, $direction);
+        $migrations = $this->get_migration_files($directories, $direction);
         $current = $this->find_version($migrations, $this->get_max_version());
         $target = $this->find_version($migrations, $destination);
         if (is_null($target) && !is_null($destination) && $destination > 0) {
@@ -205,37 +205,44 @@ class Ruckusing_Util_Migrator
      * If nested, then return a complex array with the migration parts broken up into parts
      * which make analysis much easier.
      *
-     * @param string $directory the migration dir
-     * @param string $direction the direction  up/down
+     * @param array  $directories the migration dirs
+     * @param string $direction   the direction  up/down
      *
      * @return array
      */
-    public static function get_migration_files($directory, $direction)
+    public static function get_migration_files($directories, $direction)
     {
         $valid_files = array();
-        if (!is_dir($directory)) {
-            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $directory);
-            if (mkdir($directory, 0755, true) === FALSE) {
-                throw new Ruckusing_Exception(
-                                "\n\tUnable to create migrations directory at %s, check permissions?", $directory,
-                                Ruckusing_Exception::INVALID_MIGRATION_DIR
-                );
-            } else {
-                printf("\n\tCreated OK");
+        foreach ($directories as $name => $path) {
+            if (!is_dir($path)) {
+                printf("\n\tMigrations directory (%s) doesn't exist, attempting to create.", $path);
+                if (mkdir($path, 0755, true) === FALSE) {
+                    throw new Ruckusing_Exception(
+                        "\n\tUnable to create migrations directory at %s, check permissions?", $path,
+                        Ruckusing_Exception::INVALID_MIGRATION_DIR
+                    );
+                } else {
+                    printf("\n\tCreated OK");
+                }
             }
-        }
-        $files = scandir($directory);
-        $file_cnt = count($files);
-        if ($file_cnt > 0) {
-            for ($i = 0; $i < $file_cnt; $i++) {
-                if (preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
-                    if (count($matches) == 3) {
-                        $valid_files[] = $files[$i];
+            $files = scandir($path);
+            $file_cnt = count($files);
+            if ($file_cnt > 0) {
+                for ($i = 0; $i < $file_cnt; $i++) {
+                    if (preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
+                        if (count($matches) == 3) {
+                            $valid_files[] = array(
+                                'name'  =>  $files[$i],
+                                'path'  =>  $name
+                            );
+                        }
                     }
                 }
             }
         }
-        sort($valid_files); //sorts in place
+
+        usort($valid_files, array("Ruckusing_Util_Migrator", "migration_compare")); //sorts in place
+
         if ($direction == 'down') {
             $valid_files = array_reverse($valid_files);
         }
@@ -245,11 +252,12 @@ class Ruckusing_Util_Migrator
         $cnt = count($valid_files);
         for ($i = 0; $i < $cnt; $i++) {
             $migration = $valid_files[$i];
-            if (preg_match('/^(\d+)_(.*)\.php$/', $migration, $matches)) {
+            if (preg_match('/^(\d+)_(.*)\.php$/', $migration['name'], $matches)) {
                 $files[] = array(
-                                'version' => $matches[1],
-                                'class' 	=> $matches[2],
-                                'file'		=> $matches[0]
+                    'version'   => $matches[1],
+                    'class'     => $matches[2],
+                    'file'		=> $matches[0],
+                    'path'      => $migration['path']
                 );
             }
         }
@@ -277,6 +285,19 @@ class Ruckusing_Util_Migrator
         }
 
         return null;
+    }
+
+    /**
+     * Custom comparator for migration sorting
+     *
+     * @param array  $a first migration structure
+     * @param array  $b second migration structure
+     *
+     * @return integer
+     */
+    private static function migration_compare($a, $b)
+    {
+      return strcmp($a["name"], $b["name"]);
     }
 
     /**
