@@ -68,15 +68,15 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         else {
             $migration_name = $args['name'];
         }
-        if (!array_key_exists('dir', $args)) {
-            $args['dir'] = false;
+        if (!array_key_exists('module', $args)) {
+            $args['module'] = '';
         }
 
         //clear any filesystem stats cache
         clearstatcache();
 
         $framework = $this->get_framework();
-        $migrations_dir = $framework->migrations_directory($args['dir']);
+        $migrations_dir = $framework->migrations_directory($args['module']);
 
         if (!is_dir($migrations_dir)) {
             echo "\n\tMigrations directory (" . $migrations_dir . ") doesn't exist, attempting to create.\n";
@@ -153,7 +153,7 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
     /**
      * Indicate if a class name is already used
      *
-     * @param string $classname    The class name to test
+     * @param string $classname      The class name to test
      * @param string $migrationsDirs The array with directories of migration files (in simplest case - just array with one element)
      *
      * @return bool
@@ -164,7 +164,7 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         $classname = strtolower($classname);
         foreach ($migrationFiles as $file) {
             if (strtolower($file['class']) == $classname) {
-                return $file['path'];
+                return $file['module'];
             }
         }
 

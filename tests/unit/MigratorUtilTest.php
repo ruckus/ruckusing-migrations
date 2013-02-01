@@ -22,7 +22,7 @@ define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
  * @category Ruckusing_Tests
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
- */
+*/
 class MigratorUtilTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -50,8 +50,8 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
         $framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test'));
         $this->migrations_dirs = $framework->migrations_directories();
         // need to deal with array, not just string at main
-        if (!is_dir($this->migrations_dirs['main'])) {
-            mkdir($this->migrations_dirs['main'], 0755, true);
+        if (!is_dir($this->migrations_dirs['default'])) {
+            mkdir($this->migrations_dirs['default'], 0755, true);
         }
     }//setUp()
 
@@ -146,19 +146,19 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
                                         'version' => 1,
                                         'class' => 'CreateUsers',
                                         'file' => '001_CreateUsers.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         ),
                         array(
                                         'version' => 3,
                                         'class' => 'AddIndexToBlogs',
                                         'file' => '003_AddIndexToBlogs.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         ),
                         array(
                                         'version' => '20090122193325',
                                         'class'   => 'AddNewTable',
                                         'file'    => '20090122193325_AddNewTable.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         )
         );
         $this->assertEquals($expect_up_files, $actual_up_files);
@@ -186,13 +186,13 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
                                         'version' => 1,
                                         'class' => 'CreateUsers',
                                         'file'  => '001_CreateUsers.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         ),
                         array(
                                         'version' => 3,
                                         'class' => 'AddIndexToBlogs',
                                         'file'  => '003_AddIndexToBlogs.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         )
         );
         $this->assertEquals($expect_up_files, $actual_up_files);
@@ -212,7 +212,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
                                         'version' => 3,
                                         'class' => 'AddIndexToBlogs',
                                         'file'  => '003_AddIndexToBlogs.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         )
         );
         $this->assertEquals($expect_up_files, $actual_up_files);
@@ -237,13 +237,13 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
                                         'version' => '20090122193325',
                                         'class'   => 'AddNewTable',
                                         'file'    => '20090122193325_AddNewTable.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         ),
                         array(
                                         'version' => 3,
                                         'class' => 'AddIndexToBlogs',
                                         'file' => '003_AddIndexToBlogs.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         )
         );
         $this->assertEquals($expect_down_files, $actual_down_files);
@@ -256,7 +256,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
                                         'version' => 3,
                                         'class' => 'AddIndexToBlogs',
                                         'file' => '003_AddIndexToBlogs.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         )
         );
         $this->assertEquals($expect_down_files, $actual_down_files);
@@ -270,19 +270,19 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
                                         'version' => '20090122193325',
                                         'class'   => 'AddNewTable',
                                         'file'    => '20090122193325_AddNewTable.php',
-                                        'path' => 'main'
+                                        'module'  => 'default'
                         ),
                         array(
                                         'version' => 3,
                                         'class' => 'AddIndexToBlogs',
                                         'file' => '003_AddIndexToBlogs.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         ),
                         array(
                                         'version' => 1,
                                         'class' => 'CreateUsers',
                                         'file' => '001_CreateUsers.php',
-                                        'path' => 'main'
+                                        'module' => 'default'
                         )
         );
         $this->assertEquals($expect_down_files, $actual_down_files);

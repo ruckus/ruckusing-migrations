@@ -249,7 +249,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         $last_version = -1;
         foreach ($migrations as $file) {
-            $full_path = $this->_migratorDirs[$file['path']] . DIRECTORY_SEPARATOR . $file['file'];
+            $full_path = $this->_migratorDirs[$file['module']] . DIRECTORY_SEPARATOR . $file['file'];
             if (is_file($full_path) && is_readable($full_path) ) {
                 require_once $full_path;
                 $klass = Ruckusing_Util_Naming::class_from_migration_file($file['file']);

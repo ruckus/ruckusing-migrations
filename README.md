@@ -25,6 +25,8 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 * Code generator for generating skeleton migration files.
 
+* Support for module based migration directories where migrations files could be generated/run from specified module directories.
+
 * Out-of-the-box support for basic tasks like initializing the DB schema info table (`db:setup`), asking for the current version (`db:version`) and dumping the current schema (`db:schema`).
 
 # Limitations
@@ -37,9 +39,9 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 `type` is one of `pgsql` or `mysql` depending on your database, as well `migrations_dir`, `db_dir`, `log_dir`, `ruckusing_base` paths.
 
-* Copy `/path/to/ruckusing-migrations/ruckus.php` to `/path/to/mycodebase/ruckus.php` and edit the `development` key with your DB credentials:
+* If you want to use module migration directories, Edit `/path/to/mycodebase/ruckusing.conf.php` and update  `migrations_dir` like `array('default' => '/default/path', 'module_name' => '/module/migration/path')` paths.
 
-`type` is one of `pgsql` or `mysql` depending on your database.
+* Copy `/path/to/ruckusing-migrations/ruckus.php` to `/path/to/mycodebase/ruckus.php`.
 
 ## Generating Skeleton Migration files
 
@@ -50,6 +52,15 @@ $ php ruckus.php db:generate create_users_table
 
 Created OK
 Created migration: 20121112163653_CreateUsersTable.php
+```
+
+Module migration directory example:
+
+```
+$ php ruckus.php db:generate create_items_table module=module_name
+
+Created OK
+Created migration: 20121112163653_CreateItemsTable.php
 ```
 
 The generated file is in the `migrations` directory. Open up that file and you'll see it looks like:

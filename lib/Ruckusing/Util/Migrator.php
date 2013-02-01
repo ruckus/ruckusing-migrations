@@ -218,8 +218,8 @@ class Ruckusing_Util_Migrator
                 printf("\n\tMigrations directory (%s) doesn't exist, attempting to create.", $path);
                 if (mkdir($path, 0755, true) === FALSE) {
                     throw new Ruckusing_Exception(
-                        "\n\tUnable to create migrations directory at %s, check permissions?", $path,
-                        Ruckusing_Exception::INVALID_MIGRATION_DIR
+                                    "\n\tUnable to create migrations directory at %s, check permissions?", $path,
+                                    Ruckusing_Exception::INVALID_MIGRATION_DIR
                     );
                 } else {
                     printf("\n\tCreated OK");
@@ -232,8 +232,8 @@ class Ruckusing_Util_Migrator
                     if (preg_match('/^(\d+)_(.*)\.php$/', $files[$i], $matches)) {
                         if (count($matches) == 3) {
                             $valid_files[] = array(
-                                'name'  =>  $files[$i],
-                                'path'  =>  $name
+                                            'name'  =>  $files[$i],
+                                            'module'  =>  $name
                             );
                         }
                     }
@@ -254,10 +254,10 @@ class Ruckusing_Util_Migrator
             $migration = $valid_files[$i];
             if (preg_match('/^(\d+)_(.*)\.php$/', $migration['name'], $matches)) {
                 $files[] = array(
-                    'version'   => $matches[1],
-                    'class'     => $matches[2],
-                    'file'		=> $matches[0],
-                    'path'      => $migration['path']
+                                'version'   => $matches[1],
+                                'class'     => $matches[2],
+                                'file'		=> $matches[0],
+                                'module'    => $migration['module']
                 );
             }
         }
@@ -290,14 +290,14 @@ class Ruckusing_Util_Migrator
     /**
      * Custom comparator for migration sorting
      *
-     * @param array  $a first migration structure
-     * @param array  $b second migration structure
+     * @param array $a first migration structure
+     * @param array $b second migration structure
      *
      * @return integer
      */
     private static function migration_compare($a, $b)
     {
-      return strcmp($a["name"], $b["name"]);
+        return strcmp($a["name"], $b["name"]);
     }
 
     /**

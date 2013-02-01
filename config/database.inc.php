@@ -43,7 +43,7 @@ return array(
 
         ),
 
-        'migrations_dir' => RUCKUSING_WORKING_BASE . '/migrations',
+        'migrations_dir' => array('default' => RUCKUSING_WORKING_BASE . '/migrations'),
 
         'db_dir' => RUCKUSING_WORKING_BASE . '/db',
 
