@@ -29,7 +29,7 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 # Limitations
 
-* PHP 5.2 is a hard requirement. The framework employes extensive use of object-oriented features of PHP5. There are no plans to make the framework backwards compatible.
+* PHP 5.2+ is a hard requirement. The framework employes extensive use of object-oriented features of PHP5. There are no plans to make the framework backwards compatible.
 
 ## Configuration
 
