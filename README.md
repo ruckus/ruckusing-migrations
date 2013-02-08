@@ -240,7 +240,7 @@ Tables can be renamed using the `rename_table` method.
 ## Column-level operations
 
 ### Adding a new column to a table
-For the complete documentation on adding new columns, please see [[Adding Columns]].
+For the complete documentation on adding new columns, please see [Adding Columns](https://github.com/ruckus/ruckusing-migrations/wiki/Adding-Columns)
 
 ### Removing Columns
 Removing a database column is very simple, but keep in mind that any index associated with that column will also be removed.
