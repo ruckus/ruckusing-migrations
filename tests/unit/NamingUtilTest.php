@@ -1,14 +1,5 @@
 <?php
 
-if (!defined('BASE')) {
-    define('BASE', dirname(__FILE__) . '/..');
-}
-if (!defined('RUCKUSING_TEST_HOME')) {
-    define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
-}
-
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Util/Naming.php';
-
 /**
  * Implementation of NamingUtilTest.
  * To run these unit-tests an empty test database needs to be setup in database.inc.php

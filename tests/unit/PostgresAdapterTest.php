@@ -1,15 +1,5 @@
 <?php
 
-if (!defined('BASE')) {
-    define('BASE', dirname(__FILE__) . '/..');
-}
-
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/PgSQL/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Exception.php';
-
 /**
  * Implementation of PostgresAdapterTest.
  * To run these unit-tests an empty test database needs to be setup in database.inc.php
