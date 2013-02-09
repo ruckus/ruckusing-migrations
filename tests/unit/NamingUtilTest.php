@@ -7,7 +7,6 @@ if (!defined('RUCKUSING_TEST_HOME')) {
     define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
 }
 
-require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Util/Naming.php';
 
 /**

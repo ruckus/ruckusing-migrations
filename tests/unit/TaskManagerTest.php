@@ -4,7 +4,6 @@ if (!defined('BASE')) {
     define('BASE', dirname(__FILE__) . '/..');
 }
 
-require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Manager.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Base.php';

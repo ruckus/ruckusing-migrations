@@ -5,7 +5,6 @@ if (!defined('BASE')) {
 }
 define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
 
-require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/FrameworkRunner.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Util/Migrator.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
