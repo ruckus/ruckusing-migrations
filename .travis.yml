@@ -9,12 +9,10 @@ before_script:
   - mysql -uroot < tests/test.sql
   - psql -Upostgres -f tests/test.sql
 
-branches:
-  only:
-    - master
-
 notifications:
   email:
-    recipients: codycaughlan@gmail.com
+    recipients:
+      - codycaughlan@gmail.com
+      - me@salimane.com
     on_success: change
     on_failure: always
