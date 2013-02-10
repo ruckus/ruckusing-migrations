@@ -1127,7 +1127,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             return true;
         } else {
             throw new Ruckusing_Exception(
-                    "\n\nCould not extract DB connection information from: {$dsn}\n\n",
+                    "\n\nCould not extract DB connection information from: " . implode(' ', $dsn) . "\n\n",
                     Ruckusing_Exception::INVALID_CONFIG
             );
         }

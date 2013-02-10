@@ -34,4 +34,22 @@ interface Ruckusing_Task_Interface
      * @return string
      */
     public function help();
+
+    /**
+     * Set the migrations directory
+     *
+     * @param string $migrationDir The migration directory path
+     *
+     * @return void
+     */
+    public function setMigrationsDirectory($migrationDir);
+
+    /**
+     * Set the current adapter
+     *
+     * @param Ruckusing_Adapter_Base $adapter the current adapter
+     *
+     * @return Ruckusing_Task_Interface
+     */
+    public function setAdapter($adapter);
 }

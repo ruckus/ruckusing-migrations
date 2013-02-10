@@ -34,6 +34,13 @@ class Ruckusing_Task_Base
     private $_adapter;
 
     /**
+     * the migration directory
+     *
+     * @var string
+     */
+    protected $_migrationDir;
+
+    /**
      * Creates an instance of Ruckusing_Task_Base
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -73,7 +80,7 @@ class Ruckusing_Task_Base
      *
      * @param Ruckusing_Adapter_Base $adapter the current adapter
      *
-     * @return Ruckusing_Util_Migrator
+     * @return Ruckusing_Task_Base
      */
     public function setAdapter($adapter)
     {
@@ -93,6 +100,19 @@ class Ruckusing_Task_Base
     public function get_adapter()
     {
         return $this->_adapter;
+    }
+
+    /**
+     * set migration directories
+     *
+     * @param string $migrationDir Directory of migrations
+     *
+     * @return Ruckusing_Task_Base
+     */
+    public function setMigrationsDirectory($migrationDir)
+    {
+        $this->_migrationDir = $migrationDir;
+        return $this;
     }
 
 }
