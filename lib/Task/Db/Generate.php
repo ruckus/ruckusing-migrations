@@ -53,14 +53,15 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
      */
     public function execute($args)
     {
+        $output = '';
         // Add support for old migration style
         if (!is_array($args) || !array_key_exists('name', $args)) {
             $cargs = $this->parse_args($_SERVER['argv']);
             //input sanity check
             if (!is_array($cargs) || !array_key_exists('name', $cargs)) {
-                echo $this->help();
+                $output .= $this->help();
 
-                return;
+                return $output;
             }
             $migration_name = $cargs['name'];
         }
@@ -76,11 +77,11 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         $migrations_dir = $framework->migrations_directory();
 
         if (!is_dir($migrations_dir)) {
-            echo "\n\tMigrations directory (" . $migrations_dir . " doesn't exist, attempting to create.\n";
+            $output .= "\n\tMigrations directory (" . $migrations_dir . " doesn't exist, attempting to create.\n";
             if (mkdir($migrations_dir, 0755, true) === FALSE) {
-                echo "\n\tUnable to create migrations directory at " . $migrations_dir . ", check permissions?\n";
+                $output .= "\n\tUnable to create migrations directory at " . $migrations_dir . ", check permissions?\n";
             } else {
-                echo "\n\tCreated OK\n";
+                $output .= "\n\tCreated OK\n";
             }
         }
 
@@ -117,8 +118,10 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
                             Ruckusing_Exception::INVALID_MIGRATION_DIR
             );
         } else {
-            echo "\n\tCreated migration: {$file_name}\n\n";
+            $output .= "\n\tCreated migration: {$file_name}\n\n";
         }
+
+        return $output;
     }
 
     /**
@@ -137,9 +140,7 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         }
         $num_args = count($argv);
         if ($num_args < 3) {
-            echo $this->help();
-
-            return;
+            return array();
         }
         $migration_name = $argv[2];
 

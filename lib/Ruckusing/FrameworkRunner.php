@@ -141,28 +141,31 @@ class Ruckusing_FrameworkRunner
      */
     public function execute()
     {
+        $output = '';
         if (empty($this->_cur_task_name)) {
             if (isset($_SERVER["argv"][1]) && stripos($_SERVER["argv"][1], '=') === false) {
-                echo sprintf("\n\tWrong Task format: %s\n", $_SERVER["argv"][1]);
+                $output .= sprintf("\n\tWrong Task format: %s\n", $_SERVER["argv"][1]);
             }
-            echo $this->help();
+            $output .= $this->help();
         } else {
             if ($this->_task_mgr->has_task($this->_cur_task_name)) {
                 if ($this->_showhelp) {
-                    echo $this->_task_mgr->help($this->_cur_task_name);
+                    $output .= $this->_task_mgr->help($this->_cur_task_name);
                 } else {
-                    $output = $this->_task_mgr->execute($this, $this->_cur_task_name, $this->_task_options);
+                    $output .= $this->_task_mgr->execute($this, $this->_cur_task_name, $this->_task_options);
 
                 }
             } else {
-                echo sprintf("\n\tTask not found: %s\n", $this->_cur_task_name);
-                echo $this->help();
+                $output .= sprintf("\n\tTask not found: %s\n", $this->_cur_task_name);
+                $output .= $this->help();
             }
         }
 
         if ($this->logger) {
             $this->logger->close();
         }
+
+        return $output;
     }
 
     /**
@@ -302,7 +305,7 @@ class Ruckusing_FrameworkRunner
                 $new_vers_sql = sprintf("SELECT version FROM %s WHERE version = %d", RUCKUSING_TS_SCHEMA_TBL_NAME, $file['version']);
                 $existing_version_new_style = $this->_adapter->select_one($new_vers_sql);
                 if (empty($existing_version_new_style)) {
-                    // use printf & %d to force it to be stripped of any leading zeros, we *know* this represents an old version style
+                    // use sprintf & %d to force it to be stripped of any leading zeros, we *know* this represents an old version style
                     // so we dont have to worry about PHP and integer overflow
                     $insert_sql = sprintf("INSERT INTO %s (version) VALUES (%d)", RUCKUSING_TS_SCHEMA_TBL_NAME, $file['version']);
                     $this->_adapter->query($insert_sql);

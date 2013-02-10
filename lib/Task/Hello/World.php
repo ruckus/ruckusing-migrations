@@ -40,7 +40,7 @@ class Task_Hello_World extends Ruckusing_Task_Base implements Ruckusing_Task_Int
      */
     public function execute($args)
     {
-        echo "\nHello, World\n";
+        return "\nHello, World\n";
     }
 
     /**

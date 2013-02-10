@@ -68,6 +68,13 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     private $_debug = false;
 
     /**
+     * Return executed string
+     *
+     * @var string
+     */
+    private $_return = '';
+
+    /**
      * Creates an instance of Task_DB_Migrate
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -88,7 +95,6 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      */
     public function execute($args)
     {
-        $output = "";
         if (!$this->_adapter->supports_migrations()) {
             throw new Ruckusing_Exception(
                             "This database does not support migrations.",
@@ -96,8 +102,8 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             );
         }
         $this->_task_args = $args;
-        echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
-        echo "[db:migrate]: \n";
+        $this->_return .= "Started: " . date('Y-m-d g:ia T') . "\n\n";
+        $this->_return .= "[db:migrate]: \n";
         try {
             // Check that the schema_version table exists, and if not, automatically create it
             $this->verify_environment();
@@ -138,16 +144,18 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
 
             // Completed - display accumulated output
             if (!empty($output)) {
-                echo $output . "\n\n";
+                $this->_return .= "\n\n";
             }
         } catch (Ruckusing_Exception $ex) {
             if ($ex->getCode() == Ruckusing_Exception::MISSING_SCHEMA_INFO_TABLE) {
-                echo "\tSchema info table does not exist. I tried creating it but failed. Check permissions.";
+                $this->_return .= "\tSchema info table does not exist. I tried creating it but failed. Check permissions.";
             } else {
                 throw $ex;
             }
         }
-        echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+        $this->_return .= "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+
+        return $this->_return;
     }
 
     /**
@@ -171,9 +179,9 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
         }
         if ($this->_debug == true) {
             print_r($migrations);
-            echo "\ncurrent_index: " . $current_index . "\n";
-            echo "\ncurrent_version: " . $current_version . "\n";
-            echo "\noffset: " . $offset . "\n";
+            $this->_return .= "\ncurrent_index: " . $current_index . "\n";
+            $this->_return .= "\ncurrent_version: " . $current_version . "\n";
+            $this->_return .= "\noffset: " . $offset . "\n";
         }
 
         // If we are not at the bottom then adjust our index (to satisfy array_slice)
@@ -193,14 +201,14 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             }
             $num_available = count($names);
             $prefix = $direction == 'down' ? '-' : '+';
-            echo "\n\nCannot migrate " . strtoupper($direction) . " via offset \"{$prefix}{$offset}\": not enough migrations exist to execute.\n";
-            echo "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
+            $this->_return .= "\n\nCannot migrate " . strtoupper($direction) . " via offset \"{$prefix}{$offset}\": not enough migrations exist to execute.\n";
+            $this->_return .= "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
         } else {
             // run em
             $target = end($available);
             if ($this->_debug == true) {
-                echo "\n------------- TARGET ------------------\n";
-                print_r($target);
+                $this->_return .= "\n------------- TARGET ------------------\n";
+                $this->_return .= print_r($target, true);
             }
             $this->prepare_to_migrate($target['version'], $direction);
         }
@@ -215,11 +223,11 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     private function prepare_to_migrate($destination, $direction)
     {
         try {
-            echo "\tMigrating " . strtoupper($direction);
+            $this->_return .= "\tMigrating " . strtoupper($direction);
             if (!is_null($destination)) {
-                echo " to: {$destination}\n";
+                $this->_return .= " to: {$destination}\n";
             } else {
-                echo ":\n";
+                $this->_return .= ":\n";
             }
             $migrations = $this->_migrator_util->get_runnable_migrations(
                             $this->_migratorDir,
@@ -227,7 +235,8 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                             $destination
             );
             if (count($migrations) == 0) {
-                return "\nNo relevant migrations to run. Exiting...\n";
+                $this->_return .= "\nNo relevant migrations to run. Exiting...\n";
+                return;
             }
             $result = $this->run_migrations($migrations, $direction, $destination);
         } catch (Exception $ex) {
@@ -272,7 +281,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                 }
                 $end = $this->end_timer();
                 $diff = $this->diff_timer($start, $end);
-                printf("========= %s ======== (%.2f)\n", $file['class'], $diff);
+                $this->_return .= sprintf("========= %s ======== (%.2f)\n", $file['class'], $diff);
                 $last_version = $file['version'];
                 $exec = true;
             }
@@ -323,7 +332,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     private function verify_environment()
     {
         if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
-            echo "\n\tSchema version table does not exist. Auto-creating.";
+            $this->_return .= "\n\tSchema version table does not exist. Auto-creating.";
             $this->auto_create_schema_info_table();
         }
 
@@ -331,11 +340,11 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
 
         // create the migrations directory if it doesnt exist
         if (!is_dir($this->_migratorDir)) {
-            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $this->_migratorDir);
+            $this->_return .= sprintf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $this->_migratorDir);
             if (mkdir($this->_migratorDir, 0755, true) === FALSE) {
-                printf("\n\tUnable to create migrations directory at %s, check permissions?", $this->_migratorDir);
+                $this->_return .= sprintf("\n\tUnable to create migrations directory at %s, check permissions?", $this->_migratorDir);
             } else {
-                printf("\n\tCreated OK");
+                $this->_return .= sprintf("\n\tCreated OK");
             }
         }
 
@@ -358,7 +367,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     private function auto_create_schema_info_table()
     {
         try {
-            echo sprintf("\n\tCreating schema version table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME . "\n\n");
+            $this->_return .= sprintf("\n\tCreating schema version table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME . "\n\n");
             $this->_adapter->create_schema_version_table();
 
             return true;

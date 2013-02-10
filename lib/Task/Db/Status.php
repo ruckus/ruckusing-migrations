@@ -53,8 +53,8 @@ class Task_Db_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
      */
     public function execute($args)
     {
-        echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
-        echo "[db:status]: \n";
+        $output = "Started: " . date('Y-m-d g:ia T') . "\n\n";
+        $output .= "[db:status]: \n";
         $util = new Ruckusing_Util_Migrator($this->_adapter);
         $migrations = $util->get_executed_migrations();
         $files = $util->get_migration_files($this->get_framework()->migrations_directory(), 'up');
@@ -67,16 +67,34 @@ class Task_Db_Status extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
                 $not_applied[] = $file['class'] . ' [ ' . $file['version'] . ' ]';
             }
         }
-        echo "\n\n===================== APPLIED ======================= \n";
-        foreach ($applied as $a) {
-            echo "\t" . $a . "\n";
+        if (count($applied) > 0) {
+            $output .= $this->_displayMigrations($applied, 'APPLIED');
         }
-        echo "\n\n===================== NOT APPLIED ======================= \n";
-        foreach ($not_applied as $na) {
-            echo "\t" . $na . "\n";
+        if (count($not_applied) > 0) {
+            $output .= $this->_displayMigrations($not_applied, 'NOT APPLIED');
         }
 
-        echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+        $output .= "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+
+        return $output;
+    }
+
+    /**
+     * display migrations results
+     *
+     * @param array  $migrations The migrations
+     * @param string $title      The title of section
+     *
+     * @return string
+     */
+    private function _displayMigrations($migrations, $title)
+    {
+        $output = "\n\n===================== {$title} =======================\n";
+        foreach ($migrations as $a) {
+            $output .= "\t" . $a . "\n";
+        }
+
+        return $output;
     }
 
     /**

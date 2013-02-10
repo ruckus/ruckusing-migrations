@@ -34,6 +34,13 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
     private $_adapter = null;
 
     /**
+     * Return executed string
+     *
+     * @var string
+     */
+    private $_return = '';
+
+    /**
      * Creates an instance of Task_DB_Schema
      *
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
@@ -53,14 +60,16 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
      */
     public function execute($args)
     {
-        echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
-        echo "[db:schema]: \n";
+        $this->_return .= "Started: " . date('Y-m-d g:ia T') . "\n\n";
+        $this->_return .= "[db:schema]: \n";
 
         //write to disk
         $schema_file = $this->db_dir() . '/schema.txt';
         $schema = $this->_adapter->schema($schema_file);
-        echo "\tSchema written to: $schema_file\n\n";
-        echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+        $this->_return .= "\tSchema written to: $schema_file\n\n";
+        $this->_return .= "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+
+        return $this->_return;
     }
 
     /**
@@ -73,11 +82,11 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
         // create the db directory if it doesnt exist
         $db_directory = $this->get_framework()->db_directory();
         if (!is_dir($db_directory)) {
-            printf("\n\tDB Schema directory (%s doesn't exist, attempting to create.\n", $db_directory);
+            $this->_return .= sprintf("\n\tDB Schema directory (%s doesn't exist, attempting to create.\n", $db_directory);
             if (mkdir($db_directory, 0755, true) === FALSE) {
-                printf("\n\tUnable to create migrations directory at %s, check permissions?\n", $db_directory);
+                $this->_return .= sprintf("\n\tUnable to create migrations directory at %s, check permissions?\n", $db_directory);
             } else {
-                printf("\n\tCreated OK\n\n");
+                $this->_return .= sprintf("\n\tCreated OK\n\n");
             }
         }
 

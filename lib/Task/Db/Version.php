@@ -51,11 +51,11 @@ class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      */
     public function execute($args)
     {
-        echo "Started: " . date('Y-m-d g:ia T') . "\n\n";
-        echo "[db:version]: \n";
+        $output = "Started: " . date('Y-m-d g:ia T') . "\n\n";
+        $output .= "[db:version]: \n";
         if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
             //it doesnt exist, create it
-            echo "\tSchema version table (" . RUCKUSING_TS_SCHEMA_TBL_NAME . ") does not exist. Do you need to run 'db:setup'?";
+            $output .= "\tSchema version table (" . RUCKUSING_TS_SCHEMA_TBL_NAME . ") does not exist. Do you need to run 'db:setup'?";
         } else {
             //it exists, read the version from it
             // We only want one row but we cannot assume that we are using MySQL and use a LIMIT statement
@@ -70,12 +70,14 @@ class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             if ($num_versions > 0) {
                 sort($versions); //sorts lowest-to-highest (ascending)
                 $version = (string) $versions[$num_versions-1];
-                printf("\tCurrent version: %s", $version);
+                $output .= sprintf("\tCurrent version: %s", $version);
             } else {
-                printf("\tNo migrations have been executed.");
+                $output .= sprintf("\tNo migrations have been executed.");
             }
         }
-        echo "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+        $output .= "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
+
+        return $output;
     }
 
     /**

@@ -214,14 +214,11 @@ class Ruckusing_Util_Migrator
     {
         $valid_files = array();
         if (!is_dir($directory)) {
-            printf("\n\tMigrations directory (%s doesn't exist, attempting to create.", $directory);
             if (mkdir($directory, 0755, true) === FALSE) {
                 throw new Ruckusing_Exception(
                                 "\n\tUnable to create migrations directory at %s, check permissions?", $directory,
                                 Ruckusing_Exception::INVALID_MIGRATION_DIR
                 );
-            } else {
-                printf("\n\tCreated OK");
             }
         }
         $files = scandir($directory);

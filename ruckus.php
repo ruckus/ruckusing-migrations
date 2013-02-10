@@ -41,4 +41,4 @@ if (!$composer_found) {
 }
 
 $main = new Ruckusing_FrameworkRunner($db_config, $argv);
-$main->execute();
+echo $main->execute();

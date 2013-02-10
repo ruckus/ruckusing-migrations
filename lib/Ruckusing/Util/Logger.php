@@ -92,7 +92,10 @@ class Ruckusing_Util_Logger
             $line = sprintf("%s [info] %s\n", $ts, $msg);
             fwrite($this->_fp, $line);
         } else {
-            throw new Ruckusing_Exception(sprintf("Error: logfile '%s' not open for writing!", $this->_file), Ruckusing_Exception::INVALID_LOG);
+            throw new Ruckusing_Exception(
+                    sprintf("Error: logfile '%s' not open for writing!", $this->_file),
+                    Ruckusing_Exception::INVALID_LOG
+            );
         }
 
     }
@@ -108,7 +111,10 @@ class Ruckusing_Util_Logger
                 $this->_fp = null;
                 self::$_instance = null;
             } else {
-                echo 'Error closing the log file';
+                throw new Ruckusing_Exception(
+                        'Error closing the log file',
+                        Ruckusing_Exception::INVALID_LOG
+                );
             }
         }
     }
