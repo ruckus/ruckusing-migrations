@@ -10,10 +10,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
-
 /**
  * Task_DB_Status.
  * Prints out a list of migrations that have and haven't been applied

@@ -9,8 +9,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Naming.php';
-
 define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/Task');
 
 /**

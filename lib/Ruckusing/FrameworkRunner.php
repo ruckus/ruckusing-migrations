@@ -9,9 +9,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Manager.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Exception.php';
-
 /**
  * Ruckusing_FrameworkRunner
  *

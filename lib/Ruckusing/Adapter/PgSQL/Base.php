@@ -10,13 +10,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/Base.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/Interface.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Naming.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/TableDefinition.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/PgSQL/TableDefinition.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/ColumnDefinition.php';
-
 // max length of an identifier like a column or index name
 define('PG_MAX_IDENTIFIER_LENGTH', 64);
 

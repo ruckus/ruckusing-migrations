@@ -10,6 +10,7 @@ require_once RUCKUSING_BASE  . '/lib/Ruckusing/FrameworkRunner.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Util/Migrator.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/ColumnDefinition.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
 require_once RUCKUSING_BASE  . '/config/database.inc.php';
 require_once RUCKUSING_BASE  . '/config/config.inc.php';

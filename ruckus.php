@@ -3,7 +3,8 @@
 
 // Find and initialize Composer
 $composer_found = false;
-if (version_compare(PHP_VERSION, '5.3.2', '>=')) {
+$php53 = version_compare(PHP_VERSION, '5.3.2', '>=');
+if ($php53) {
     $files = array(
                     __DIR__ . '/vendor/autoload.php',
                     __DIR__ . '/../vendor/autoload.php',
@@ -36,8 +37,27 @@ if (isset($db_config['ruckusing_base'])) {
 require_once RUCKUSING_BASE . '/config/config.inc.php';
 
 if (!$composer_found) {
-    require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Logger.php';
-    require_once RUCKUSING_BASE . '/lib/Ruckusing/FrameworkRunner.php';
+
+    set_include_path(
+            implode(
+                    PATH_SEPARATOR,
+                    array(
+                            RUCKUSING_BASE . '/lib',
+                            get_include_path(),
+                    )
+            )
+    );
+
+    function loader($classname)
+    {
+        include RUCKUSING_BASE . '/lib/' . str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
+    }
+
+    if ($php53) {
+        spl_autoload_register('loader', true, true);
+    } else {
+        spl_autoload_register('loader', true);
+    }
 }
 
 $main = new Ruckusing_FrameworkRunner($db_config, $argv);

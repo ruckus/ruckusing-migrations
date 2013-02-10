@@ -10,8 +10,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
-
 /**
  * Task_DB_Version.
  * This task retrieves the current version of the schema.

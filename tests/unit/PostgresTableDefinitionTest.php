@@ -8,6 +8,7 @@ require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Migration/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/TableDefinition.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/PgSQL/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/PgSQL/TableDefinition.php';
 

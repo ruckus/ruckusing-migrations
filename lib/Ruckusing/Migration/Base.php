@@ -9,8 +9,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Adapter/Interface.php';
-
 /**
  * Ruckusing_Migration_Base
  *

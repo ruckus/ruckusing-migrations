@@ -10,12 +10,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Exception.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Util/Migrator.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Migration/Base.php';
-
 define('STYLE_REGULAR', 1);
 define('STYLE_OFFSET', 2);
 

@@ -7,6 +7,8 @@ if (!defined('BASE')) {
 require_once BASE  . '/test_helper.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
 require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Manager.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Base.php';
+require_once RUCKUSING_BASE  . '/lib/Ruckusing/Task/Interface.php';
 require_once RUCKUSING_BASE  . '/lib/Task/Db/Schema.php';
 
 /**

@@ -10,9 +10,6 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Base.php';
-require_once RUCKUSING_BASE . '/lib/Ruckusing/Task/Interface.php';
-
 /**
  * Task_DB_Setup.
  * This is a generic task which initializes a table to hold migration version information.
