@@ -209,6 +209,9 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $expected = "`weight` bigint(20)";
         $this->assertEquals($expected, $this->adapter->column_definition("weight", "biginteger", array('limit' => 20)));
 
+        $expected = "`weight` mediumint(4)";
+        $this->assertEquals($expected, $this->adapter->column_definition("weight", "mediuminteger", array('limit' => 4)));
+
         $expected = "`age` int(11) AFTER `height`";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "integer", array("after" => "height")));
 
