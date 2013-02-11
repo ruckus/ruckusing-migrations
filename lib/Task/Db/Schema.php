@@ -90,10 +90,10 @@ class Task_Db_Schema extends Ruckusing_Task_Base implements Ruckusing_Task_Inter
         //check to make sure our destination directory is writable
         if (!is_writable($db_directory)) {
             throw new Ruckusing_Exception(
-                            "ERROR: DB Schema directory '"
-                            . $db_directory
-                            . "' is not writable by the current user. Check permissions and try again.\n",
-                            Ruckusing_Exception::INVALID_DB_DIR
+                    "ERROR: DB Schema directory '"
+                    . $db_directory
+                    . "' is not writable by the current user. Check permissions and try again.\n",
+                    Ruckusing_Exception::INVALID_DB_DIR
             );
         }
 

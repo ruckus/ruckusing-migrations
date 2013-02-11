@@ -87,8 +87,8 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
 
         if (self::classNameIsDuplicated($class, $migrations_dir)) {
             throw new Ruckusing_Exception(
-                            'This migration name is already used. Please, choose another name.',
-                            Ruckusing_Exception::INVALID_ARGUMENT
+                    'This migration name is already used. Please, choose another name.',
+                    Ruckusing_Exception::INVALID_ARGUMENT
             );
         }
 
@@ -97,21 +97,21 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         //check to make sure our destination directory is writable
         if (!is_writable($migrations_dir)) {
             throw new Ruckusing_Exception(
-                            "ERROR: migration directory '"
-                            . $migrations_dir
-                            . "' is not writable by the current user. Check permissions and try again.",
-                            Ruckusing_Exception::INVALID_MIGRATION_DIR
+                    "ERROR: migration directory '"
+                    . $migrations_dir
+                    . "' is not writable by the current user. Check permissions and try again.",
+                    Ruckusing_Exception::INVALID_MIGRATION_DIR
             );
         }
 
         //write it out!
-        $full_path = $migrations_dir . '/' . $file_name;
+        $full_path = $migrations_dir . DIRECTORY_SEPARATOR . $file_name;
         $template_str = self::get_template($class);
         $file_result = file_put_contents($full_path, $template_str);
         if ($file_result === FALSE) {
             throw new Ruckusing_Exception(
-                            "Error writing to migrations directory/file. Do you have sufficient privileges?",
-                            Ruckusing_Exception::INVALID_MIGRATION_DIR
+                    "Error writing to migrations directory/file. Do you have sufficient privileges?",
+                    Ruckusing_Exception::INVALID_MIGRATION_DIR
             );
         } else {
             $output .= "\n\tCreated migration: {$file_name}\n\n";

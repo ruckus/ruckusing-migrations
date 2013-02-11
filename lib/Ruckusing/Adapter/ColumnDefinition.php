@@ -64,7 +64,7 @@ class Ruckusing_Adapter_ColumnDefinition
      * @param array                  $options the column options
      *
      * @return Ruckusing_Adapter_ColumnDefinition
-    */
+     */
     public function __construct($adapter, $name, $type, $options = array())
     {
         if (!($adapter instanceof Ruckusing_Adapter_Base)) {
@@ -77,13 +77,13 @@ class Ruckusing_Adapter_ColumnDefinition
             throw new Ruckusing_Exception(
                     "Invalid 'name' parameter",
                     Ruckusing_Exception::INVALID_ARGUMENT
-                    );
+            );
         }
         if (empty($type) || !is_string($type)) {
             throw new Ruckusing_Exception(
                     "Invalid 'type' parameter",
                     Ruckusing_Exception::INVALID_ARGUMENT
-                    );
+            );
         }
 
         $this->_adapter = $adapter;

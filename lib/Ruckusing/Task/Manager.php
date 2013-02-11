@@ -9,7 +9,7 @@
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
-define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/Task');
+define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Task');
 
 /**
  * Ruckusing_Task_Manager
@@ -171,19 +171,19 @@ class Ruckusing_Task_Manager
         $namespaces = scandir($task_dir);
         foreach ($namespaces as $namespace) {
             if ($namespace == '.' || $namespace == '..'
-                    || ! is_dir($task_dir . '/' . $namespace)
+                    || ! is_dir($task_dir . DIRECTORY_SEPARATOR . $namespace)
             ) {
                 continue;
             }
-            $files = scandir($task_dir . '/' . $namespace);
+            $files = scandir($task_dir . DIRECTORY_SEPARATOR . $namespace);
             $regex = '/^(\w+)\.php$/';
             foreach ($files as $file) {
                 //skip over invalid files
                 if ($file == '.' || $file == ".." || !preg_match($regex, $file, $matches) ) {
                     continue;
                 }
-                require_once $task_dir . '/' . $namespace . '/' . $file;
-                $klass = Ruckusing_Util_Naming::class_from_file_name($task_dir . '/' . $namespace . '/' . $file);
+                require_once $task_dir . DIRECTORY_SEPARATOR . $namespace . DIRECTORY_SEPARATOR . $file;
+                $klass = Ruckusing_Util_Naming::class_from_file_name($task_dir . DIRECTORY_SEPARATOR . $namespace . DIRECTORY_SEPARATOR . $file);
                 $task_name = Ruckusing_Util_Naming::task_from_class_name($klass);
 
                 $this->register_task($task_name, new $klass($this->get_adapter()));

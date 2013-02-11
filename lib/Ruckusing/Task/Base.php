@@ -70,7 +70,10 @@ class Ruckusing_Task_Base
     public function set_framework($fw)
     {
         if (!($fw instanceof Ruckusing_FrameworkRunner)) {
-            throw new Ruckusing_Exception('Framework must be instance of Ruckusing_FrameworkRunner!', Ruckusing_Exception::INVALID_FRAMEWORK);
+            throw new Ruckusing_Exception(
+                    'Framework must be instance of Ruckusing_FrameworkRunner!',
+                    Ruckusing_Exception::INVALID_FRAMEWORK
+            );
         }
         $this->_framework = $fw;
     }
@@ -85,7 +88,10 @@ class Ruckusing_Task_Base
     public function setAdapter($adapter)
     {
         if (!($adapter instanceof Ruckusing_Adapter_Base)) {
-            throw new Ruckusing_Exception('Adapter must be implement Ruckusing_Adapter_Base!', Ruckusing_Exception::INVALID_ADAPTER);
+            throw new Ruckusing_Exception(
+                    'Adapter must be implement Ruckusing_Adapter_Base!',
+                    Ruckusing_Exception::INVALID_ADAPTER
+            );
         }
         $this->_adapter = $adapter;
 
@@ -112,6 +118,7 @@ class Ruckusing_Task_Base
     public function setMigrationsDirectory($migrationDir)
     {
         $this->_migrationDir = $migrationDir;
+
         return $this;
     }
 

@@ -38,7 +38,7 @@ class Ruckusing_Util_Migrator
      * @param Ruckusing_Adapter_Base $adapter The current adapter being used
      *
      * @return Ruckusing_Util_Migrator
-    */
+     */
     public function __construct($adapter)
     {
         $this->setAdapter($adapter);
@@ -55,8 +55,8 @@ class Ruckusing_Util_Migrator
     {
         if (!($adapter instanceof Ruckusing_Adapter_Base)) {
             throw new Ruckusing_Exception(
-                            'Adapter must be implement Ruckusing_Adapter_Base!',
-                            Ruckusing_Exception::INVALID_ADAPTER
+                    'Adapter must be implement Ruckusing_Adapter_Base!',
+                    Ruckusing_Exception::INVALID_ADAPTER
             );
         }
         $this->_adapter = $adapter;
@@ -120,8 +120,8 @@ class Ruckusing_Util_Migrator
         $target = $this->find_version($migrations, $destination);
         if (is_null($target) && !is_null($destination) && $destination > 0) {
             throw new Ruckusing_Exception(
-                            "Could not find target version {$destination} in set of migrations.",
-                            Ruckusing_Exception::INVALID_TARGET_MIGRATION
+                    "Could not find target version {$destination} in set of migrations.",
+                    Ruckusing_Exception::INVALID_TARGET_MIGRATION
             );
         }
         $start = $direction == 'up' ? 0 : array_search($current, $migrations);
@@ -216,8 +216,8 @@ class Ruckusing_Util_Migrator
         if (!is_dir($directory)) {
             if (mkdir($directory, 0755, true) === FALSE) {
                 throw new Ruckusing_Exception(
-                                "\n\tUnable to create migrations directory at %s, check permissions?", $directory,
-                                Ruckusing_Exception::INVALID_MIGRATION_DIR
+                        "\n\tUnable to create migrations directory at %s, check permissions?", $directory,
+                        Ruckusing_Exception::INVALID_MIGRATION_DIR
                 );
             }
         }
@@ -244,9 +244,9 @@ class Ruckusing_Util_Migrator
             $migration = $valid_files[$i];
             if (preg_match('/^(\d+)_(.*)\.php$/', $migration, $matches)) {
                 $files[] = array(
-                                'version' => $matches[1],
-                                'class' 	=> $matches[2],
-                                'file'		=> $matches[0]
+                        'version' => $matches[1],
+                        'class' 	=> $matches[2],
+                        'file'		=> $matches[0]
                 );
             }
         }

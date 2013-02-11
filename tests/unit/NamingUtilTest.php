@@ -47,14 +47,15 @@ class NamingUtilTest extends PHPUnit_Framework_TestCase
         $klass = RUCKUSING_TEST_HOME . '/dummy/Task/Db/Setup.php';
         $this->assertEquals('Task_Db_Setup', Ruckusing_Util_Naming::class_from_file_name($klass));
     }
-	    /**
-	     * test class name from filename
-	     */
-	    public function test_class_name_from_file_name_with_combined_directory_separators()
-	    {
-	        $klass = RUCKUSING_TEST_HOME . '/dummy/Task\Db\Setup.php';
-	        $this->assertEquals('Task_Db_Setup', Ruckusing_Util_Naming::class_from_file_name($klass));
-	    }
+
+    /**
+     * test class name from filename
+     */
+    public function test_class_name_from_file_name_with_combined_directory_separators()
+    {
+        $klass = RUCKUSING_TEST_HOME . '/dummy/Task\Db\Setup.php';
+        $this->assertEquals('Task_Db_Setup', Ruckusing_Util_Naming::class_from_file_name($klass));
+    }
 
     /**
      * test class name from string

@@ -6,11 +6,11 @@ $composer_found = false;
 $php53 = version_compare(PHP_VERSION, '5.3.2', '>=');
 if ($php53) {
     $files = array(
-                    __DIR__ . '/vendor/autoload.php',
-                    __DIR__ . '/../vendor/autoload.php',
-                    __DIR__ . '/../../vendor/autoload.php',
-                    __DIR__ . '/../../../vendor/autoload.php',
-                    __DIR__ . '/../../../../autoload.php',
+            __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'autoload.php',
     );
 
     foreach ($files as $file) {
@@ -26,7 +26,7 @@ if ($php53) {
 }
 
 define('RUCKUSING_WORKING_BASE', getcwd());
-$db_config = require RUCKUSING_WORKING_BASE . '/ruckusing.conf.php';
+$db_config = require RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'ruckusing.conf.php';
 
 if (isset($db_config['ruckusing_base'])) {
     define('RUCKUSING_BASE', $db_config['ruckusing_base']);
@@ -34,7 +34,7 @@ if (isset($db_config['ruckusing_base'])) {
     define('RUCKUSING_BASE', dirname(__FILE__));
 }
 
-require_once RUCKUSING_BASE . '/config/config.inc.php';
+require_once RUCKUSING_BASE . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.inc.php';
 
 if (!$composer_found) {
 
@@ -42,7 +42,7 @@ if (!$composer_found) {
             implode(
                     PATH_SEPARATOR,
                     array(
-                            RUCKUSING_BASE . '/lib',
+                            RUCKUSING_BASE . DIRECTORY_SEPARATOR . 'lib',
                             get_include_path(),
                     )
             )
@@ -50,7 +50,7 @@ if (!$composer_found) {
 
     function loader($classname)
     {
-        include RUCKUSING_BASE . '/lib/' . str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
+        include RUCKUSING_BASE . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, $classname) . '.php';
     }
 
     if ($php53) {

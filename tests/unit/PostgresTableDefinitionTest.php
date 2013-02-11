@@ -40,7 +40,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         $this->adapter = new Ruckusing_Adapter_PgSQL_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T'));
-    }//setUp()
+    }
 
     /**
      * shutdown commands after test case
@@ -63,9 +63,9 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
         /*
          $expected = <<<EXP
         CREATE TABLE users (
-                        id int(11) UNSIGNED auto_increment PRIMARY KEY,
-                        first_name varchar(255),
-                        last_name varchar(32)
+                id int(11) UNSIGNED auto_increment PRIMARY KEY,
+                first_name varchar(255),
+                last_name varchar(32)
         ) Engine=InnoDB;
         EXP;
         $expected = trim($expected);
@@ -77,8 +77,8 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         $expected = <<<EXP
         CREATE TABLE users (
-                        first_name varchar(255),
-                        last_name varchar(32)
+                first_name varchar(255),
+                last_name varchar(32)
         ) Engine=InnoDB;
         EXP;
         $expected = trim($expected);
@@ -88,7 +88,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
         $actual = $t1->finish(true);
         //				$this->assertEquals($expected, $actual);
         */
-    }//test_create_sql
+    }
 
     /**
      * test column definition
@@ -109,7 +109,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "id", "integer", array("primary_key" => true, "unsigned" => true));
         $this->assertEquals("\"id\" integer", trim($c));
-    }//test_column_definition
+    }
 
     /**
      * test column definition with limit
@@ -118,7 +118,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
     {
         $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
-        $table_name = "users_${ts}";
+        $table_name = "users_$ts";
         $table = $bm->create_table($table_name);
         $table->column('username', 'string', array('limit' => 17));
         $table->finish();
@@ -135,7 +135,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
     {
         $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
-        $table_name = "users_${ts}";
+        $table_name = "users_$ts";
         $table = $bm->create_table($table_name);
         $table->column('username', 'string', array('limit' => 17, 'null' => false));
         $table->finish();
@@ -153,7 +153,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
     {
         $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
-        $table_name = "users_${ts}";
+        $table_name = "users_$ts";
         $table = $bm->create_table($table_name);
         $table->column('username', 'string', array('limit' => 17, 'default' => 'thor'));
         $table->finish();
@@ -171,7 +171,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
     {
         $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
-        $table_name = "users_${ts}";
+        $table_name = "users_$ts";
         $table = $bm->create_table($table_name, array('id' => false));
         $table->column('user_id', 'integer', array('primary_key' => true));
         $table->column('username', 'string', array('primary_key' => true));
@@ -202,7 +202,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
     {
         $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
-        $table_name = "users_${ts}";
+        $table_name = "users_$ts";
         $table = $bm->create_table($table_name, array('id' => false));
         $table->column('user_id', 'integer', array('primary_key' => true, 'auto_increment' => true));
         $sql = $table->finish();

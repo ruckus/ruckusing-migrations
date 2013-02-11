@@ -43,12 +43,12 @@ return array(
 
         ),
 
-        'migrations_dir' => RUCKUSING_WORKING_BASE . '/migrations',
+        'migrations_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'migrations',
 
-        'db_dir' => RUCKUSING_WORKING_BASE . '/db',
+        'db_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'db',
 
-        'log_dir' => RUCKUSING_WORKING_BASE . '/logs',
+        'log_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'logs',
 
-        'ruckusing_base' => dirname(__FILE__) . '/..'
+        'ruckusing_base' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..'
 
 );

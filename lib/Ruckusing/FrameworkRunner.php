@@ -123,7 +123,7 @@ class Ruckusing_FrameworkRunner
         $this->initialize_logger();
 
         //include all adapters
-        $this->load_all_adapters(RUCKUSING_BASE . '/lib/Ruckusing/Adapter');
+        $this->load_all_adapters(RUCKUSING_BASE . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'Ruckusing' . DIRECTORY_SEPARATOR . 'Adapter');
 
         //initialize logger
         $this->initialize_db();
@@ -237,7 +237,7 @@ class Ruckusing_FrameworkRunner
             mkdir($this->_config['log_dir'], 0755, true);
         }
         $log_name = sprintf("%s.log", $this->_env);
-        $this->logger = Ruckusing_Util_Logger::instance($this->_config['log_dir'] . "/" . $log_name);
+        $this->logger = Ruckusing_Util_Logger::instance($this->_config['log_dir'] . DIRECTORY_SEPARATOR . $log_name);
     }
 
     /**
@@ -434,10 +434,10 @@ class Ruckusing_FrameworkRunner
         $files = scandir($adapter_dir);
         foreach ($files as $f) {
             //skip over invalid files
-            if ($f == '.' || $f == ".." || !is_dir($adapter_dir . '/' . $f)) {
+            if ($f == '.' || $f == ".." || !is_dir($adapter_dir . DIRECTORY_SEPARATOR . $f)) {
                 continue;
             }
-            require_once $adapter_dir . '/' . $f . '/Base.php';
+            require_once $adapter_dir . DIRECTORY_SEPARATOR . $f . DIRECTORY_SEPARATOR . 'Base.php';
         }
     }
 

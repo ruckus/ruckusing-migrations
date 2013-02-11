@@ -100,13 +100,13 @@ class Ruckusing_Adapter_MySQL_TableDefinition
             throw new Ruckusing_Exception(
                     "Invalid MySQL Adapter instance.",
                     Ruckusing_Exception::INVALID_ADAPTER
-                    );
+            );
         }
         if (!$name) {
             throw new Ruckusing_Exception(
                     "Invalid 'name' parameter",
                     Ruckusing_Exception::INVALID_ARGUMENT
-                    );
+            );
         }
 
         $this->_adapter = $adapter;
@@ -204,7 +204,7 @@ class Ruckusing_Adapter_MySQL_TableDefinition
             throw new Ruckusing_Exception(
                     sprintf("Table Definition: '%s' has not been initialized", $this->_name),
                     Ruckusing_Exception::INVALID_TABLE_DEFINITION
-                    );
+            );
         }
         if (is_array($this->_options) && array_key_exists('options', $this->_options)) {
             $opt_str = $this->_options['options'];
@@ -218,7 +218,7 @@ class Ruckusing_Adapter_MySQL_TableDefinition
         if ($this->_auto_generate_id === true) {
             $this->_primary_keys[] = 'id';
             $primary_id = new Ruckusing_Adapter_ColumnDefinition($this->_adapter, 'id', 'integer',
-                            array('unsigned' => true, 'null' => false, 'auto_increment' => true));
+                    array('unsigned' => true, 'null' => false, 'auto_increment' => true));
 
             $create_table_sql .= $primary_id->to_sql() . ",\n";
         }

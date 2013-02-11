@@ -23,7 +23,7 @@ define('STYLE_OFFSET', 2);
  * @subpackage Db
  * @author   Cody Caughlan <codycaughlan % gmail . com>
  * @link      https://github.com/ruckus/ruckusing-migrations
-*/
+ */
 class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Interface
 {
     /**
@@ -58,7 +58,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      * debug
      *
      * @var boolean
-    */
+     */
     private $_debug = false;
 
     /**
@@ -91,8 +91,8 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         if (!$this->_adapter->supports_migrations()) {
             throw new Ruckusing_Exception(
-                            "This database does not support migrations.",
-                            Ruckusing_Exception::MIGRATION_NOT_SUPPORTED
+                    "This database does not support migrations.",
+                    Ruckusing_Exception::MIGRATION_NOT_SUPPORTED
             );
         }
         $this->_task_args = $args;
@@ -224,12 +224,13 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                 $this->_return .= ":\n";
             }
             $migrations = $this->_migrator_util->get_runnable_migrations(
-                            $this->_migratorDir,
-                            $direction,
-                            $destination
+                    $this->_migratorDir,
+                    $direction,
+                    $destination
             );
             if (count($migrations) == 0) {
                 $this->_return .= "\nNo relevant migrations to run. Exiting...\n";
+
                 return;
             }
             $result = $this->run_migrations($migrations, $direction, $destination);
@@ -252,7 +253,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         $last_version = -1;
         foreach ($migrations as $file) {
-            $full_path = $this->_migratorDir  . '/' . $file['file'];
+            $full_path = $this->_migratorDir . DIRECTORY_SEPARATOR . $file['file'];
             if (is_file($full_path) && is_readable($full_path) ) {
                 require_once $full_path;
                 $klass = Ruckusing_Util_Naming::class_from_migration_file($file['file']);
@@ -269,8 +270,8 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                     $this->_adapter->rollback_transaction();
                     //wrap the caught exception in our own
                     throw new Ruckusing_Exception(
-                                    sprintf("%s - %s", $file['class'], $e->getMessage()),
-                                    Ruckusing_Exception::MIGRATION_FAILED
+                            sprintf("%s - %s", $file['class'], $e->getMessage()),
+                            Ruckusing_Exception::MIGRATION_FAILED
                     );
                 }
                 $end = $this->end_timer();
@@ -345,10 +346,10 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
         //check to make sure our destination directory is writable
         if (!is_writable($this->_migratorDir)) {
             throw new Ruckusing_Exception(
-                            "ERROR: Migrations directory '"
-                            . $this->_migratorDir
-                            . "' is not writable by the current user. Check permissions and try again.\n",
-                            Ruckusing_Exception::INVALID_MIGRATION_DIR
+                    "ERROR: Migrations directory '"
+                    . $this->_migratorDir
+                    . "' is not writable by the current user. Check permissions and try again.\n",
+                    Ruckusing_Exception::INVALID_MIGRATION_DIR
             );
         }
     }
@@ -367,8 +368,8 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             return true;
         } catch (Exception $e) {
             throw new Ruckusing_Exception(
-                            "\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n",
-                            Ruckusing_Exception::MIGRATION_FAILED
+                    "\nError auto-creating 'schema_info' table: " . $e->getMessage() . "\n\n",
+                    Ruckusing_Exception::MIGRATION_FAILED
             );
         }
     }
