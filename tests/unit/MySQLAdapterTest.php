@@ -309,6 +309,12 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $col = $this->adapter->column_info('users', 'shortcode');
         $this->assertEquals('utf8_bin', $col['collation']);
 
+        // Test that the character option works, default collation of latin1 is latin1_swedish_ci
+        // http://dev.mysql.com/doc/refman/5.0/en/charset-mysql.html
+        $this->adapter->add_column('users', 'highschool', 'string', array('character' => 'latin1'));
+        $col = $this->adapter->column_info('users', 'highschool');
+        $this->assertEquals('latin1_swedish_ci', $col['collation']);
+
         $this->remove_table('users');
     }
 
