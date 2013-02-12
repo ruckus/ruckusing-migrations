@@ -994,6 +994,13 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             $sql .= ' UNSIGNED';
         }
 
+        if (array_key_exists('character', $options)) {
+        	$sql .= sprintf(" CHARACTER SET %s", $this->identifier($options['character']));
+        }
+        if (array_key_exists('collate', $options)) {
+            $sql .= sprintf(" COLLATE %s", $this->identifier($options['collate']));
+        }
+
         if (array_key_exists('auto_increment', $options) && $options['auto_increment'] === true) {
             $sql .= ' auto_increment';
         }
@@ -1021,12 +1028,6 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
 
         if (array_key_exists('null', $options) && $options['null'] === false) {
             $sql .= " NOT NULL";
-        }
-        if (array_key_exists('character', $options)) {
-        	$sql .= sprintf(" CHARACTER SET %s", $this->identifier($options['character']));
-        }
-        if (array_key_exists('collate', $options)) {
-            $sql .= sprintf(" COLLATE %s", $this->identifier($options['collate']));
         }
         if (array_key_exists('comment', $options)) {
             $sql .= sprintf(" COMMENT '%s'", $this->quote_string($options['comment']));
