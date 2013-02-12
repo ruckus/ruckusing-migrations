@@ -190,7 +190,14 @@ class Ruckusing_FrameworkRunner
      */
     public function migrations_directory()
     {
-        return $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+    	$path = $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR;
+
+        if (array_key_exists('directory', $this->_config['db'][$this->_env])) {
+            return $path . $this->_config['db'][$this->_env]['directory'];
+        }
+        else {
+            return $path . $this->_config['db'][$this->_env]['database'];
+        }
     }
 
     /**
