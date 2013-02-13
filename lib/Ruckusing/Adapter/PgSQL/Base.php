@@ -105,6 +105,7 @@ class Ruckusing_Adapter_PgSQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'primary_key'   => array('name' => 'serial'),
                 'string'        => array('name' => 'varchar', 'limit' => 255),
                 'text'          => array('name' => 'text'),
+                'tinytext'		=> array('name' => 'text'),
                 'mediumtext'    => array('name' => 'text'),
                 'integer'       => array('name' => 'integer'),
                 'smallinteger'  => array('name' => 'smallint'),
