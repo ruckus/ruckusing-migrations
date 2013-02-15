@@ -226,6 +226,11 @@ Tables can be removed by using the `drop_table` method call. As might be expecte
 
 **Arguments:**:
   `table_name`: The name of the table to remove.
+  
+**Example:**
+```php
+   $this->drop_table("users");
+```
 
 ### Renaming tables
 Tables can be renamed using the `rename_table` method.
@@ -235,6 +240,12 @@ Tables can be renamed using the `rename_table` method.
 *Arguments:*:
   `table_name`: The existing name of the table.
   `new_name`: The new name of the table.
+
+**Example:**
+```php
+   // rename from "users" to "people"
+   $this->rename_table("users", "people");
+```
 
 
 ## Column-level operations
