@@ -20,7 +20,8 @@ return array(
                         'port'      => 3306,
                         'database'  => 'ruckusing_migrations',
                         'user'      => 'root',
-                        'password'  => ''
+                        'password'  => '',
+                        //'directory' => 'custom_name'
                 ),
 
                 'pg_test'  => array(
@@ -29,7 +30,8 @@ return array(
                         'port'  => 5432,
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'postgres',
-                        'password'  => ''
+                        'password'  => '',
+                        //'directory' => 'custom_name'
                 ),
 
                 'mysql_test'  => array(
@@ -38,7 +40,8 @@ return array(
                         'port'  => 3306,
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'root',
-                        'password'  => ''
+                        'password'  => '',
+                        //'directory' => 'custom_name'
                 )
 
         ),
