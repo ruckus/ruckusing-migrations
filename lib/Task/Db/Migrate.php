@@ -179,33 +179,25 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
         }
 
         // If we are not at the bottom then adjust our index (to satisfy array_slice)
-        if ($current_index == -1) {
-            $current_index = 0;
+        if ($current_index == -1 && $direction === 'down') {
+            $available = array();
         } else {
-            $current_index += 1;
+            if ($direction === 'up') {
+                $current_index += 1;
+            } else {
+                $current_index += $offset;
+            }
+            // check to see if we have enough migrations to run - the user
+            // might have asked to run more than we have available
+            $available = array_slice($migrations, $current_index, $offset);
         }
 
-        // check to see if we have enough migrations to run - the user
-        // might have asked to run more than we have available
-        $available = array_slice($migrations, $current_index, $offset);
-        if (count($available) != $offset) {
-            $names = array();
-            foreach ($available as $a) {
-                $names[] = $a['file'];
-            }
-            $num_available = count($names);
-            $prefix = $direction == 'down' ? '-' : '+';
-            $this->_return .= "\n\nCannot migrate " . strtoupper($direction) . " via offset \"{$prefix}{$offset}\": not enough migrations exist to execute.\n";
-            $this->_return .= "You asked for ({$offset}) but only available are ({$num_available}): " . implode(", ", $names) . "\n\n";
-        } else {
-            // run em
-            $target = end($available);
-            if ($this->_debug == true) {
-                $this->_return .= "\n------------- TARGET ------------------\n";
-                $this->_return .= print_r($target, true);
-            }
-            $this->prepare_to_migrate($target['version'], $direction);
+        $target = end($available);
+        if ($this->_debug == true) {
+            $this->_return .= "\n------------- TARGET ------------------\n";
+            $this->_return .= print_r($target, true);
         }
+        $this->prepare_to_migrate(isset($target['version']) ? $target['version'] : null, $direction);
     }
 
     /**
