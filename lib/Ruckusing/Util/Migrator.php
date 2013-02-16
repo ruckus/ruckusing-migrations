@@ -254,27 +254,28 @@ class Ruckusing_Util_Migrator
         return $files;
     }
 
-    //== Private methods
-
     /**
      * Find the specified structure (representing a migration) that matches the given version
      *
      * @param array  $migrations the list of migrations
      * @param string $version    the version being searched
+     * @param boolean $only_index whether to only return the index of the version
      *
-     * @return string
+     * @return null | integer | array
      */
-    private function find_version($migrations, $version)
+    public function find_version($migrations, $version, $only_index = false)
     {
         $len = count($migrations);
         for ($i = 0; $i < $len; $i++) {
             if ($migrations[$i]['version'] == $version) {
-                return $migrations[$i];
+                return $only_index ? $i : $migrations[$i];
             }
         }
 
         return null;
     }
+
+    //== Private methods
 
     /**
      * Find the index of the migration in the set of migrations that match the given version

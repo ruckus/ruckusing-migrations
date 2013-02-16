@@ -115,7 +115,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                 if (preg_match('/^([\-\+])(\d+)$/', $target_version, $matches)) {
                     if (count($matches) == 3) {
                         $direction = $matches[1] == '-' ? 'down' : 'up';
-                        $offset = intval($matches[2]);
+                        $steps = intval($matches[2]);
                         $style = STYLE_OFFSET;
                     }
                 }
@@ -133,7 +133,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             }
 
             if ($style == STYLE_OFFSET) {
-                $this->migrate_from_offset($offset, $current_version, $direction);
+                $this->migrate_from_offset($steps, $current_version, $direction);
             }
 
             // Completed - display accumulated output
@@ -153,29 +153,24 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     }
 
     /**
-     * Migrate to a specific offset
+     * Migrate to a specific version using steps from current version
      *
-     * @param integer $offset          version to migrate to
+     * @param integer $steps  number of versions to jump to
      * @param string  $current_version current version
      * @param $string $direction direction to migrate to 'up'/'down'
      */
-    private function migrate_from_offset($offset, $current_version, $direction)
+    private function migrate_from_offset($steps, $current_version, $direction)
     {
         $migrations = $this->_migrator_util->get_migration_files($this->_migratorDir, $direction);
-        $versions = array();
-        $current_index = -1;
-        for ($i = 0; $i < count($migrations); $i++) {
-            $migration = $migrations[$i];
-            $versions[] = $migration['version'];
-            if ($migration['version'] === $current_version) {
-                $current_index = $i;
-            }
-        }
+
+        $current_index = $this->_migrator_util->find_version($migrations, $current_version, true);
+        $current_index = $current_index !== null ? $current_index : -1;
+
         if ($this->_debug == true) {
-            print_r($migrations);
+            $this->_return .= print_r($migrations, true);
             $this->_return .= "\ncurrent_index: " . $current_index . "\n";
             $this->_return .= "\ncurrent_version: " . $current_version . "\n";
-            $this->_return .= "\noffset: " . $offset . "\n";
+            $this->_return .= "\nsteps: " . $steps . " $direction\n";
         }
 
         // If we are not at the bottom then adjust our index (to satisfy array_slice)
@@ -185,11 +180,11 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             if ($direction === 'up') {
                 $current_index += 1;
             } else {
-                $current_index += $offset;
+                $current_index += $steps;
             }
             // check to see if we have enough migrations to run - the user
             // might have asked to run more than we have available
-            $available = array_slice($migrations, $current_index, $offset);
+            $available = array_slice($migrations, $current_index, $steps);
         }
 
         $target = end($available);
