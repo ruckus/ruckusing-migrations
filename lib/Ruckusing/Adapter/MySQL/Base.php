@@ -1117,7 +1117,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             }
             if (!$this->conn->select_db($db_info['database'])) {
                 throw new Ruckusing_Exception(
-                        "\n\nCould not select the DB " . $db_info['database'] . ", check permissions on host $host \n\n",
+                        "\n\nCould not select the DB " . $db_info['database'] . ", check permissions on host " . $db_info['host'] . " \n\n",
                         Ruckusing_Exception::INVALID_CONFIG
                 );
             }
