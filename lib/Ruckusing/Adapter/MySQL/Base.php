@@ -1108,7 +1108,10 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             if (empty($db_info['port'])) {
                 $db_info['port'] = 3306;
             }
-            $this->conn = new mysqli($db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port']); //db name leaved for selection
+            if (empty($db_info['socket'])) {
+                $db_info['socket'] = @ini_get('mysqli.default_socket');
+            }
+            $this->conn = new mysqli($db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port'], $db_info['socket']); //db name leaved for selection
             if ($this->conn->connect_error) {
                 throw new Ruckusing_Exception(
                         "\n\nCould not connect to the DB, check host / user / password\n\n",
