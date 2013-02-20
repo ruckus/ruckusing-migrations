@@ -21,7 +21,8 @@ return array(
                         'database'  => 'ruckusing_migrations',
                         'user'      => 'root',
                         'password'  => '',
-                        //'directory' => 'custom_name'
+                        //'directory' => 'custom_name',
+                        //'socket' => '/var/run/mysqld/mysqld.sock'
                 ),
 
                 'pg_test'  => array(
@@ -31,7 +32,8 @@ return array(
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'postgres',
                         'password'  => '',
-                        //'directory' => 'custom_name'
+                        //'directory' => 'custom_name',
+
                 ),
 
                 'mysql_test'  => array(
@@ -41,7 +43,8 @@ return array(
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'root',
                         'password'  => '',
-                        //'directory' => 'custom_name'
+                        //'directory' => 'custom_name',
+                        //'socket' => '/var/run/mysqld/mysqld.sock'
                 )
 
         ),
