@@ -212,6 +212,9 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
 
         $expected = "`age` tinytext";
         $this->assertEquals($expected, $this->adapter->column_definition("age", "tinytext"));
+
+	$expected = "`age` longblob";
+	$this->assertEquals($expected, $this->adapter->column_definition("age", "longbinary"));
     }//test_column_definition
 
     /**

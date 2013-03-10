@@ -119,6 +119,9 @@ class Ruckusing_Adapter_PgSQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'time'          => array('name' => 'time'),
                 'date'          => array('name' => 'date'),
                 'binary'        => array('name' => 'bytea'),
+		'tinybinary'    => array('name' => "bytea"),
+		'mediumbinary'  => array('name' => "bytea"),
+		'longbinary'    => array('name' => "bytea"),
                 'boolean'       => array('name' => 'boolean'),
                 'tsvector'      => array('name' => 'tsvector')
         );

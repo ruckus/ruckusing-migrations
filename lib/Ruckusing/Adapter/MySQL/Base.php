@@ -119,6 +119,9 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'time'          => array('name' => "time"),
                 'date'          => array('name' => "date"),
                 'binary'        => array('name' => "blob"),
+		'tinybinary'    => array('name' => "tinyblob"),
+		'mediumbinary'  => array('name' => "mediumblob"),
+		'longbinary'    => array('name' => "longblob"),
                 'boolean'       => array('name' => "tinyint", 'limit' => 1),
                 'enum'          => array('name' => "enum", 'values' => array())
         );

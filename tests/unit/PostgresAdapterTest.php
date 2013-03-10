@@ -232,6 +232,10 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
         $expected = '"age" text';
         $this->assertEquals($expected, $this->adapter->column_definition("age", "tinytext"));
+
+	$expected = '"age" bytea';
+	$this->assertEquals($expected, $this->adapter->column_definition("age", "longbinary"));
+
     }
 
     /**
