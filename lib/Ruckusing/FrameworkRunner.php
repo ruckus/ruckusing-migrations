@@ -449,7 +449,10 @@ class Ruckusing_FrameworkRunner
             if ($f == '.' || $f == ".." || !is_dir($adapter_dir . DIRECTORY_SEPARATOR . $f)) {
                 continue;
             }
-            require_once $adapter_dir . DIRECTORY_SEPARATOR . $f . DIRECTORY_SEPARATOR . 'Base.php';
+            $adapter_class_path = $adapter_dir . DIRECTORY_SEPARATOR . $f . DIRECTORY_SEPARATOR . 'Base.php';
+            if(file_exists($adapter_class_path)) {
+              require_once $adapter_class_path;
+            }
         }
     }
 
