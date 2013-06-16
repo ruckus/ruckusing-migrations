@@ -1,19 +1,5 @@
 <?php
 
-if (!defined('BASE')) {
-    define('BASE', dirname(__FILE__) . '/..');
-}
-
-require_once BASE  . '/test_helper.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/FrameworkRunner.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Util/Migrator.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Base.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/Interface.php';
-require_once RUCKUSING_BASE  . '/lib/Ruckusing/Adapter/MySQL/Base.php';
-require_once RUCKUSING_BASE  . '/config/database.inc.php';
-require_once RUCKUSING_BASE  . '/config/config.inc.php';
-
-define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
 /**
  * Implementation of MigratorUtilTest
  * To run these unit-tests an empty test database needs to be setup in database.inc.php

@@ -1,8 +1,5 @@
 <?php
 
-require_once RUCKUSING_BASE  . '/config/database.inc.php';
-require_once RUCKUSING_BASE  . '/config/config.inc.php';
-
 /**
  * Implementation of MigratorUtilTest
  * To run these unit-tests an empty test database needs to be setup in database.inc.php
