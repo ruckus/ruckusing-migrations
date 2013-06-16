@@ -23,7 +23,7 @@ define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
  * @package  Ruckusing_Migrations
  * @author   (c) Cody Caughlan <codycaughlan % gmail . com>
 */
-class MigratorUtilTest extends PHPUnit_Framework_TestCase
+class MigratorUtilTestSingleDirectory extends PHPUnit_Framework_TestCase
 {
     /**
      * Setup commands before test case
@@ -47,7 +47,7 @@ class MigratorUtilTest extends PHPUnit_Framework_TestCase
         //create the schema table if necessary
         $this->adapter->create_schema_version_table();
 
-        $framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test'));
+        $framework = new Ruckusing_FrameworkRunner($ruckusing_config, array('ENV=mysql_test', 'module=default'));
         $this->migrations_dirs = $framework->migrations_directories();
         // need to deal with array, not just string at main
         if (!is_dir($this->migrations_dirs['default'])) {
