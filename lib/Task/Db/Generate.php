@@ -65,12 +65,15 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         else {
             $migration_name = $args['name'];
         }
+        if (!array_key_exists('module', $args)) {
+            $args['module'] = '';
+        }
 
         //clear any filesystem stats cache
         clearstatcache();
 
         $framework = $this->get_framework();
-        $migrations_dir = $framework->migrations_directory();
+        $migrations_dir = $framework->migrations_directory($args['module']);
 
         if (!is_dir($migrations_dir)) {
             $output .= "\n\tMigrations directory (" . $migrations_dir . " doesn't exist, attempting to create.\n";
@@ -84,10 +87,11 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         //generate a complete migration file
         $next_version = Ruckusing_Util_Migrator::generate_timestamp();
         $class = Ruckusing_Util_Naming::camelcase($migration_name);
+        $all_dirs = $framework->migrations_directories();
 
-        if (self::classNameIsDuplicated($class, $migrations_dir)) {
+        if ($re = self::classNameIsDuplicated($class, $all_dirs)) {
             throw new Ruckusing_Exception(
-                    'This migration name is already used. Please, choose another name.',
+                    "This migration name is already used in the \"$re\" directory. Please, choose another name.",
                     Ruckusing_Exception::INVALID_ARGUMENT
             );
         }
@@ -146,18 +150,18 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
     /**
      * Indicate if a class name is already used
      *
-     * @param string $classname    The class name to test
-     * @param string $migrationDir The directory of migration files
+     * @param string $classname      The class name to test
+     * @param string $migrationsDirs The array with directories of migration files (in simplest case - just array with one element)
      *
      * @return bool
      */
-    public static function classNameIsDuplicated($classname, $migrationDir)
+    public static function classNameIsDuplicated($classname, $migrationsDirs)
     {
-        $migrationFiles = Ruckusing_Util_Migrator::get_migration_files($migrationDir, 'up');
+        $migrationFiles = Ruckusing_Util_Migrator::get_migration_files($migrationsDirs, 'up');
         $classname = strtolower($classname);
         foreach ($migrationFiles as $file) {
             if (strtolower($file['class']) == $classname) {
-                return true;
+                return $file['module'];
             }
         }
 

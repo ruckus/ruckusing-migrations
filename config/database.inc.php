@@ -49,7 +49,7 @@ return array(
 
         ),
 
-        'migrations_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'migrations',
+        'migrations_dir' => array('default' => RUCKUSING_WORKING_BASE . '/migrations'),
 
         'db_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'db',
 
