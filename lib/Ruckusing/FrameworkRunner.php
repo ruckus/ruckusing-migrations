@@ -201,14 +201,18 @@ class Ruckusing_FrameworkRunner
                                 Ruckusing_Exception::INVALID_CONFIG
                 );
             }
-            $migration_dir = $this->_config['migrations_dir'][$key] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+            $migration_dir = $this->_config['migrations_dir'][$key] . DIRECTORY_SEPARATOR;
         } elseif (is_array($this->_config['migrations_dir'])) {
-            $migration_dir = $this->_config['migrations_dir']['default'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+            $migration_dir = $this->_config['migrations_dir']['default'] . DIRECTORY_SEPARATOR;
         } else {
-            $migration_dir = $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+            $migration_dir = $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR;
         }
 
-        return $migration_dir;
+        if (array_key_exists('directory', $this->_config['db'][$this->_env])) {
+            return $migration_dir . $this->_config['db'][$this->_env]['directory'];
+        }
+
+        return $migration_dir . $this->_config['db'][$this->_env]['database'];
     }
 
     /**
