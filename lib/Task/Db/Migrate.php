@@ -324,7 +324,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
         foreach ($this->_migratorDirs as $name => $path) {
             if (!is_dir($path)) {
                 $this->_return .= sprintf("\n\tMigrations directory (%s) doesn't exist, attempting to create.", $path);
-                if (mkdir($this->_migratorDirs, 0755, true) === FALSE) {
+                if (mkdir($path, 0755, true) === FALSE) {
                     $this->_return .= sprintf("\n\tUnable to create migrations directory at %s, check permissions?", $path);
                 } else {
                     $this->_return .= sprintf("\n\tCreated OK");
