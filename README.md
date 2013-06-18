@@ -457,5 +457,3 @@ $ mysql -uroot -p < tests/test.sql
 $ phpunit tests/unit/MySQLAdapterTest.php
 ```
 Some of the tests require a `mysql_test` or `pg_test` database configuration to be defined. If this is required and its not satisfied than the test will complain appropriately.
-
-
