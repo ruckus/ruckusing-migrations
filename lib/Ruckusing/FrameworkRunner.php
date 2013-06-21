@@ -229,6 +229,9 @@ class Ruckusing_FrameworkRunner
             }
         } else {
             $result['default'] = $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['database'];
+            if (array_key_exists('directory', $this->_config['db'][$this->_env])) {
+                $result['default'] = $this->_config['migrations_dir'] . DIRECTORY_SEPARATOR . $this->_config['db'][$this->_env]['directory'];
+            }
         }
 
         return $result;
