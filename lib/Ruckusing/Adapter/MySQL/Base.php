@@ -614,6 +614,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 $this->identifier($table_name),
                 $this->identifier($column_name),
                 $this->identifier($new_column_name), $current_type);
+        
+        $sql .= $this->add_column_options($current_type, $column_info);
 
         return $this->execute_ddl($sql);
     }//rename_column
@@ -1031,7 +1033,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             $sql .= sprintf(" DEFAULT %s", $default_value);
         }
 
-        if (array_key_exists('null', $options) && $options['null'] === false) {
+        if (array_key_exists('null', $options) && ($options['null'] === false || $options['null'] === 'NO')) {
             $sql .= " NOT NULL";
         }
         if (array_key_exists('comment', $options)) {

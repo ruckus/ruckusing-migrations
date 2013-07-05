@@ -255,7 +255,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
     public function test_rename_column()
     {
         //create it
-        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) DEFAULT 'abc' NOT NULL);");
 
         $before = $this->adapter->column_info("users", "name");
         $this->assertEquals('varchar(20)', $before['type'] );
@@ -267,6 +267,11 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $after = $this->adapter->column_info("users", "new_name");
         $this->assertEquals('varchar(20)', $after['type'] );
         $this->assertEquals('new_name', $after['field'] );
+        
+        // assert that we didnt mess up the NOT NULL and DEFAULT
+        $this->assertEquals('NO', $after['null'] );
+        $this->assertEquals('abc', $after['default'] );
+
         $this->remove_table('users');
     }
 
