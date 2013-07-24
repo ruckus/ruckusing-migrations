@@ -21,6 +21,7 @@ return array(
                         'database'  => 'ruckusing_migrations',
                         'user'      => 'root',
                         'password'  => '',
+                        //'charset' => 'utf8',
                         //'directory' => 'custom_name',
                         //'socket' => '/var/run/mysqld/mysqld.sock'
                 ),
