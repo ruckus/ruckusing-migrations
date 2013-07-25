@@ -79,7 +79,9 @@ class Ruckusing_Exception extends Exception
     public static function errorHandler($code, $message, $file, $line)
     {
         file_put_contents('php://stderr', "\n" . basename($file) . "({$line}) : {$message}\n\n");
-        exit(1);
+        if ($code != E_WARNING && $code != E_NOTICE) {
+            exit(1);
+        }
     }
 
     /**
