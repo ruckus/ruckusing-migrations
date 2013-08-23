@@ -1116,6 +1116,9 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             if (empty($db_info['socket'])) {
                 $db_info['socket'] = @ini_get('mysqli.default_socket');
             }
+            if (empty($db_info['charset'])) {
+                $db_info['charset'] = "utf8";
+            }
             $this->conn = new mysqli($db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port'], $db_info['socket']); //db name leaved for selection
             if ($this->conn->connect_error) {
                 throw new Ruckusing_Exception(
@@ -1126,6 +1129,12 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             if (!$this->conn->select_db($db_info['database'])) {
                 throw new Ruckusing_Exception(
                         "\n\nCould not select the DB " . $db_info['database'] . ", check permissions on host " . $db_info['host'] . " \n\n",
+                        Ruckusing_Exception::INVALID_CONFIG
+                );
+            }
+            if (!$this->conn->set_charset($db_info['charset'])) {
+                throw new Ruckusing_Exception(
+                        "\n\nCould not set charset " . $db_info['charset'] . " \n\n",
                         Ruckusing_Exception::INVALID_CONFIG
                 );
             }
