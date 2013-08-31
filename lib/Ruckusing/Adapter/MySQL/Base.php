@@ -813,8 +813,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                     Ruckusing_Exception::INVALID_ARGUMENT
             );
         }
-        $created_at = $this->add_column($table_name, "created_at", "datetime", array("null" => false));
-        $updated_at = $this->add_column($table_name, "updated_at", "datetime", array("null" => false));
+        $updated_at = $this->add_column($table_name, "updated_at", "timestamp", array("null" => false));
+        $created_at = $this->add_column($table_name, "created_at", "timestamp");
 
         return $created_at && $updated_at;
     }
@@ -834,8 +834,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                     Ruckusing_Exception::INVALID_ARGUMENT
             );
         }
-        $created_at = $this->remove_column($table_name, "created_at", "datetime", array("null" => false));
-        $updated_at = $this->remove_column($table_name, "updated_at", "datetime", array("null" => false));
+        $updated_at = $this->remove_column($table_name, "updated_at");
+        $created_at = $this->remove_column($table_name, "created_at");
 
         return $created_at && $updated_at;
     }

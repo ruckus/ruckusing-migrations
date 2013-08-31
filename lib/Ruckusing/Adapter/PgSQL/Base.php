@@ -996,8 +996,8 @@ SQL;
                     Ruckusing_Exception::INVALID_ARGUMENT
             );
         }
-        $created_at = $this->remove_column($table_name, "created_at", "datetime", array("null" => false));
-        $updated_at = $this->remove_column($table_name, "updated_at", "datetime", array("null" => false));
+        $created_at = $this->remove_column($table_name, "created_at");
+        $updated_at = $this->remove_column($table_name, "updated_at");
 
         return $created_at && $updated_at;
     }
