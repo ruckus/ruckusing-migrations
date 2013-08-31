@@ -417,6 +417,58 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->drop_table('users');
     }
+    
+    /**
+     * test add timestamps
+     */
+    public function test_add_timestamps()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+
+        $col = $this->adapter->column_info("users", "name");
+        $this->assertEquals("name", $col['field']);
+
+        //add timestamps
+        $this->adapter->add_timestamps("users");
+        
+        $col = $this->adapter->column_info("users", "created_at");
+        $this->assertEquals("created_at", $col['field']);
+        $this->assertEquals('datetime', $col['type'] );
+        
+        $col = $this->adapter->column_info("users", "updated_at");
+        $this->assertEquals("updated_at", $col['field']);
+        $this->assertEquals('datetime', $col['type'] );
+
+        $this->remove_table('users');
+    }
+    
+    /**
+     * test remove timestamps
+     */
+    public function test_remove_timestamps()
+    {
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20), created_at datetime not null, updated_at datetime not null );");
+        
+        //verify they exists
+        $col = $this->adapter->column_info("users", "created_at");
+        $this->assertEquals("created_at", $col['field']);
+        
+        $col = $this->adapter->column_info("users", "updated_at");
+        $this->assertEquals("updated_at", $col['field']);
+
+        //drop them
+        $this->adapter->remove_timestamps("users");
+
+        //verify they does not exist
+        $col = $this->adapter->column_info("users", "created_at");
+        $this->assertEquals(null, $col);
+        $col = $this->adapter->column_info("users", "updated_at");
+        $this->assertEquals(null, $col);
+        
+        $this->remove_table('users');
+    }
 
     /**
      * test multi column index
