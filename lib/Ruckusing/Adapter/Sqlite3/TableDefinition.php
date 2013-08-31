@@ -198,6 +198,15 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
     }
 
     /**
+     * 
+     */
+    public function timestamps($created_column_name = "created_at", $updated_column_name = "updated_at")
+    {
+        $this->column($created_column_name, "datetime", array("null" => false, 'default' => 'CURRENT_TIMESTAMP'));
+        $this->column($updated_column_name, "datetime", array("null" => false, 'default' => 'CURRENT_TIMESTAMP'));
+    }
+
+    /**
      * @return string
      */
     private function keys()

@@ -557,6 +557,28 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     }
 
     /**
+     * @param $table_name
+     * @param $created_column_name
+     * @param $updated_column_name
+     * @return boolean
+     */
+    public function add_timestamps($table_name, $created_column_name, $updated_column_name)
+    {
+        $this->log_unsupported_feature(__FUNCTION__);
+    }
+
+   /**
+     * @param $table_name
+     * @param $created_column_name
+     * @param $updated_column_name
+     * @return boolean
+     */
+    public function remove_timestamps($table_name, $created_column_name, $updated_column_name)
+    {
+        $this->log_unsupported_feature(__FUNCTION__);
+    }
+
+    /**
      * @param $type
      * @param $options
      * @param bool $performing_change
@@ -575,6 +597,8 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
                     $default_format = '%d';
                 } elseif (is_bool($options['default'])) {
                     $default_format = "'%d'";
+                } elseif ($options['default'] == 'CURRENT_TIMESTAMP') {
+                    $default_format = "%s";
                 } else {
                     $default_format = "'%s'";
                 }
@@ -584,6 +608,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
             if (array_key_exists('null', $options) && $options['null'] === false) {
                 $sql .= " NOT NULL";
+            }
+            if (array_key_exists('extra', $options)) {
+                $sql .= sprintf(" %s", $this->quote_string($options['extra']));
             }
         }
         return $sql;

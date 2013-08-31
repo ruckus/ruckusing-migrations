@@ -808,6 +808,76 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
 
         return $this->execute_ddl($sql);
     }
+    
+    /**
+     * Add timestamps
+     *
+     * @param string $table_name          The table name
+     * @param string $created_column_name Created at column name
+     * @param string $updated_column_name Updated at column name
+     *
+     * @return boolean
+     */
+    public function add_timestamps($table_name, $created_column_name, $updated_column_name)
+    {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing table name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (empty($created_column_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing created at column name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (empty($updated_column_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing updated at column name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        $created_at = $this->add_column($table_name, $created_column_name, "datetime");
+        $updated_at = $this->add_column($table_name, $updated_column_name, "timestamp", array("null" => false, 'default' => 'CURRENT_TIMESTAMP', 'extra' => 'ON UPDATE CURRENT_TIMESTAMP'));
+
+        return $created_at && $updated_at;
+    }
+    
+    /**
+     * Remove timestamps
+     *
+     * @param string $table_name          The table name
+     * @param string $created_column_name Created at column name
+     * @param string $updated_column_name Updated at column name
+     *
+     * @return boolean
+     */
+    public function remove_timestamps($table_name, $created_column_name, $updated_column_name)
+    {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing table name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (empty($created_column_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing created at column name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (empty($updated_column_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing updated at column name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        $updated_at = $this->remove_column($table_name, $created_column_name);
+        $created_at = $this->remove_column($table_name, $updated_column_name);
+
+        return $created_at && $updated_at;
+    }
 
     /**
      * Check an index
@@ -1039,6 +1109,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 $default_format = '%d';
             } elseif (is_bool($options['default'])) {
                 $default_format = "'%d'";
+            } elseif ($options['default'] == 'CURRENT_TIMESTAMP') {
+                $default_format = "%s";
             } else {
                 $default_format = "'%s'";
             }
@@ -1052,6 +1124,9 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         }
         if (array_key_exists('comment', $options)) {
             $sql .= sprintf(" COMMENT '%s'", $this->quote_string($options['comment']));
+        }
+        if (array_key_exists('extra', $options)) {
+            $sql .= sprintf(" %s", $this->quote_string($options['extra']));
         }
         if (array_key_exists('after', $options)) {
             $sql .= sprintf(" AFTER %s", $this->identifier($options['after']));

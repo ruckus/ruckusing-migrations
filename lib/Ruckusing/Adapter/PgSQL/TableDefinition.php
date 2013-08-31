@@ -161,7 +161,20 @@ class Ruckusing_Adapter_PgSQL_TableDefinition extends Ruckusing_Adapter_TableDef
 
         $this->_columns[] = $column;
     }//column
-
+    
+    /**
+     * Shortcut to create timestamps columns (default created_at, updated_at)
+     *
+     * @param string $created_column_name Created at column name
+     * @param string $updated_column_name Updated at column name
+     *    
+     */
+    public function timestamps($created_column_name = "created_at", $updated_column_name = "updated_at")
+    {
+        $this->column($created_column_name, "datetime", array("null" => false));
+        $this->column($updated_column_name, "datetime", array("null" => false));
+    }
+    
     /**
      * Get all primary keys
      *
