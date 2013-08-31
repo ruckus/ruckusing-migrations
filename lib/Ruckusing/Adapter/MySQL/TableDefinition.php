@@ -177,7 +177,7 @@ class Ruckusing_Adapter_MySQL_TableDefinition
     public function timestamps()
     {
       $this->column($table_name, "updated_at", "timestamp", array("null" => false));
-      $this->column($table_name, "created_at", "timestamp");
+      $this->column($table_name, "created_at", "datetime");
     }
 
     /**

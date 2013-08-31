@@ -814,7 +814,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             );
         }
         $updated_at = $this->add_column($table_name, "updated_at", "timestamp", array("null" => false));
-        $created_at = $this->add_column($table_name, "created_at", "timestamp");
+        $created_at = $this->add_column($table_name, "created_at", "datetime");
 
         return $created_at && $updated_at;
     }
