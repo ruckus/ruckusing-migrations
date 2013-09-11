@@ -105,10 +105,10 @@ class Ruckusing_Adapter_PgSQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'primary_key'   => array('name' => 'serial'),
                 'string'        => array('name' => 'varchar', 'limit' => 255),
                 'text'          => array('name' => 'text'),
-                'tinytext'		=> array('name' => 'text'),
+                'tinytext'      => array('name' => 'text'),
                 'mediumtext'    => array('name' => 'text'),
                 'integer'       => array('name' => 'integer'),
-                'tinyinteger'	=> array('name' => 'smallint'),
+                'tinyinteger'	  => array('name' => 'smallint'),
                 'smallinteger'  => array('name' => 'smallint'),
                 'mediuminteger' => array('name' => 'integer'),
                 'biginteger'    => array('name' => 'bigint'),
@@ -119,11 +119,12 @@ class Ruckusing_Adapter_PgSQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'time'          => array('name' => 'time'),
                 'date'          => array('name' => 'date'),
                 'binary'        => array('name' => 'bytea'),
-		'tinybinary'    => array('name' => "bytea"),
-		'mediumbinary'  => array('name' => "bytea"),
-		'longbinary'    => array('name' => "bytea"),
+		            'tinybinary'    => array('name' => "bytea"),
+		            'mediumbinary'  => array('name' => "bytea"),
+		            'longbinary'    => array('name' => "bytea"),
                 'boolean'       => array('name' => 'boolean'),
-                'tsvector'      => array('name' => 'tsvector')
+                'tsvector'      => array('name' => 'tsvector'),
+                'uuid'          => array('name' => 'uuid'),
         );
 
         return $types;
