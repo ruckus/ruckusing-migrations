@@ -105,10 +105,10 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'primary_key'   => array('name' => 'integer', 'limit' => 11, 'null' => false),
                 'string'        => array('name' => "varchar", 'limit' => 255),
                 'text'          => array('name' => "text"),
-                'tinytext'		=> array('name' => "tinytext"),
+                'tinytext'      => array('name' => "tinytext"),
                 'mediumtext'    => array('name' => 'mediumtext'),
                 'integer'       => array('name' => "int", 'limit' => 11),
-                'tinyinteger'	=> array('name' => "tinyint"),
+                'tinyinteger'  	=> array('name' => "tinyint"),
                 'smallinteger'  => array('name' => "smallint"),
                 'mediuminteger'	=> array('name' => "mediumint"),
                 'biginteger'    => array('name' => "bigint"),
@@ -119,11 +119,12 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'time'          => array('name' => "time"),
                 'date'          => array('name' => "date"),
                 'binary'        => array('name' => "blob"),
-		'tinybinary'    => array('name' => "tinyblob"),
-		'mediumbinary'  => array('name' => "mediumblob"),
-		'longbinary'    => array('name' => "longblob"),
+		            'tinybinary'    => array('name' => "tinyblob"),
+		            'mediumbinary'  => array('name' => "mediumblob"),
+		            'longbinary'    => array('name' => "longblob"),
                 'boolean'       => array('name' => "tinyint", 'limit' => 1),
-                'enum'          => array('name' => "enum", 'values' => array())
+                'enum'          => array('name' => "enum", 'values' => array()),
+                'uuid'          => array('name' => "char", 'limit' => 36),
         );
 
         return $types;
