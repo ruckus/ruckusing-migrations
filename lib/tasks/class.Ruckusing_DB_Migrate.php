@@ -11,8 +11,13 @@ require_once RUCKUSING_BASE . '/lib/classes/Ruckusing_exceptions.php';
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';
 require_once RUCKUSING_BASE . '/lib/classes/class.Ruckusing_BaseMigration.php';
 
-define('STYLE_REGULAR', 1);
-define('STYLE_OFFSET', 2);
+if(!defined('STYLE_REGULAR')) {
+	define('STYLE_REGULAR', 1);
+}
+
+if(!defined('STYLE_OFFSET')) {
+	define('STYLE_OFFSET', 2);
+}
 
 class Ruckusing_DB_Migrate implements Ruckusing_iTask {
 	

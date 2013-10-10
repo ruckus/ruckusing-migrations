@@ -11,7 +11,9 @@ require_once RUCKUSING_BASE  . '/lib/classes/adapters/class.Ruckusing_MySQLAdapt
 require_once RUCKUSING_BASE  . '/tests/config/database.inc.php';
 require_once RUCKUSING_BASE  . '/config/config.inc.php';
 
-define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
+if(!defined('RUCKUSING_TEST_HOME')) {
+	define('RUCKUSING_TEST_HOME', RUCKUSING_BASE . '/tests');
+}
 
 class MigratorUtilTest extends PHPUnit_Framework_TestCase {
 
