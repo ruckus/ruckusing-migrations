@@ -107,7 +107,11 @@ class Ruckusing_FrameworkRunner {
 
 		if($num_args >= 2) {					
 			$this->cur_task_name = $argv[1];			
-			define('RUCKUSING_CURRENT_TASK', $argv[1]);
+
+			if(!defined('RUCKUSING_CURRENT_TASK')) {
+				define('RUCKUSING_CURRENT_TASK', $argv[1]);
+			}
+
 			$options = array();
 			for($i = 2; $i < $num_args;$i++) {
 				$arg = $argv[$i];

@@ -6,8 +6,10 @@
   Call with no arguments to see usage info.
 */
 
+if(!defined('RUCKUSING_BASE')) {
+	define('RUCKUSING_BASE', realpath(__DIR__));
+}
 
-define('RUCKUSING_BASE', realpath(dirname(__FILE__)));
 require RUCKUSING_BASE.'/bootstrap.php';
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 require_once RUCKUSING_BASE  . '/lib/classes/util/class.Ruckusing_MigratorUtil.php';

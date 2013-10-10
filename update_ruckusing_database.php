@@ -5,7 +5,9 @@
   over existing migrations.
 */
 
-define('RUCKUSING_BASE', dirname(__FILE__) );
+if(!defined('RUCKUSING_BASE')) {
+	define('RUCKUSING_BASE', __DIR__);
+}
 
 //requirements
 require RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_Logger.php';

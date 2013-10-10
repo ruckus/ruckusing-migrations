@@ -3,7 +3,9 @@
 //requirements
 require_once RUCKUSING_BASE . '/lib/classes/util/class.Ruckusing_NamingUtil.php';
 
-define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/tasks');
+if(!defined('RUCKUSING_TASK_DIR')) {
+	define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . '/lib/tasks');
+}
 
 class Ruckusing_TaskManager  {
 	

@@ -1,5 +1,8 @@
 <?php
-define('RUCKUSING_BASE', dirname(__FILE__) );
+if(!defined('RUCKUSING_BASE')) {
+	define('RUCKUSING_BASE', __DIR__);
+}
+
 require RUCKUSING_BASE.'/bootstrap.php';
 
 //requirements
