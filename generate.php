@@ -83,7 +83,7 @@ function main($args) {
   $klass            = Ruckusing_NamingUtil::camelcase($migration_name);
   $file_name        = $next_version . '_' . $klass . '.php';
   $full_path        = realpath($newMigrationDir) . '/' . $file_name;
-  $template_str     = get_template($klass);
+  $template_str     = get_template($klass, $args['template']);
     
   //check to make sure our destination directory is writable
   if(!is_writable($newMigrationDir . '/')) {
@@ -103,11 +103,12 @@ function die_with_error($str) {
   die("\n{$str}\n");
 }
 
-function get_template($klass) {
+function get_template($klass, $template_name) {
 if(defined('RUCKUSING_MIGRATION_TPL')
 	&& is_file(RUCKUSING_MIGRATION_TPL)) {
     $template = file_get_contents(RUCKUSING_MIGRATION_TPL);
 	$template = str_replace('CLASS_NAME', $klass, $template);
+	$template = str_replace('TEMPLATE_NAME', $template_name, $template);
 } else {
 $template = <<<TPL
 <?php\n
