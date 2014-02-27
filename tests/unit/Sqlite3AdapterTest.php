@@ -28,6 +28,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter = new Ruckusing_Adapter_Sqlite3_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T'));
         $this->adapter->query('DROP TABLE IF EXISTS test');
+        $this->adapter->query('CREATE TABLE test(id int)');
     }
 
     protected function tearDown()
@@ -100,6 +101,18 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->adapter->table_exists('test1234'));
 
         $this->adapter->query('DROP TABLE IF EXISTS test1234');
+    }
+
+    public function test_add_column()
+    {
+        $this->assertTrue($this->adapter->add_column('test', 'name', 'string', array('limit' => 10)));
+        $this->assertEquals(array(
+            'name' => 'name',
+            'type' => 'varchar(10)',
+            'field' => 'name',
+            'null' => 1,
+            'default' => null
+        ), $this->adapter->column_info('test', 'name'));
     }
 
 }
