@@ -13,54 +13,58 @@ Valid types (adapters) are Postgres & MySQL:
 */
 
 return array(
-        'db' => array(
-                'development' => array(
-                        'type'      => 'mysql',
-                        'host'      => 'localhost',
-                        'port'      => 3306,
-                        'database'  => 'ruckusing_migrations',
-                        'user'      => 'root',
-                        'password'  => 'root',
-                        //'charset' => 'utf8',
-                        //'directory' => 'custom_name',
-                        //'socket' => '/var/run/mysqld/mysqld.sock'
-                ),
+    'db' => array(
+        'development' => array(
+            'type' => 'mysql',
+            'host' => 'localhost',
+            'port' => 3306,
+            'database' => 'ruckusing_migrations',
+            'user' => 'root',
+            'password' => 'root',
+            //'charset' => 'utf8',
+            //'directory' => 'custom_name',
+            //'socket' => '/var/run/mysqld/mysqld.sock'
+        ),
 
-                'pg_test'  => array(
-                        'type'  => 'pgsql',
-                        'host'  => 'localhost',
-                        'port'  => 5432,
-                        'database'  => 'ruckusing_migrations_test',
-                        'user'  => 'postgres',
-                        'password'  => '',
-                        //'directory' => 'custom_name',
-
-                ),
-
-                'mysql_test'  => array(
-                        'type'  => 'mysql',
-                        'host'  => 'localhost',
-                        'port'  => 3306,
-                        'database'  => 'ruckusing_migrations_test',
-                        'user'  => 'root',
-                        'password'  => 'root',
-                        //'directory' => 'custom_name',
-                        //'socket' => '/var/run/mysqld/mysqld.sock'
-                ),
-
-                'sqlite_test' => array(
-                    'type' => 'sqlite',
-                    'dsn' => 'sqlite:/tmp/ruckusing_migrations_test.sqlite3'
-                )
+        'pg_test' => array(
+            'type' => 'pgsql',
+            'host' => 'localhost',
+            'port' => 5432,
+            'database' => 'ruckusing_migrations_test',
+            'user' => 'postgres',
+            'password' => '',
+            //'directory' => 'custom_name',
 
         ),
 
-        'migrations_dir' => array('default' => RUCKUSING_WORKING_BASE . '/migrations'),
+        'mysql_test' => array(
+            'type' => 'mysql',
+            'host' => 'localhost',
+            'port' => 3306,
+            'database' => 'ruckusing_migrations_test',
+            'user' => 'root',
+            'password' => 'root',
+            //'directory' => 'custom_name',
+            //'socket' => '/var/run/mysqld/mysqld.sock'
+        ),
 
-        'db_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'db',
+        'sqlite_test' => array(
+            'type' => 'sqlite',
+            'database' => '/tmp/ruckusing_migrations_test.sqlite3',
+            'host' => 'localhost',
+            'port' => '',
+            'user' => '',
+            'password' => ''
+        )
 
-        'log_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'logs',
+    ),
 
-        'ruckusing_base' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..'
+    'migrations_dir' => array('default' => RUCKUSING_WORKING_BASE . '/migrations'),
+
+    'db_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'db',
+
+    'log_dir' => RUCKUSING_WORKING_BASE . DIRECTORY_SEPARATOR . 'logs',
+
+    'ruckusing_base' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..'
 
 );
