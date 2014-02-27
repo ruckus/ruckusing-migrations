@@ -310,19 +310,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->execute_ddl($sql);
     }
 
-    /**
-     * change column
-     *
-     * @param string $table_name The table name
-     * @param string $column_name The column name
-     * @param string $type The type generic of the column
-     * @param array $options The options definition of the column
-     *
-     * @return void
-     */
     public function change_column($table_name, $column_name, $type, $options = array())
     {
-
+        $this->log_unsupported_feature(__FUNCTION__);
     }
 
     /**
