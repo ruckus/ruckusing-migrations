@@ -397,29 +397,9 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test dropping column
-     */
     public function test_remove_column()
     {
-        $this->drop_table('users');
-        //create it
-        $table = $this->adapter->create_table('users');
-        $table->column('name', 'string', array('limit' => 20));
-        $table->column('age', 'integer');
-        $table->finish();
-
-        //verify it exists
-        $col = $this->adapter->column_info("users", "name");
-        $this->assertEquals("name", $col['field']);
-
-        //drop it
-        $this->adapter->remove_column("users", "name");
-
-        //verify it does not exist
-        $col = $this->adapter->column_info("users", "name");
-        $this->assertEquals(array(), $col);
-        $this->drop_table('users');
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
     }
 
     public function test_change_column()

@@ -303,11 +303,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     public function remove_column($table_name, $column_name)
     {
-        $sql = sprintf("ALTER TABLE %s DROP COLUMN %s",
-            $this->quote_table_name($table_name),
-            $this->quote_column_name($column_name)
-        );
-        return $this->execute_ddl($sql);
+        $this->log_unsupported_feature(__FUNCTION__);
     }
 
     public function change_column($table_name, $column_name, $type, $options = array())
