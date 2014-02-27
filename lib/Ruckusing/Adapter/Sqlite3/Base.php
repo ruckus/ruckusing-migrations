@@ -9,6 +9,14 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     private $db_info;
     private $_tables;
 
+    /**
+     * Creates an instance of Ruckusing_Adapter_PgSQL_Base
+     *
+     * @param array $dsn The current dsn being used
+     * @param Ruckusing_Util_Logger $logger the current logger
+     *
+     * @return Ruckusing_Adapter_Sqlite3_Base
+     */
     public function __construct($dsn, $logger)
     {
         parent::__construct($dsn);
@@ -16,11 +24,23 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->set_logger($logger);
     }
 
+    /**
+     * Connect to the db
+     *
+     * @param string $dsn the current dsn
+     */
     private function connect($dsn)
     {
         $this->db_connect($dsn);
     }
 
+    /**
+     * Connect to the db
+     *
+     * @param string $dsn the current dsn
+     *
+     * @return boolean
+     */
     private function db_connect($dsn)
     {
         if (!class_exists('SQLite3')) {
@@ -281,17 +301,13 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->execute_ddl($sql);
     }
 
-    /**
-     * remove column
-     *
-     * @param string $table_name The table name
-     * @param string $column_name The column name
-     *
-     * @return boolean
-     */
     public function remove_column($table_name, $column_name)
     {
-
+        $sql = sprintf("ALTER TABLE %s DROP COLUMN %s",
+            $this->quote_table_name($table_name),
+            $this->quote_column_name($column_name)
+        );
+        return $this->execute_ddl($sql);
     }
 
     /**
@@ -421,6 +437,40 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     {
         $this->query($ddl);
         return true;
+    }
+
+    /**
+     * Return all indexes of a table
+     *
+     * @param string $table_name the table name
+     *
+     * @return array
+     */
+    public function indexes($table_name)
+    {
+        $sql = <<<SQL
+       SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
+       FROM pg_class t
+       INNER JOIN pg_index d ON t.oid = d.indrelid
+       INNER JOIN pg_class i ON d.indexrelid = i.oid
+       WHERE i.relkind = 'i'
+         AND d.indisprimary = 'f'
+         AND t.relname = '%s'
+         AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = ANY (current_schemas(false)) )
+      ORDER BY i.relname
+SQL;
+        $sql = sprintf($sql, $table_name);
+        $result = $this->select_all($sql);
+
+        $indexes = array();
+        foreach ($result as $row) {
+            $indexes[] = array(
+                'name' => $row['relname'],
+                'unique' => $row['indisunique'] == 't' ? true : false
+            );
+        }
+
+        return $indexes;
     }
 
     private function isError($SQLite3Result)
