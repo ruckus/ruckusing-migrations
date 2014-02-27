@@ -181,18 +181,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->markTestSkipped('In sqlite create table is unsupported - http://www.sqlite.org');
     }
 
-    public function test_database_droppage()
-    {
-        $db = "test_db";
-        //create it
-        $this->assertEquals(true, $this->adapter->create_database($db));
-        $this->assertEquals(true, $this->adapter->database_exists($db));
-
-        //drop it
-        $this->assertEquals(true, $this->adapter->drop_database($db));
-        $this->assertEquals(false, $this->adapter->database_exists($db));
-    }
-
     /**
      * test index name too long
      */
