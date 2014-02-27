@@ -19,7 +19,7 @@ return array(
             'port' => 3306,
             'database' => 'ruckusing_migrations',
             'user' => 'root',
-            'password' => 'piotr123',
+            'password' => '',
             //'charset' => 'utf8',
             //'directory' => 'custom_name',
             //'socket' => '/var/run/mysqld/mysqld.sock'
@@ -30,7 +30,7 @@ return array(
             'port' => 5432,
             'database' => 'ruckusing_migrations_test',
             'user' => 'postgres',
-            'password' => 'piotr123',
+            'password' => '',
             //'directory' => 'custom_name',
 
         ),
@@ -40,13 +40,13 @@ return array(
             'port' => 3306,
             'database' => 'ruckusing_migrations_test',
             'user' => 'root',
-            'password' => 'piotr123',
+            'password' => '',
             //'directory' => 'custom_name',
             //'socket' => '/var/run/mysqld/mysqld.sock'
         ),
         'sqlite_test' => array(
             'type' => 'sqlite',
-            'database' => '/tmp/ruckusing_migrations_test.sqlite3',
+            'database' => sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ruckusing_migrations_test.sqlite3',
             'host' => 'localhost',
             'port' => '',
             'user' => '',
