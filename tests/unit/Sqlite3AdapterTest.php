@@ -99,4 +99,5 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $this->adapter->query('DROP TABLE test');
     }
+
 }

@@ -200,41 +200,26 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     }
 
-    /**
-     * database exists
-     *
-     * @param string $db The database name
-     *
-     * @return boolean
-     */
     public function database_exists($db)
     {
-
+        $this->log_unsupported_feature(__FUNCTION__);
+        return true;
     }
 
-    /**
-     * create table
-     *
-     * @param string $table_name The table name
-     * @param array $options Options for definition table
-     *
-     * @return boolean
-     */
     public function create_table($table_name, $options = array())
     {
         return new Ruckusing_Adapter_Sqlite3_TableDefinition($this, $table_name, $options);
     }
 
-    /**
-     * drop database
-     *
-     * @param string $db The database name
-     *
-     * @return boolean
-     */
-    public function drop_database($db)
+    public function drop_database($databaseName)
     {
+        $this->log_unsupported_feature(__FUNCTION__);
+        return true;
+    }
 
+    public function log_unsupported_feature($feature)
+    {
+        $this->logger->log(sprintf("WARNING: Unsupported SQLite3 feature: %s", $feature));
     }
 
     public function table_exists($tbl)
@@ -254,29 +239,36 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
-    /**
-     * drop table
-     *
-     * @param string $tbl The table name
-     *
-     * @return boolean
-     */
-    public function drop_table($tbl)
+    public function drop_table($table_name)
     {
-
+        $ddl = sprintf("DROP TABLE IF EXISTS %s", $this->quote_table_name($table_name));
+        $this->execute_ddl($ddl);
+        return true;
     }
 
-    /**
-     * rename table
-     *
-     * @param string $name The old name of table
-     * @param string $new_name The new name
-     *
-     * @return boolean
-     */
+    public function quote_table_name($string)
+    {
+        return '"' . $string . '"';
+    }
+
     public function rename_table($name, $new_name)
     {
-
+        if (empty($name)) {
+            throw new Ruckusing_Exception("Missing original column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        if (empty($new_name)) {
+            throw new Ruckusing_Exception("Missing new column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        $sql = sprintf("ALTER TABLE %s RENAME TO %s", $this->identifier($name), $this->identifier($new_name));
+        $this->execute_ddl($sql);
+        $pk_and_sequence_for = $this->pk_and_sequence_for($new_name);
+        if (!empty($pk_and_sequence_for)) {
+            list($pk, $seq) = $pk_and_sequence_for;
+            if ($seq == "{$name}_{$pk}_seq") {
+                $new_seq = "{$new_name}_{$pk}_seq";
+                $this->execute_ddl("ALTER TABLE $seq RENAME TO $new_seq");
+            }
+        }
     }
 
     /**
@@ -432,9 +424,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return true;
     }
 
-    /**
-     * @param $SQLite3Result SQLite3Result
-     */
     private function isError($SQLite3Result)
     {
         return ($SQLite3Result === FALSE);
