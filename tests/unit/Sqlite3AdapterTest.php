@@ -179,17 +179,10 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * test db creation
-     */
+
     public function test_database_creation()
     {
-        $db = "test_db";
-        $this->assertEquals(true, $this->adapter->create_database($db));
-        $this->assertEquals(true, $this->adapter->database_exists($db));
-
-        $db = "db_does_not_exist";
-        $this->assertEquals(false, $this->adapter->database_exists($db));
+        $this->markTestSkipped('In sqlite create table is unsupported - http://www.sqlite.org');
     }
 
     /**

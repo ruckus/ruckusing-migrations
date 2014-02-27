@@ -189,6 +189,12 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return system($command);
     }
 
+    public function create_database($db, $options = array())
+    {
+        $this->log_unsupported_feature(__FUNCTION__);
+        return true;
+    }
+
     public function execute($query)
     {
         return $this->query($query);
