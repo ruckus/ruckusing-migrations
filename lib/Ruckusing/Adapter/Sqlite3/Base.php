@@ -7,7 +7,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     private $sqlite3;
     private $db_info;
-    private $_tables;
 
     /**
      * Creates an instance of Ruckusing_Adapter_PgSQL_Base
@@ -236,19 +235,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     public function table_exists($tbl, $reload_tables = false)
     {
-        $this->load_tables($reload_tables);
-        return array_key_exists($tbl, $this->_tables);
-    }
-
-    private function load_tables($reload_tables = true)
-    {
-        if ($reload_tables || !$this->_tables) {
-            $this->_tables = array();
-            $query = "SELECT tbl_name FROM sqlite_master WHERE type='table';";
-            foreach ($this->query($query) as $table) {
-                $this->_tables[$table['tbl_name']] = true;
-            }
-        }
+        $query = sprintf("SELECT tbl_name FROM sqlite_master WHERE type='table' AND tbl_name=%s;", $this->quote_column_name($tbl));
+        $table = $this->select_one($query);
+        return sizeof($table) > 0;
     }
 
     public function drop_table($table_name)
