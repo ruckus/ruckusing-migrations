@@ -99,52 +99,28 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return ("'{$value}'");
     }
 
-    /**
-     * Wrapper to execute a query
-     *
-     * @param string $query query to run
-     *
-     * @return boolean
-     */
     public function query($query)
     {
         $this->logger->log($query);
         $query_type = $this->determine_query_type($query);
         $data = array();
-        if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
-            $SqliteResult = $this->sqlite3->query($query);
-            if ($this->isError($SqliteResult)) {
-                throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
-                    Ruckusing_Exception::QUERY_ERROR
-                );
-            }
-            while ($row = $SqliteResult->fetchArray() ) {
+        if ($query_type == SQL_SELECT) {
+            $SqliteResult = $this->executeQuery($query);
+            while ($row = $SqliteResult->fetchArray()) {
                 $data[] = $row;
             }
             return $data;
         } else {
-            $SqliteResult = $this->sqlite3->query($query);
-            if ($this->isError($SqliteResult)) {
-                throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
-                    Ruckusing_Exception::QUERY_ERROR
-                );
+            $this->executeQuery($query);
+            if ($query_type == SQL_INSERT) {
+                return $this->sqlite3->lastInsertRowID();
             }
-            // if the query contained a 'RETURNING' class then grab its value
-            $returning_regex = '/ RETURNING \"(.+)\"$/';
-            $matches = array();
-            if (preg_match($returning_regex, $query, $matches)) {
-                if (count($matches) == 2) {
-                    $returning_column_value = pg_fetch_result($SqliteResult, 0, $matches[1]);
-
-                    return ($returning_column_value);
-                }
-            }
-
             return true;
         }
     }
 
-    private function executeQuery($query){
+    private function executeQuery($query)
+    {
         $SqliteResult = $this->sqlite3->query($query);
         if ($this->isError($SqliteResult)) {
             throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
@@ -402,8 +378,8 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     /**
      * Add column options
      *
-     * @param string  $type              the native type
-     * @param array   $options
+     * @param string $type the native type
+     * @param array $options
      * @param boolean $performing_change
      *
      * @return string
@@ -417,7 +393,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      * Convert type to sql
      *
      * @param string $type the native type
-     * @param array  $options
+     * @param array $options
      *
      * @return string
      */
