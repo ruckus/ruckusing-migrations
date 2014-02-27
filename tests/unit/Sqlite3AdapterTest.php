@@ -115,10 +115,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         ), $this->adapter->column_info('test', 'name'));
     }
 
-
-    /**
-     * test if we can list indexes
-     */
     public function test_can_list_indexes()
     {
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
@@ -130,17 +126,14 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
     }
 
-    /**
-     * test create schema version table
-     */
     public function test_create_schema_version_table()
     {
         //force drop, start from a clean slate
-        if ($this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME, true)) {
+        if ($this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME, true)) {
             $this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
         }
         $this->adapter->create_schema_version_table();
-        $this->assertEquals(true, $this->adapter->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME, true));
+        $this->assertEquals(true, $this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME, true));
     }
 
     /**

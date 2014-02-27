@@ -65,6 +65,16 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    public function create_schema_version_table()
+    {
+        if (!$this->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
+            $t = $this->create_table(RUCKUSING_TS_SCHEMA_TBL_NAME, array('id' => false));
+            $t->column('version', 'string');
+            $t->finish();
+            $this->add_index(RUCKUSING_TS_SCHEMA_TBL_NAME, 'version', array('unique' => true));
+        }
+    }
+
     public function get_database_name()
     {
         return $this->db_info['database'];
@@ -173,11 +183,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $types;
     }
 
-    /**
-     * schema
-     *
-     * @return void
-     */
     public function schema($output_file)
     {
 
@@ -190,7 +195,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     /**
      * Quote a raw string.
-     *
+     * 
      * @param string $str Raw string
      *
      * @return string
@@ -222,15 +227,15 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->logger->log(sprintf("WARNING: Unsupported SQLite3 feature: %s", $feature));
     }
 
-    public function table_exists($tbl)
+    public function table_exists($tbl, $reload_tables = false)
     {
-        $this->load_tables();
+        $this->load_tables($reload_tables);
         return array_key_exists($tbl, $this->_tables);
     }
 
-    private function load_tables()
+    private function load_tables($reload_tables = true)
     {
-        if ($this->_tables === null) {
+        if ($reload_tables || !$this->_tables) {
             $this->_tables = array();
             $query = "SELECT tbl_name FROM sqlite_master WHERE type='table';";
             foreach ($this->query($query) as $table) {
