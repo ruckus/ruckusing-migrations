@@ -429,34 +429,16 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return true;
     }
 
-    /**
-     * Return all indexes of a table
-     *
-     * @param string $table_name the table name
-     *
-     * @return array
-     */
     public function indexes($table_name)
     {
-        $sql = <<<SQL
-       SELECT distinct i.relname, d.indisunique, d.indkey, pg_get_indexdef(d.indexrelid), t.oid
-       FROM pg_class t
-       INNER JOIN pg_index d ON t.oid = d.indrelid
-       INNER JOIN pg_class i ON d.indexrelid = i.oid
-       WHERE i.relkind = 'i'
-         AND d.indisprimary = 'f'
-         AND t.relname = '%s'
-         AND i.relnamespace IN (SELECT oid FROM pg_namespace WHERE nspname = ANY (current_schemas(false)) )
-      ORDER BY i.relname
-SQL;
-        $sql = sprintf($sql, $table_name);
+        $sql = sprintf("PRAGMA INDEX_LIST(%s);", $this->quote_table_name($table_name));
         $result = $this->select_all($sql);
 
         $indexes = array();
         foreach ($result as $row) {
             $indexes[] = array(
-                'name' => $row['relname'],
-                'unique' => $row['indisunique'] == 't' ? true : false
+                'name' => $row['name'],
+                'unique' => $row['unique'] ? true : false
             );
         }
 
