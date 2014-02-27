@@ -402,6 +402,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return 'integer';
     }
 
+
+    /**
+     * Get a column info
+     *
+     * @param string $table  the table name
+     * @param string $column the column name
+     *
+     * @return array
+     */
+    public function column_info($table, $column)
+    {
+        return array();
+    }
     /**
      * Use this method for non-SELECT queries
      * Or anything where you dont necessarily expect a result string, e.g. DROPs, CREATEs, etc.
