@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Ruckusing
+ *
+ * @category  Ruckusing
+ * @package   Ruckusing_Adapter
+ * @subpackage Sqlite3
+ * @author    Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
+ */
+
+define('SQLITE3_MAX_IDENTIFIER_LENGTH', 64);
+
 class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements Ruckusing_Adapter_Interface
 {
     /**
@@ -8,14 +19,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     private $sqlite3;
     private $db_info;
 
-    /**
-     * Creates an instance of Ruckusing_Adapter_PgSQL_Base
-     *
-     * @param array $dsn The current dsn being used
-     * @param Ruckusing_Util_Logger $logger the current logger
-     *
-     * @return Ruckusing_Adapter_Sqlite3_Base
-     */
     public function __construct($dsn, $logger)
     {
         parent::__construct($dsn);
@@ -23,23 +26,11 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->set_logger($logger);
     }
 
-    /**
-     * Connect to the db
-     *
-     * @param string $dsn the current dsn
-     */
     private function connect($dsn)
     {
         $this->db_connect($dsn);
     }
 
-    /**
-     * Connect to the db
-     *
-     * @param string $dsn the current dsn
-     *
-     * @return boolean
-     */
     private function db_connect($dsn)
     {
         if (!class_exists('SQLite3')) {
@@ -351,6 +342,14 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             $index_name = $options['name'];
         } else {
             $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
+        }
+
+        if (strlen($index_name) > SQLITE3_MAX_IDENTIFIER_LENGTH) {
+            $msg = "The auto-generated index name is too long for Postgres (max is 64 chars). ";
+            $msg .= "Considering using 'name' option parameter to specify a custom name for this index.";
+            $msg .= " Note: you will also need to specify";
+            $msg .= " this custom name in a drop_index() - if you have one.";
+            throw new Ruckusing_Exception($msg, Ruckusing_Exception::INVALID_INDEX_NAME);
         }
 
         if (!is_array($column_name)) {

@@ -198,7 +198,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         } catch (Ruckusing_Exception $exception) {
             if (Ruckusing_Exception::INVALID_INDEX_NAME == $exception->getCode()) {
                 $bm->drop_table($table_name);
-
                 return;
             }
         }
