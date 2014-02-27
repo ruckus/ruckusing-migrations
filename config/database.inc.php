@@ -32,7 +32,7 @@ return array(
                         'port'  => 5432,
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'postgres',
-                        'password'  => '',
+                        'password'  => 'piotr123',
                         //'directory' => 'custom_name',
 
                 ),
@@ -43,7 +43,7 @@ return array(
                         'port'  => 3306,
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'root',
-                        'password'  => '',
+                        'password'  => 'piotr123',
                         //'directory' => 'custom_name',
                         //'socket' => '/var/run/mysqld/mysqld.sock'
                 )
