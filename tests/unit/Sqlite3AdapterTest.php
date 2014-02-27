@@ -136,9 +136,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(true, $this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME, true));
     }
 
-    /**
-     * test if we can dump the current schema
-     */
     public function test_can_dump_schema()
     {
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
@@ -153,9 +150,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
     }
 
-    /**
-     * test to ensure table does not exist
-     */
     public function test_ensure_table_does_not_exist()
     {
         $this->assertEquals(false, $this->adapter->has_table('unknown_table'));

@@ -185,7 +185,8 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     public function schema($output_file)
     {
-
+        $command = sprintf("sqlite3 '%s' .schema > '%s'", $this->db_info['database'], $output_file);
+        return system($command);
     }
 
     public function execute($query)
@@ -195,7 +196,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     /**
      * Quote a raw string.
-     * 
+     *
      * @param string $str Raw string
      *
      * @return string
