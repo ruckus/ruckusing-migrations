@@ -114,8 +114,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
             $res = $this->sqlite3->query($query);
             if ($this->isError($res)) {
-                throw new Ruckusing_Exception(
-                    sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, pg_last_error($this->conn)),
+                throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
                     Ruckusing_Exception::QUERY_ERROR
                 );
             }
@@ -129,7 +128,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             $res = pg_query($this->conn, $query);
             if ($this->isError($res)) {
                 throw new Ruckusing_Exception(
-                    sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, pg_last_error($this->conn)),
+                    sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
                     Ruckusing_Exception::QUERY_ERROR
                 );
             }
@@ -394,6 +393,20 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     }
 
     /**
+     * Add column options
+     *
+     * @param string  $type              the native type
+     * @param array   $options
+     * @param boolean $performing_change
+     *
+     * @return string
+     */
+    public function add_column_options($type, $options, $performing_change = false)
+    {
+        return '';
+    }
+
+    /**
      * Convert type to sql
      *
      * @param string $type the native type
@@ -414,11 +427,8 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $SQLite3Result !== FALSE;
     }
 
-    /**
-     * @param $SQLite3Result SQLite3Result
-     */
-    private function lastErrorMsg($SQLite3Result)
+    private function lastErrorMsg()
     {
-        return $SQLite3Result !== FALSE;
+        return $this->sqlite3->lastErrorMsg();
     }
 }
