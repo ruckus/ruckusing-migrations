@@ -8,6 +8,7 @@
  * @subpackage Sqlite3
  * @author    Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
  * @author    Piotr Olaszewski <piotroo89 % gmail dot com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
 define('SQLITE3_MAX_IDENTIFIER_LENGTH', 64);
