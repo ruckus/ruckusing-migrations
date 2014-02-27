@@ -224,15 +224,12 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->fail('Expected to raise & catch Ruckusing_Exception::INVALID_INDEX_NAME');
     }
 
-    /**
-     * test custom primary key 1
-     */
     public function test_custom_primary_key_1()
     {
         $this->drop_table('users');
-        $t1 = new Ruckusing_Adapter_PgSQL_TableDefinition($this->adapter, "users", array('id' => true));
+        $t1 = new Ruckusing_Adapter_Sqlite3_TableDefinition($this->adapter, "users", array('id' => true));
         $t1->column("user_id", "integer", array("primary_key" => true));
-        $table_create_sql = $t1->finish(true);
+        $t1->finish(true);
         $this->drop_table('users');
     }
 
