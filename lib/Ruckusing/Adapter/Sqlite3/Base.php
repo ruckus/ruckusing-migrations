@@ -64,36 +64,16 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
-    /**
-     * get the current database name
-     *
-     * @return string
-     */
     public function get_database_name()
     {
         return $this->db_info['database'];
     }
 
-    /**
-     * Quote a string
-     *
-     * @param string $string the string
-     *
-     * @return string
-     */
     public function identifier($string)
     {
         return '"' . $string . '"';
     }
 
-    /**
-     * Quote a raw string.
-     *
-     * @param string $value Raw string
-     * @param string $column the column name
-     *
-     * @return string
-     */
     public function quote($value, $column = null)
     {
         return ("'{$value}'");
@@ -130,13 +110,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $SqliteResult;
     }
 
-    /**
-     * Check query type
-     *
-     * @param string $query query to run
-     *
-     * @return int
-     */
     private function determine_query_type($query)
     {
         $query = strtolower(trim($query));
@@ -158,16 +131,13 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
                 return SQL_DROP;
             case 'create':
                 return SQL_CREATE;
+            case 'pragma':
+                return SQL_SHOW;
             default:
                 return SQL_UNKNOWN_QUERY_TYPE;
         }
     }
 
-    /**
-     * supports migrations ?
-     *
-     * @return boolean
-     */
     public function supports_migrations()
     {
         return true;
@@ -193,16 +163,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     }
 
-    /**
-     * execute
-     *
-     * @param string $query Query SQL
-     *
-     * @return void
-     */
     public function execute($query)
     {
-
+        return $this->query($query);
     }
 
     /**
@@ -389,16 +352,10 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return '';
     }
 
-    /**
-     * Convert type to sql
-     *
-     * @param string $type the native type
-     * @param array $options
-     *
-     * @return string
-     */
     public function type_to_sql($type, $options = array())
     {
+
+
         return 'integer';
     }
 
@@ -406,7 +363,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     /**
      * Get a column info
      *
-     * @param string $table  the table name
+     * @param string $table the table name
      * @param string $column the column name
      *
      * @return array
@@ -415,14 +372,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     {
         return array();
     }
-    /**
-     * Use this method for non-SELECT queries
-     * Or anything where you dont necessarily expect a result string, e.g. DROPs, CREATEs, etc.
-     *
-     * @param string $ddl query to run
-     *
-     * @return boolean
-     */
+
     public function execute_ddl($ddl)
     {
         $this->query($ddl);

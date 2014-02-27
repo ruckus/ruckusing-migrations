@@ -5,7 +5,7 @@
  * @package  Ruckusing_Migrations
  * @author   (c) Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
  */
-class PostgresAdapterTest extends PHPUnit_Framework_TestCase
+class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var $adapter Ruckusing_Adapter_Sqlite3_Base
@@ -66,14 +66,26 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
     public function test_query_create()
     {
-        $this->adapter->query('DROP TABLE test');
+        $this->adapter->query('DROP TABLE IF EXISTS test');
         $this->adapter->query('CREATE TABLE test(id int)');
         $this->adapter->query('INSERT INTO test(id) VALUES(1)');
 
         $id = $this->adapter->query('SELECT id FROM test LIMIT 1');
-        $this->assertEquals(1, $id);
+        $this->assertEquals(1, $id[0]['id']);
 
         $this->adapter->query('DROP TABLE test');
     }
 
+    public function test_convert_native_types()
+    {
+        $this->adapter->type_to_sql();
+
+        $this->adapter->query('CREATE TABLE test(id int)');
+        $this->adapter->query('INSERT INTO test(id) VALUES(1)');
+
+        $id = $this->adapter->query('SELECT id FROM test LIMIT 1');
+        $this->assertEquals(1, $id[0]['id']);
+
+        $this->adapter->query('DROP TABLE test');
+    }
 }
