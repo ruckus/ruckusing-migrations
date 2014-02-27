@@ -169,9 +169,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test dropping table
-     */
     private function drop_table($table)
     {
         if ($this->adapter->has_table($table, true)) {
@@ -179,15 +176,11 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
     public function test_database_creation()
     {
         $this->markTestSkipped('In sqlite create table is unsupported - http://www.sqlite.org');
     }
 
-    /**
-     * test dropping database
-     */
     public function test_database_droppage()
     {
         $db = "test_db";
