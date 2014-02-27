@@ -12,10 +12,10 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
         if (!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("sqlite_test", $ruckusing_config['db']))) {
-            $this->markTestSkipped("\n'mysql_test' DB is not defined in config/database.inc.php\n\n");
+            $this->markTestSkipped("\n'sqlite_test' DB is not defined in config/database.inc.php\n\n");
         }
 
-        $test_db = $ruckusing_config['db']['mysql_test'];
+        $test_db = $ruckusing_config['db']['sqlite_test'];
         //setup our log
         $logger = Ruckusing_Util_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
@@ -69,7 +69,27 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         $table->finish();
 
         $username_actual = $this->adapter->column_info($table_name, "username");
-        $this->assertEquals('character varying(17)', $username_actual['type']);
+        $this->assertEquals('varchar(17)', $username_actual['type']);
+        $bm->drop_table($table_name);
+    }
+
+    /**
+     * test column definition with not null
+     */
+    public function test_column_definition_with_not_null()
+    {
+        $this->markTestIncomplete('wait for endrju');
+
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $ts = time();
+        $table_name = "users_$ts";
+        $table = $bm->create_table($table_name);
+        $table->column('username', 'string', array('limit' => 17, 'null' => false));
+        $table->finish();
+
+        $username_actual = $this->adapter->column_info($table_name, "username");
+        $this->assertEquals('varying(17)', $username_actual['type']);
+        $this->assertEquals(false, $username_actual['null']);
         $bm->drop_table($table_name);
     }
 }

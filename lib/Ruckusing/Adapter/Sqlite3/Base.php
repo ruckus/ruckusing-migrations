@@ -85,7 +85,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->logger->log($query);
         $query_type = $this->determine_query_type($query);
         $data = array();
-        if ($query_type == SQL_SELECT) {
+        if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
             $SqliteResult = $this->executeQuery($query);
             while ($row = $SqliteResult->fetchArray(SQLITE3_ASSOC)) {
                 $data[] = $row;
@@ -344,25 +344,38 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     }
 
-    /**
-     * Add column options
-     *
-     * @param string $type the native type
-     * @param array $options
-     * @param boolean $performing_change
-     *
-     * @return string
-     */
     public function add_column_options($type, $options, $performing_change = false)
     {
-        return '';
+        if (!is_array($options)) {
+            return '';
+        }
+
+        $sql = "";
+        if (!$performing_change) {
+            if (array_key_exists('default', $options) && $options['default'] !== null) {
+                if (is_int($options['default'])) {
+                    $default_format = '%d';
+                } elseif (is_bool($options['default'])) {
+                    $default_format = "'%d'";
+                } else {
+                    $default_format = "'%s'";
+                }
+                $default_value = sprintf($default_format, $options['default']);
+                $sql .= sprintf(" DEFAULT %s", $default_value);
+            }
+
+            if (array_key_exists('null', $options) && $options['null'] === false) {
+                $sql .= " NOT NULL";
+            }
+        }
+        return $sql;
     }
 
     public function type_to_sql($type, $options = array())
     {
         $natives = $this->native_database_types();
         if (!array_key_exists($type, $natives)) {
-            $error = sprintf("Error: I dont know what column type of '%s' maps to for SQLite3.", $type);
+            $error = sprintf("Error: I don't know what column type of '%s' maps to for SQLite3.", $type);
             $error .= "\nYou provided: {$type}\n";
             $error .= "Valid types are: \n";
             $error .= implode(', ', array_diff(array_keys($natives), array('primary_key')));
@@ -392,14 +405,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
 
         try {
-            $pragmaTable = $this->executeQuery('pragma table_info(' . $table . ')')->fetchArray(SQLITE3_ASSOC);
+            $pragmaTable = $this->query('pragma table_info(' . $table . ')');
             $data = array();
-            if (is_array($pragmaTable)) {
-                $data['type'] = $pragmaTable['type'];
+
+            $pragmaTable = array_values(array_filter($pragmaTable, function ($element) use ($column) {
+                return $element['name'] == $column ? $element : false;
+            }));
+
+            if (is_array($pragmaTable[0])) {
+                $data['type'] = $pragmaTable[0]['type'];
                 $data['name'] = $column;
                 $data['field'] = $column;
-                $data['null'] = $pragmaTable['notnull'] == 0;
-                $data['default'] = $pragmaTable['dflt_value'];
+                $data['null'] = $pragmaTable[0]['notnull'] == 0;
+                $data['default'] = $pragmaTable[0]['dflt_value'];
             }
             return $data;
         } catch (Exception $e) {
