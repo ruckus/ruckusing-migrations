@@ -402,19 +402,31 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return 'integer';
     }
 
-
-    /**
-     * Get a column info
-     *
-     * @param string $table  the table name
-     * @param string $column the column name
-     *
-     * @return array
-     */
     public function column_info($table, $column)
     {
-        return array();
+        if (empty($table)) {
+            throw new Ruckusing_Exception("Missing table name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        if (empty($column)) {
+            throw new Ruckusing_Exception("Missing original column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+
+        try {
+            $pragmaTable = $this->executeQuery('pragma table_info(' . $table . ')')->fetchArray(SQLITE3_ASSOC);
+            $data = array();
+            if (is_array($pragmaTable)) {
+                $data['type'] = $pragmaTable['type'];
+                $data['name'] = $column;
+                $data['field'] = $column;
+                $data['null'] = $pragmaTable['notnull'] == 0;
+                $data['default'] = $pragmaTable['dflt_value'];
+            }
+            return $data;
+        } catch (Exception $e) {
+            return null;
+        }
     }
+
     /**
      * Use this method for non-SELECT queries
      * Or anything where you dont necessarily expect a result string, e.g. DROPs, CREATEs, etc.
