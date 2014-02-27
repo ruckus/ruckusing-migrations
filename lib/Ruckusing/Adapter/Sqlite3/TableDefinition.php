@@ -121,4 +121,100 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
             }
         }
     }
+
+    /**
+     * Init create sql
+     *
+     * @param string $name
+     * @param array $options
+     *
+     * @throws Exception
+     * @throws Ruckusing_Exception
+     */
+    private function init_sql($name, $options)
+    {
+        //are we forcing table creation? If so, drop it first
+        if (array_key_exists('force', $options) && $options['force']) {
+            try {
+                $this->_adapter->drop_table($name);
+            } catch (Ruckusing_Exception $e) {
+                if ($e->getCode() != Ruckusing_Exception::MISSING_TABLE) {
+                    throw $e;
+                }
+                //do nothing
+            }
+        }
+        $temp = "";
+        $create_sql = sprintf("CREATE%s TABLE ", $temp);
+        $create_sql .= sprintf("%s (\n", $this->_adapter->identifier($name));
+        $this->_sql .= $create_sql;
+        $this->_initialized = true;
+    }
+
+    /**
+     * Create a column
+     *
+     * @param string $column_name the column name
+     * @param string $type the column type
+     * @param array $options
+     */
+    public function column($column_name, $type, $options = array())
+    {
+        //if there is already a column by the same name then silently fail and continue
+        if ($this->_table_def->included($column_name)) {
+            return;
+        }
+
+        $column_options = array();
+
+        if (array_key_exists('primary_key', $options)) {
+            if ($options['primary_key'] == true) {
+                $this->_primary_keys[] = $column_name;
+            }
+        }
+
+        $column_options = array_merge($column_options, $options);
+        $column = new Ruckusing_Adapter_ColumnDefinition($this->_adapter, $column_name, $type, $column_options);
+
+        $this->_columns[] = $column;
+    }
+
+    /**
+     * Table definition
+     *
+     * @param boolean $wants_sql
+     *
+     * @throws Ruckusing_Exception
+     * @return boolean | string
+     */
+    public function finish($wants_sql = false)
+    {
+        if (!$this->_initialized) {
+            throw new Ruckusing_Exception(sprintf("Table Definition: '%s' has not been initialized", $this->_name), Ruckusing_Exception::INVALID_TABLE_DEFINITION);
+        }
+
+        if (is_array($this->_options) && array_key_exists('options', $this->_options)) {
+            $opt_str = $this->_options['options'];
+        } else {
+            $opt_str = null;
+        }
+
+        $close_sql = sprintf(") %s;", $opt_str);
+        $create_table_sql = $this->_sql;
+
+        if ($this->_auto_generate_id === true) {
+            $this->_primary_keys[] = 'id';
+            $primary_id = new Ruckusing_Adapter_ColumnDefinition($this->_adapter, 'id', 'primary_key');
+            $create_table_sql .= $primary_id->to_sql() . ",\n";
+        }
+
+        $create_table_sql .= $this->columns_to_str();
+        $create_table_sql .= $this->keys() . $close_sql;
+
+        if ($wants_sql) {
+            return $create_table_sql;
+        } else {
+            return $this->_adapter->execute_ddl($create_table_sql);
+        }
+    }
 }
