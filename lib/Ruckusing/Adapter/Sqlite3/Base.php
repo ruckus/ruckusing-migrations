@@ -96,7 +96,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     public function quote($value, $column = null)
     {
-
+        return ("'{$value}'");
     }
 
     /**
@@ -394,9 +394,30 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     }
 
     /**
+     * Convert type to sql
+     *
+     * @param string $type the native type
+     * @param array  $options
+     *
+     * @return string
+     */
+    public function type_to_sql($type, $options = array())
+    {
+        return 'integer';
+    }
+
+    /**
      * @param $SQLite3Result SQLite3Result
      */
     private function isError($SQLite3Result)
+    {
+        return $SQLite3Result !== FALSE;
+    }
+
+    /**
+     * @param $SQLite3Result SQLite3Result
+     */
+    private function lastErrorMsg($SQLite3Result)
     {
         return $SQLite3Result !== FALSE;
     }
