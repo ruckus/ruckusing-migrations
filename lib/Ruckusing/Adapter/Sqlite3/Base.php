@@ -7,6 +7,7 @@
  * @package   Ruckusing_Adapter
  * @subpackage Sqlite3
  * @author    Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
+ * @author    Piotr Olaszewski <piotroo89 % gmail dot com>
  */
 
 define('SQLITE3_MAX_IDENTIFIER_LENGTH', 64);
