@@ -195,7 +195,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     /**
      * Quote a raw string.
-     *
+     * 
      * @param string $str Raw string
      *
      * @return string
