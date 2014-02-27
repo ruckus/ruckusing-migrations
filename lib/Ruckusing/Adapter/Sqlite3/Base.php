@@ -2,7 +2,11 @@
 
 class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements Ruckusing_Adapter_Interface
 {
+    /**
+     * @var SQLite3
+     */
     private $sqlite3;
+    private $db_info;
 
     /**
      * Creates an instance of Ruckusing_Adapter_PgSQL_Base
@@ -39,8 +43,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     private function db_connect($dsn)
     {
         if (!class_exists('SQLite3')) {
-            throw new Ruckusing_Exception(
-                "\nIt appears you have not compiled PHP with SQLite3 support: missing class SQLite3",
+            throw new Ruckusing_Exception("\nIt appears you have not compiled PHP with SQLite3 support: missing class SQLite3",
                 Ruckusing_Exception::INVALID_CONFIG
             );
         }
@@ -50,14 +53,12 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             try {
                 $this->sqlite3 = new SQLite3($db_info['database']);
             } catch (Exception $e) {
-                throw new Ruckusing_Exception(
-                    "\n\nCould not connect to the DB, check database name\n\n",
+                throw new Ruckusing_Exception("\n\nCould not connect to the DB, check database name\n\n",
                     Ruckusing_Exception::INVALID_CONFIG, $e->getCode(), $e);
             }
             return true;
         } else {
-            throw new Ruckusing_Exception(
-                "\n\nCould not extract DB connection information from: {$dsn}\n\n",
+            throw new Ruckusing_Exception("\n\nCould not extract DB connection information from: {$dsn}\n\n",
                 Ruckusing_Exception::INVALID_CONFIG
             );
         }
@@ -70,7 +71,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     public function get_database_name()
     {
+        return $this->db_info['database'];
+    }
 
+    /**
+     * Quote a string
+     *
+     * @param string $string the string
+     *
+     * @return string
+     */
+    public function identifier($string)
+    {
+        return '"' . $string . '"';
     }
 
     /**
@@ -99,7 +112,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $query_type = $this->determine_query_type($query);
         $data = array();
         if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
-            $res = sqlite_query($this->conn, $query);
+            $res = $this->sqlite3->query($query);
             if ($this->isError($res)) {
                 throw new Ruckusing_Exception(
                     sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, pg_last_error($this->conn)),
@@ -175,7 +188,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     public function supports_migrations()
     {
-
+        return true;
     }
 
     /**
@@ -378,5 +391,13 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     public function add_index($table_name, $column_name, $options = array())
     {
 
+    }
+
+    /**
+     * @param $SQLite3Result SQLite3Result
+     */
+    private function isError($SQLite3Result)
+    {
+        return $SQLite3Result !== FALSE;
     }
 }
