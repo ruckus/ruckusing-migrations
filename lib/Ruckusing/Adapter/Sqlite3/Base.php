@@ -355,25 +355,38 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     }
 
-    /**
-     * Add column options
-     *
-     * @param string $type the native type
-     * @param array $options
-     * @param boolean $performing_change
-     *
-     * @return string
-     */
     public function add_column_options($type, $options, $performing_change = false)
     {
-        return '';
+        if (!is_array($options)) {
+            return '';
+        }
+
+        $sql = "";
+        if (!$performing_change) {
+            if (array_key_exists('default', $options) && $options['default'] !== null) {
+                if (is_int($options['default'])) {
+                    $default_format = '%d';
+                } elseif (is_bool($options['default'])) {
+                    $default_format = "'%d'";
+                } else {
+                    $default_format = "'%s'";
+                }
+                $default_value = sprintf($default_format, $options['default']);
+                $sql .= sprintf(" DEFAULT %s", $default_value);
+            }
+
+            if (array_key_exists('null', $options) && $options['null'] === false) {
+                $sql .= " NOT NULL";
+            }
+        }
+        return $sql;
     }
 
     public function type_to_sql($type, $options = array())
     {
         $natives = $this->native_database_types();
         if (!array_key_exists($type, $natives)) {
-            $error = sprintf("Error: I dont know what column type of '%s' maps to for SQLite3.", $type);
+            $error = sprintf("Error: I don't know what column type of '%s' maps to for SQLite3.", $type);
             $error .= "\nYou provided: {$type}\n";
             $error .= "Valid types are: \n";
             $error .= implode(', ', array_diff(array_keys($natives), array('primary_key')));
