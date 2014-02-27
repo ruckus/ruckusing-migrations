@@ -420,9 +420,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
     }
 
-    /**
-     * test adding index
-     */
     public function test_add_index()
     {
         //create it
@@ -448,9 +445,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test multi column index
-     */
     public function test_multi_column_index()
     {
         //create it
@@ -468,9 +462,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test remove index with default index name
-     */
     public function test_remove_index_with_default_index_name()
     {
         $table = $this->adapter->create_table('users');
