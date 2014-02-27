@@ -7,6 +7,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     private $sqlite3;
     private $db_info;
+    private $_tables;
 
     /**
      * Creates an instance of Ruckusing_Adapter_PgSQL_Base
@@ -86,7 +87,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $data = array();
         if ($query_type == SQL_SELECT) {
             $SqliteResult = $this->executeQuery($query);
-            while ($row = $SqliteResult->fetchArray()) {
+            while ($row = $SqliteResult->fetchArray(SQLITE3_ASSOC)) {
                 $data[] = $row;
             }
             return $data;
@@ -143,14 +144,33 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return true;
     }
 
-    /**
-     * native database types
-     *
-     * @return array
-     */
     public function native_database_types()
     {
+        $types = array(
+            'primary_key' => array('name' => 'integer'),
+            'string' => array('name' => 'varchar', 'limit' => 255),
+            'text' => array('name' => 'text'),
+            'tinytext' => array('name' => 'text'),
+            'mediumtext' => array('name' => 'text'),
+            'integer' => array('name' => 'integer'),
+            'tinyinteger' => array('name' => 'smallint'),
+            'smallinteger' => array('name' => 'smallint'),
+            'mediuminteger' => array('name' => 'integer'),
+            'biginteger' => array('name' => 'bigint'),
+            'float' => array('name' => 'float'),
+            'decimal' => array('name' => 'decimal', 'scale' => 0, 'precision' => 10),
+            'datetime' => array('name' => 'datetime'),
+            'timestamp' => array('name' => 'datetime'),
+            'time' => array('name' => 'time'),
+            'date' => array('name' => 'date'),
+            'binary' => array('name' => 'blob'),
+            'tinybinary' => array('name' => "blob"),
+            'mediumbinary' => array('name' => "blob"),
+            'longbinary' => array('name' => "blob"),
+            'boolean' => array('name' => 'boolean')
+        );
 
+        return $types;
     }
 
     /**
@@ -217,16 +237,21 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     }
 
-    /**
-     * table exists ?
-     *
-     * @param string $tbl Table name
-     *
-     * @return boolean
-     */
     public function table_exists($tbl)
     {
+        $this->load_tables();
+        return array_key_exists($tbl, $this->_tables);
+    }
 
+    private function load_tables()
+    {
+        if ($this->_tables === null) {
+            $this->_tables = array();
+            $query = "SELECT tbl_name FROM sqlite_master WHERE type='table';";
+            foreach ($this->query($query) as $table) {
+                $this->_tables[$table['tbl_name']] = true;
+            }
+        }
     }
 
     /**
@@ -354,18 +379,28 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     public function type_to_sql($type, $options = array())
     {
-        return 'integer';
+        $natives = $this->native_database_types();
+        if (!array_key_exists($type, $natives)) {
+            $error = sprintf("Error: I dont know what column type of '%s' maps to for SQLite3.", $type);
+            $error .= "\nYou provided: {$type}\n";
+            $error .= "Valid types are: \n";
+            $error .= implode(', ', array_diff(array_keys($natives), array('primary_key')));
+            throw new Ruckusing_Exception($error, Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+
+        $native_type = $natives[$type];
+        $column_type_sql = $native_type['name'];
+
+        $optionsLimit = isset($options['limit']) ? $options['limit'] : null;
+        $nativeLimit = isset($native_type['limit']) ? $native_type['limit'] : null;
+        $limit = $optionsLimit ? : $nativeLimit;
+
+        if ($limit !== null) {
+            $column_type_sql .= sprintf("(%d)", $limit);
+        }
+        return $column_type_sql;
     }
 
-
-    /**
-     * Get a column info
-     *
-     * @param string $table  the table name
-     * @param string $column the column name
-     *
-     * @return array
-     */
     public function column_info($table, $column)
     {
         if (empty($table)) {
@@ -409,4 +444,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     {
         return $this->sqlite3->lastErrorMsg();
     }
+
+
 }

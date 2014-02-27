@@ -23,7 +23,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $test_db = $ruckusing_config['db']['sqlite_test'];
 
-        //setup our log
         $logger = Ruckusing_Util_Logger::instance(RUCKUSING_BASE . '/tests/logs/test.log');
 
         $this->adapter = new Ruckusing_Adapter_Sqlite3_Base($test_db, $logger);
@@ -78,13 +77,25 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
     public function test_convert_native_types()
     {
-        $this->adapter->type_to_sql();
+        $sql = $this->adapter->type_to_sql('string');
 
+        $this->assertEquals('varchar(255)', $sql);
+    }
+
+    public function test_convert_native_types_limit()
+    {
+        $sql = $this->adapter->type_to_sql('string', array('limit' => 50));
+
+        $this->assertEquals('varchar(50)', $sql);
+    }
+
+    public function test_table_exists()
+    {
+        $this->adapter->query('DROP TABLE IF EXISTS test');
         $this->adapter->query('CREATE TABLE test(id int)');
-        $this->adapter->query('INSERT INTO test(id) VALUES(1)');
 
-        $id = $this->adapter->query('SELECT id FROM test LIMIT 1');
-        $this->assertEquals(1, $id[0]['id']);
+        $this->assertEquals(true, $this->adapter->table_exists('test'));
+        $this->assertEquals(false, $this->adapter->table_exists('not_existing_table'));
 
         $this->adapter->query('DROP TABLE test');
     }
