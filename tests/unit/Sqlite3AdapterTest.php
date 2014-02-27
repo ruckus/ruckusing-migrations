@@ -27,6 +27,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $this->adapter = new Ruckusing_Adapter_Sqlite3_Base($test_db, $logger);
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T'));
+        $this->adapter->query('DROP TABLE IF EXISTS test');
     }
 
     protected function tearDown()
@@ -39,10 +40,8 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
             $this->adapter->drop_table(RUCKUSING_TS_SCHEMA_TBL_NAME);
         }
 
-        $db = "test_db";
-        if ($this->adapter->database_exists($db)) {
-            $this->adapter->drop_database($db);
-        }
+        $this->adapter->query('DROP TABLE IF EXISTS test');
+        parent::tearDown();
     }
 
     public function test_select_one()
@@ -65,14 +64,10 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
     public function test_query_create()
     {
-        $this->adapter->query('DROP TABLE IF EXISTS test');
-        $this->adapter->query('CREATE TABLE test(id int)');
         $this->adapter->query('INSERT INTO test(id) VALUES(1)');
 
         $id = $this->adapter->query('SELECT id FROM test LIMIT 1');
         $this->assertEquals(1, $id[0]['id']);
-
-        $this->adapter->query('DROP TABLE test');
     }
 
     public function test_convert_native_types()
@@ -91,13 +86,20 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
     public function test_table_exists()
     {
-        $this->adapter->query('DROP TABLE IF EXISTS test');
-        $this->adapter->query('CREATE TABLE test(id int)');
+        $this->assertTrue($this->adapter->table_exists('test'));
+        $this->assertFalse($this->adapter->table_exists('not_existing_table'));
+    }
 
-        $this->assertEquals(true, $this->adapter->table_exists('test'));
-        $this->assertEquals(false, $this->adapter->table_exists('not_existing_table'));
+    public function test_rename_table()
+    {
+        $this->adapter->query('DROP TABLE IF EXISTS test1234');
 
-        $this->adapter->query('DROP TABLE test');
+        $this->assertTrue($this->adapter->rename_table('test', 'test1234'));
+
+        $this->assertFalse($this->adapter->table_exists('test'));
+        $this->assertTrue($this->adapter->table_exists('test1234'));
+
+        $this->adapter->query('DROP TABLE IF EXISTS test1234');
     }
 
 }

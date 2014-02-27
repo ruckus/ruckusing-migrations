@@ -260,29 +260,18 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             throw new Ruckusing_Exception("Missing new column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
         }
         $sql = sprintf("ALTER TABLE %s RENAME TO %s", $this->identifier($name), $this->identifier($new_name));
-        $this->execute_ddl($sql);
-        $pk_and_sequence_for = $this->pk_and_sequence_for($new_name);
-        if (!empty($pk_and_sequence_for)) {
-            list($pk, $seq) = $pk_and_sequence_for;
-            if ($seq == "{$name}_{$pk}_seq") {
-                $new_seq = "{$new_name}_{$pk}_seq";
-                $this->execute_ddl("ALTER TABLE $seq RENAME TO $new_seq");
-            }
-        }
+        return $this->execute_ddl($sql);
     }
 
-    /**
-     * rename column
-     *
-     * @param string $table_name The table name where is the column
-     * @param string $column_name The old column name
-     * @param string $new_column_name The new column name
-     *
-     * @return boolean
-     */
     public function rename_column($table_name, $column_name, $new_column_name)
     {
+        $this->log_unsupported_feature(__FUNCTION__);
+        return true;
+    }
 
+    public function quote_column_name($string)
+    {
+        return '"' . $string . '"';
     }
 
     /**
