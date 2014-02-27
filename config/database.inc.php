@@ -20,7 +20,7 @@ return array(
                         'port'      => 3306,
                         'database'  => 'ruckusing_migrations',
                         'user'      => 'root',
-                        'password'  => '',
+                        'password'  => 'root',
                         //'charset' => 'utf8',
                         //'directory' => 'custom_name',
                         //'socket' => '/var/run/mysqld/mysqld.sock'
@@ -32,7 +32,7 @@ return array(
                         'port'  => 5432,
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'postgres',
-                        'password'  => 'piotr123',
+                        'password'  => '',
                         //'directory' => 'custom_name',
 
                 ),
@@ -43,9 +43,14 @@ return array(
                         'port'  => 3306,
                         'database'  => 'ruckusing_migrations_test',
                         'user'  => 'root',
-                        'password'  => 'piotr123',
+                        'password'  => 'root',
                         //'directory' => 'custom_name',
                         //'socket' => '/var/run/mysqld/mysqld.sock'
+                ),
+
+                'sqlite_test' => array(
+                    'type' => 'sqlite',
+                    'dsn' => 'sqlite:/tmp/ruckusing_migrations_test.sqlite3'
                 )
 
         ),
