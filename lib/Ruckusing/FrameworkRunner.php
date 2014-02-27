@@ -496,6 +496,9 @@ class Ruckusing_FrameworkRunner
             case 'pgsql':
                 $adapter_class = "Ruckusing_Adapter_PgSQL_Base";
                 break;
+            case 'sqlite':
+                $adapter_class = "Ruckusing_Adapter_Sqlite3_Base";
+                break;
         }
 
         return $adapter_class;
