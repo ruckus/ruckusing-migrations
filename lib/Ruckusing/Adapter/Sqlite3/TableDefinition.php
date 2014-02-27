@@ -7,6 +7,7 @@
  * @package   Ruckusing_Adapter
  * @subpackage   Sqlite3
  * @author    Piotr Olaszewski <piotroo89 % gmail dot com>
+ * @author    Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 
@@ -17,6 +18,7 @@
  * @package  Ruckusing_Adapter
  * @subpackage   Sqlite3
  * @author    Piotr Olaszewski <piotroo89 % gmail dot com>
+ * @author    Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
  * @link      https://github.com/ruckus/ruckusing-migrations
  */
 class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableDefinition
