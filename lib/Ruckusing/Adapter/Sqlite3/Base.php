@@ -315,31 +315,64 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->log_unsupported_feature(__FUNCTION__);
     }
 
-    /**
-     * remove index
-     *
-     * @param string $table_name The table name
-     * @param string $column_name The column name
-     *
-     * @return boolean
-     */
-    public function remove_index($table_name, $column_name)
+    public function remove_index($table_name, $column_name, $options = array())
     {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception("Missing table name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        if (empty($column_name)) {
+            throw new Ruckusing_Exception("Missing column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        //did the user specify an index name?
+        if (is_array($options) && array_key_exists('name', $options)) {
+            $index_name = $options['name'];
+        } else {
+            $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
+        }
+        $sql = sprintf("DROP INDEX %s", $this->quote_column_name($index_name));
 
+        return $this->execute_ddl($sql);
     }
 
-    /**
-     * add index
-     *
-     * @param string $table_name The table name
-     * @param string $column_name The column name
-     * @param array $options The options definition of the index
-     *
-     * @return boolean
-     */
     public function add_index($table_name, $column_name, $options = array())
     {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception("Missing table name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        if (empty($column_name)) {
+            throw new Ruckusing_Exception("Missing column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        //unique index?
+        if (is_array($options) && array_key_exists('unique', $options) && $options['unique'] === true) {
+            $unique = true;
+        } else {
+            $unique = false;
+        }
 
+        //did the user specify an index name?
+        if (is_array($options) && array_key_exists('name', $options)) {
+            $index_name = $options['name'];
+        } else {
+            $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
+        }
+
+        if (!is_array($column_name)) {
+            $column_names = array($column_name);
+        } else {
+            $column_names = $column_name;
+        }
+        $cols = array();
+        foreach ($column_names as $name) {
+            $cols[] = $this->quote_column_name($name);
+        }
+        $sql = sprintf("CREATE %sINDEX %s ON %s(%s)",
+            $unique ? "UNIQUE " : "",
+            $this->quote_column_name($index_name),
+            $this->quote_column_name($table_name),
+            join(", ", $cols)
+        );
+
+        return $this->execute_ddl($sql);
     }
 
     public function add_column_options($type, $options, $performing_change = false)
@@ -495,5 +528,28 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     {
         $col = new Ruckusing_Adapter_ColumnDefinition($this, $column_name, $type, $options);
         return $col->__toString();
+    }
+
+    public function has_index($table_name, $column_name, $options = array())
+    {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception("Missing table name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+        if (empty($column_name)) {
+            throw new Ruckusing_Exception("Missing column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
+        }
+
+        if (is_array($options) && array_key_exists('name', $options)) {
+            $index_name = $options['name'];
+        } else {
+            $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
+        }
+        $indexes = $this->indexes($table_name);
+        foreach ($indexes as $idx) {
+            if ($idx['name'] == $index_name) {
+                return true;
+            }
+        }
+        return false;
     }
 }
