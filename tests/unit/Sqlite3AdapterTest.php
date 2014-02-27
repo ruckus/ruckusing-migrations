@@ -136,9 +136,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(true, $this->adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME, true));
     }
 
-    /**
-     * test if we can dump the current schema
-     */
     public function test_can_dump_schema()
     {
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
@@ -153,23 +150,17 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
     }
 
-    /**
-     * test to ensure table does not exist
-     */
     public function test_ensure_table_does_not_exist()
     {
         $this->assertEquals(false, $this->adapter->has_table('unknown_table'));
     }
 
-    /**
-     * test to ensure table does exist
-     */
     public function test_ensure_table_does_exist()
     {
         //first make sure the table does not exist
         $users = $this->adapter->has_table('users', true);
         $this->assertEquals(false, $users);
-        $t1 = new Ruckusing_Adapter_PgSQL_TableDefinition($this->adapter, "users");
+        $t1 = new Ruckusing_Adapter_Sqlite3_TableDefinition($this->adapter, "users");
         $t1->column("email", "string", array('limit' => 20));
         $sql = $t1->finish();
 
@@ -188,17 +179,10 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * test db creation
-     */
+
     public function test_database_creation()
     {
-        $db = "test_db";
-        $this->assertEquals(true, $this->adapter->create_database($db));
-        $this->assertEquals(true, $this->adapter->database_exists($db));
-
-        $db = "db_does_not_exist";
-        $this->assertEquals(false, $this->adapter->database_exists($db));
+        $this->markTestSkipped('In sqlite create table is unsupported - http://www.sqlite.org');
     }
 
     /**
