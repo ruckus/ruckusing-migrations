@@ -237,7 +237,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     {
         $query = sprintf("SELECT tbl_name FROM sqlite_master WHERE type='table' AND tbl_name=%s;", $this->quote_column_name($tbl));
         $table = $this->select_one($query);
-        return sizeof($table) > 0;
+        return is_array($table) && sizeof($table) > 0;
     }
 
     public function drop_table($table_name)

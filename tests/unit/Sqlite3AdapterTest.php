@@ -288,9 +288,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test renaming table
-     */
     public function test_rename_table()
     {
         $this->adapter->drop_table('users');
@@ -300,12 +297,12 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->column('name', 'string', array('limit' => 20));
         $table->finish();
 
-        $this->assertEquals(true, $this->adapter->has_table('users'));
-        $this->assertEquals(false, $this->adapter->has_table('users_new'));
+        $this->assertTrue($this->adapter->has_table('users'));
+        $this->assertFalse($this->adapter->has_table('users_new'));
         //rename it
         $this->adapter->rename_table('users', 'users_new');
-        $this->assertEquals(false, $this->adapter->has_table('users'));
-        $this->assertEquals(true, $this->adapter->has_table('users_new'));
+        $this->assertFalse($this->adapter->has_table('users'));
+        $this->assertTrue($this->adapter->has_table('users_new'));
         //clean up
         $this->adapter->drop_table('users');
         $this->adapter->drop_table('users_new');
