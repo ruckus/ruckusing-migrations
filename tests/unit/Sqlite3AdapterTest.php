@@ -544,9 +544,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test select all and returning
-     */
     public function test_select_all_and_returning()
     {
         $table = $this->adapter->create_table('users');
@@ -554,9 +551,9 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->column('age', 'integer');
         $table->finish();
 
-        $id1 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d) RETURNING \"id\"", 'Taco', 32));
+        $id1 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d)", 'Taco', 32));
         $this->assertEquals(1, $id1);
-        $id2 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d) RETURNING \"id\"", 'Bumblebee', 76));
+        $id2 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d)", 'Bumblebee', 76));
         $this->assertEquals(2, $id2);
         $results = $this->adapter->select_all('SELECT * FROM users ORDER BY name ASC');
         $this->assertEquals(2, count($results));

@@ -513,4 +513,9 @@ SQL;
             throw new Ruckusing_Exception("Query for select_one() is not one of SELECT or SHOW: $query", Ruckusing_Exception::QUERY_ERROR);
         }
     }
+
+    public function select_all($query)
+    {
+        return $this->query($query);
+    }
 }
