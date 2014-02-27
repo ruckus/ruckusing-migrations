@@ -9,14 +9,6 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     private $db_info;
     private $_tables;
 
-    /**
-     * Creates an instance of Ruckusing_Adapter_PgSQL_Base
-     *
-     * @param array $dsn The current dsn being used
-     * @param Ruckusing_Util_Logger $logger the current logger
-     *
-     * @return Ruckusing_Adapter_Sqlite3_Base
-     */
     public function __construct($dsn, $logger)
     {
         parent::__construct($dsn);
@@ -24,23 +16,11 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->set_logger($logger);
     }
 
-    /**
-     * Connect to the db
-     *
-     * @param string $dsn the current dsn
-     */
     private function connect($dsn)
     {
         $this->db_connect($dsn);
     }
 
-    /**
-     * Connect to the db
-     *
-     * @param string $dsn the current dsn
-     *
-     * @return boolean
-     */
     private function db_connect($dsn)
     {
         if (!class_exists('SQLite3')) {
@@ -274,31 +254,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return '"' . $string . '"';
     }
 
+    /**
+     * add column
+     *
+     * @param string $table_name The table name
+     * @param string $column_name The column name
+     * @param string $type The type generic of the column
+     * @param array $options The options definition of the column
+     *
+     * @return boolean
+     */
     public function add_column($table_name, $column_name, $type, $options = array())
     {
-        if (empty($table_name)) {
-            throw new Ruckusing_Exception("Missing table name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
-        }
-        if (empty($column_name)) {
-            throw new Ruckusing_Exception("Missing column name parameter", Ruckusing_Exception::INVALID_ARGUMENT);
-        }
-        if (empty($type)) {
-            throw new Ruckusing_Exception("Missing type parameter", Ruckusing_Exception::INVALID_ARGUMENT);
-        }
-        $defaultOptions = array(
-            'limit' => null,
-            'precision' => null,
-            'scale' => null
-        );
-        $options = array_merge($defaultOptions, $options);
-        $sql = sprintf("ALTER TABLE %s ADD COLUMN %s %s",
-            $this->quote_table_name($table_name),
-            $this->quote_column_name($column_name),
-            $this->type_to_sql($type, $options)
-        );
-        $sql .= $this->add_column_options($type, $options);
 
-        return $this->execute_ddl($sql);
     }
 
     /**
