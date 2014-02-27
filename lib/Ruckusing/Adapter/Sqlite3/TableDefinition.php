@@ -22,78 +22,18 @@
 class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableDefinition
 {
     /**
-     * adapter PgSQL
-     *
      * @var Ruckusing_Adapter_Sqlite3_Base
      */
     private $_adapter;
-
-    /**
-     * Name
-     *
-     * @var string
-     */
     private $_name;
-
-    /**
-     * options
-     *
-     * @var array
-     */
     private $_options;
-
-    /**
-     * sql
-     *
-     * @var string
-     */
     private $_sql = "";
-
-    /**
-     * initialized
-     *
-     * @var boolean
-     */
     private $_initialized = false;
-
-    /**
-     * Columns
-     *
-     * @var array
-     */
     private $_columns = array();
-
-    /**
-     * Table definition
-     *
-     * @var array
-     */
     private $_table_def;
-
-    /**
-     * primary keys
-     *
-     * @var array
-     */
     private $_primary_keys = array();
-
-    /**
-     * auto generate id
-     *
-     * @var boolean
-     */
     private $_auto_generate_id = true;
 
-    /**
-     * Creates an instance of Ruckusing_Adapter_Sqlite3_TableDefinition
-     *
-     * @param Ruckusing_Adapter_Sqlite3_Base $adapter the current adapter
-     * @param string $name the table name
-     * @param array $options
-     *
-     * @throws Ruckusing_Exception
-     * @return \Ruckusing_Adapter_Sqlite3_TableDefinition
-     */
     public function __construct($adapter, $name, $options = array())
     {
         //sanity check
@@ -122,15 +62,6 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         }
     }
 
-    /**
-     * Init create sql
-     *
-     * @param string $name
-     * @param array $options
-     *
-     * @throws Exception
-     * @throws Ruckusing_Exception
-     */
     private function init_sql($name, $options)
     {
         //are we forcing table creation? If so, drop it first
@@ -151,13 +82,6 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         $this->_initialized = true;
     }
 
-    /**
-     * Create a column
-     *
-     * @param string $column_name the column name
-     * @param string $type the column type
-     * @param array $options
-     */
     public function column($column_name, $type, $options = array())
     {
         //if there is already a column by the same name then silently fail and continue
@@ -179,14 +103,6 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         $this->_columns[] = $column;
     }
 
-    /**
-     * Table definition
-     *
-     * @param boolean $wants_sql
-     *
-     * @throws Ruckusing_Exception
-     * @return boolean | string
-     */
     public function finish($wants_sql = false)
     {
         if (!$this->_initialized) {
@@ -215,6 +131,34 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
             return $create_table_sql;
         } else {
             return $this->_adapter->execute_ddl($create_table_sql);
+        }
+    }
+
+    private function columns_to_str()
+    {
+        $fields = array();
+        $len = count($this->_columns);
+        for ($i = 0; $i < $len; $i++) {
+            $c = $this->_columns[$i];
+            $fields[] = $c->__toString();
+        }
+
+        return join(",\n", $fields);
+    }
+
+    private function keys()
+    {
+        if (count($this->_primary_keys) > 0) {
+            $lead = ' PRIMARY KEY (';
+            $quoted = array();
+            foreach ($this->_primary_keys as $key) {
+                $quoted[] = sprintf("%s", $this->_adapter->identifier($key));
+            }
+            $primary_key_sql = ",\n" . $lead . implode(",", $quoted) . ")";
+
+            return ($primary_key_sql);
+        } else {
+            return '';
         }
     }
 }

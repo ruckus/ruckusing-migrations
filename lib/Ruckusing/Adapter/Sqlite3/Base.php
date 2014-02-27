@@ -85,7 +85,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->logger->log($query);
         $query_type = $this->determine_query_type($query);
         $data = array();
-        if ($query_type == SQL_SELECT) {
+        if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
             $SqliteResult = $this->executeQuery($query);
             while ($row = $SqliteResult->fetchArray(SQLITE3_ASSOC)) {
                 $data[] = $row;
@@ -403,14 +403,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
 
         try {
-            $pragmaTable = $this->executeQuery('pragma table_info(' . $table . ')')->fetchArray(SQLITE3_ASSOC);
+            $pragmaTable = $this->query('pragma table_info(' . $table . ')');
             $data = array();
-            if (is_array($pragmaTable)) {
-                $data['type'] = $pragmaTable['type'];
+
+            $pragmaTable = array_values(array_filter($pragmaTable, function ($element) use ($column) {
+                return $element['name'] == $column ? $element : false;
+            }));
+
+            if (is_array($pragmaTable[0])) {
+                $data['type'] = $pragmaTable[0]['type'];
                 $data['name'] = $column;
                 $data['field'] = $column;
-                $data['null'] = $pragmaTable['notnull'] == 0;
-                $data['default'] = $pragmaTable['dflt_value'];
+                $data['null'] = $pragmaTable[0]['notnull'] == 0;
+                $data['default'] = $pragmaTable[0]['dflt_value'];
             }
             return $data;
         } catch (Exception $e) {
