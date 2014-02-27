@@ -351,9 +351,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test adding column
-     */
     public function test_add_column()
     {
         //create it
@@ -368,19 +365,19 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->add_column("users", "fav_color", "string", array('limit' => 32));
         $col = $this->adapter->column_info("users", "fav_color");
         $this->assertEquals("fav_color", $col['field']);
-        $this->assertEquals('character varying(32)', $col['type']);
+        $this->assertEquals('varchar(32)', $col['type']);
 
         //add column
         $this->adapter->add_column("users", "latitude", "decimal", array('precision' => 10, 'scale' => 2));
         $col = $this->adapter->column_info("users", "latitude");
         $this->assertEquals("latitude", $col['field']);
-        $this->assertEquals('numeric(10,2)', $col['type']);
+        $this->assertEquals('decimal', $col['type']);
 
         //add column with unsigned parameter
         $this->adapter->add_column("users", "age", "integer", array('limit' => 2)); // the limit will be ignored
         $col = $this->adapter->column_info("users", "age");
         $this->assertEquals("age", $col['field']);
-        $this->assertEquals('integer', $col['type']);
+        $this->assertEquals('integer(2)', $col['type']);
 
         //add column with biginteger datatype
         $this->adapter->add_column("users", "weight", "biginteger");
