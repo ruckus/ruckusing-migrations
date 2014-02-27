@@ -112,23 +112,20 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $query_type = $this->determine_query_type($query);
         $data = array();
         if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
-            $res = $this->sqlite3->query($query);
-            if ($this->isError($res)) {
+            $SqliteResult = $this->sqlite3->query($query);
+            if ($this->isError($SqliteResult)) {
                 throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
                     Ruckusing_Exception::QUERY_ERROR
                 );
             }
-            while ($row = pg_fetch_assoc($res)) {
+            while ($row = $SqliteResult->fetchArray() ) {
                 $data[] = $row;
             }
-
             return $data;
         } else {
-            // INSERT, DELETE, etc...
-            $res = pg_query($this->conn, $query);
-            if ($this->isError($res)) {
-                throw new Ruckusing_Exception(
-                    sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
+            $SqliteResult = $this->sqlite3->query($query);
+            if ($this->isError($SqliteResult)) {
+                throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
                     Ruckusing_Exception::QUERY_ERROR
                 );
             }
@@ -137,7 +134,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             $matches = array();
             if (preg_match($returning_regex, $query, $matches)) {
                 if (count($matches) == 2) {
-                    $returning_column_value = pg_fetch_result($res, 0, $matches[1]);
+                    $returning_column_value = pg_fetch_result($SqliteResult, 0, $matches[1]);
 
                     return ($returning_column_value);
                 }
@@ -145,6 +142,16 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
             return true;
         }
+    }
+
+    private function executeQuery($query){
+        $SqliteResult = $this->sqlite3->query($query);
+        if ($this->isError($SqliteResult)) {
+            throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()),
+                Ruckusing_Exception::QUERY_ERROR
+            );
+        }
+        return $SqliteResult;
     }
 
     /**
@@ -417,6 +424,20 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     public function type_to_sql($type, $options = array())
     {
         return 'integer';
+    }
+
+    /**
+     * Use this method for non-SELECT queries
+     * Or anything where you dont necessarily expect a result string, e.g. DROPs, CREATEs, etc.
+     *
+     * @param string $ddl query to run
+     *
+     * @return boolean
+     */
+    public function execute_ddl($ddl)
+    {
+        $this->query($ddl);
+        return true;
     }
 
     /**
