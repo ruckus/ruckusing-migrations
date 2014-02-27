@@ -490,4 +490,10 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     {
         return $this->query($query);
     }
+
+    public function column_definition($column_name, $type, $options = null)
+    {
+        $col = new Ruckusing_Adapter_ColumnDefinition($this, $column_name, $type, $options);
+        return $col->__toString();
+    }
 }

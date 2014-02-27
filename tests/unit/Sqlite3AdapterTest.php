@@ -297,7 +297,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $expected = '"age" text';
         $this->assertEquals($expected, $this->adapter->column_definition("age", "tinytext"));
 
-        $expected = '"age" bytea';
+        $expected = '"age" blob';
         $this->assertEquals($expected, $this->adapter->column_definition("age", "longbinary"));
 
     }
