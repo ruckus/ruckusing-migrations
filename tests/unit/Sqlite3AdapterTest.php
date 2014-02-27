@@ -158,7 +158,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
      */
     public function test_ensure_table_does_not_exist()
     {
-        $this->assertEquals(false, $this->adapter->has_table('unknown_table') );
+        $this->assertEquals(false, $this->adapter->has_table('unknown_table'));
     }
 
     /**
@@ -183,7 +183,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
      */
     private function drop_table($table)
     {
-        if ($this->adapter->has_table($table,true)) {
+        if ($this->adapter->has_table($table, true)) {
             $this->adapter->drop_table($table);
         }
     }
@@ -194,11 +194,11 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
     public function test_database_creation()
     {
         $db = "test_db";
-        $this->assertEquals(true, $this->adapter->create_database($db) );
-        $this->assertEquals(true, $this->adapter->database_exists($db) );
+        $this->assertEquals(true, $this->adapter->create_database($db));
+        $this->assertEquals(true, $this->adapter->database_exists($db));
 
         $db = "db_does_not_exist";
-        $this->assertEquals(false, $this->adapter->database_exists($db) );
+        $this->assertEquals(false, $this->adapter->database_exists($db));
     }
 
     /**
@@ -208,12 +208,12 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
     {
         $db = "test_db";
         //create it
-        $this->assertEquals(true, $this->adapter->create_database($db) );
-        $this->assertEquals(true, $this->adapter->database_exists($db) );
+        $this->assertEquals(true, $this->adapter->create_database($db));
+        $this->assertEquals(true, $this->adapter->database_exists($db));
 
         //drop it
-        $this->assertEquals(true, $this->adapter->drop_database($db) );
-        $this->assertEquals(false, $this->adapter->database_exists($db) );
+        $this->assertEquals(true, $this->adapter->drop_database($db));
+        $this->assertEquals(false, $this->adapter->database_exists($db));
     }
 
     /**
@@ -246,15 +246,12 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
     public function test_custom_primary_key_1()
     {
         $this->drop_table('users');
-        $t1 = new Ruckusing_Adapter_PgSQL_TableDefinition($this->adapter, "users", array('id' => true) );
+        $t1 = new Ruckusing_Adapter_PgSQL_TableDefinition($this->adapter, "users", array('id' => true));
         $t1->column("user_id", "integer", array("primary_key" => true));
         $table_create_sql = $t1->finish(true);
         $this->drop_table('users');
     }
 
-    /**
-     * test column definition
-     */
     public function test_column_definition()
     {
         $expected = '"age" varchar(255)';
@@ -290,24 +287,20 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $expected = '"age" text';
         $this->assertEquals($expected, $this->adapter->column_definition("age", "tinytext"));
 
-        $expected = '"age" bytea';
+        $expected = '"age" blob';
         $this->assertEquals($expected, $this->adapter->column_definition("age", "longbinary"));
 
     }
 
-    /**
-     * test column info
-     */
     public function test_column_info()
     {
         $table = $this->adapter->create_table('users');
         $table->column('name', 'string', array('limit' => 20));
         $table->finish();
 
-        $expected = array();
         $actual = $this->adapter->column_info("users", "name");
-        $this->assertEquals('character varying(20)', $actual['type'] );
-        $this->assertEquals('name', $actual['field'] );
+        $this->assertEquals('varchar(20)', $actual['type']);
+        $this->assertEquals('name', $actual['field']);
         $this->drop_table('users');
     }
 
@@ -323,12 +316,12 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->column('name', 'string', array('limit' => 20));
         $table->finish();
 
-        $this->assertEquals(true, $this->adapter->has_table('users') );
-        $this->assertEquals(false, $this->adapter->has_table('users_new') );
+        $this->assertEquals(true, $this->adapter->has_table('users'));
+        $this->assertEquals(false, $this->adapter->has_table('users_new'));
         //rename it
         $this->adapter->rename_table('users', 'users_new');
-        $this->assertEquals(false, $this->adapter->has_table('users') );
-        $this->assertEquals(true, $this->adapter->has_table('users_new') );
+        $this->assertEquals(false, $this->adapter->has_table('users'));
+        $this->assertEquals(true, $this->adapter->has_table('users_new'));
         //clean up
         $this->adapter->drop_table('users');
         $this->adapter->drop_table('users_new');
@@ -346,15 +339,15 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->finish();
 
         $before = $this->adapter->column_info("users", "name");
-        $this->assertEquals('character varying(20)', $before['type'] );
-        $this->assertEquals('name', $before['field'] );
+        $this->assertEquals('character varying(20)', $before['type']);
+        $this->assertEquals('name', $before['field']);
 
         //rename the name column
         $this->adapter->rename_column('users', 'name', 'new_name');
 
         $after = $this->adapter->column_info("users", "new_name");
-        $this->assertEquals('character varying(20)', $after['type'] );
-        $this->assertEquals('new_name', $after['field'] );
+        $this->assertEquals('character varying(20)', $after['type']);
+        $this->assertEquals('new_name', $after['field']);
         $this->drop_table('users');
     }
 
@@ -375,25 +368,25 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->add_column("users", "fav_color", "string", array('limit' => 32));
         $col = $this->adapter->column_info("users", "fav_color");
         $this->assertEquals("fav_color", $col['field']);
-        $this->assertEquals('character varying(32)', $col['type'] );
+        $this->assertEquals('character varying(32)', $col['type']);
 
         //add column
         $this->adapter->add_column("users", "latitude", "decimal", array('precision' => 10, 'scale' => 2));
         $col = $this->adapter->column_info("users", "latitude");
         $this->assertEquals("latitude", $col['field']);
-        $this->assertEquals('numeric(10,2)', $col['type'] );
+        $this->assertEquals('numeric(10,2)', $col['type']);
 
         //add column with unsigned parameter
         $this->adapter->add_column("users", "age", "integer", array('limit' => 2)); // the limit will be ignored
         $col = $this->adapter->column_info("users", "age");
         $this->assertEquals("age", $col['field']);
-        $this->assertEquals('integer', $col['type'] );
+        $this->assertEquals('integer', $col['type']);
 
         //add column with biginteger datatype
         $this->adapter->add_column("users", "weight", "biginteger");
         $col = $this->adapter->column_info("users", "weight");
         $this->assertEquals("weight", $col['field']);
-        $this->assertEquals('bigint', $col['type'] );
+        $this->assertEquals('bigint', $col['type']);
         $this->drop_table('users');
     }
 
@@ -422,29 +415,9 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test changing column
-     */
     public function test_change_column()
     {
-        //create it
-        $table = $this->adapter->create_table('users');
-        $table->column('name', 'string', array('limit' => 20));
-        $table->column('age', 'integer');
-        $table->finish();
-
-        //verify its type
-        $col = $this->adapter->column_info("users", "name");
-        $this->assertEquals('character varying(20)', $col['type'] );
-        $this->assertEquals('', $col['default'] );
-
-        //change it, add a default too!
-        $this->adapter->change_column("users", "name", "string", array('default' => 'abc', 'limit' => 128));
-
-        $col = $this->adapter->column_info("users", "name");
-        $this->assertEquals('character varying(128)', $col['type'] );
-        $this->assertEquals("'abc'::character varying", $col['default'] );
-        $this->drop_table('users');
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
     }
 
     /**
@@ -461,11 +434,11 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $this->adapter->add_index("users", "name");
 
-        $this->assertEquals(true, $this->adapter->has_index("users", "name") );
-        $this->assertEquals(false, $this->adapter->has_index("users", "age") );
+        $this->assertEquals(true, $this->adapter->has_index("users", "name"));
+        $this->assertEquals(false, $this->adapter->has_index("users", "age"));
 
         $this->adapter->add_index("users", "age", array('unique' => true));
-        $this->assertEquals(true, $this->adapter->has_index("users", "age") );
+        $this->assertEquals(true, $this->adapter->has_index("users", "age"));
 
         $this->adapter->add_index("users", "title", array('name' => 'index_on_super_title'));
         $this->assertEquals(true, $this->adapter->has_index("users", "title", array('name' => 'index_on_super_title')));
@@ -487,11 +460,11 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->finish();
         $this->adapter->add_index("users", array("name", "age"));
 
-        $this->assertEquals(true, $this->adapter->has_index("users", array("name", "age") ));
+        $this->assertEquals(true, $this->adapter->has_index("users", array("name", "age")));
 
         //drop it
         $this->adapter->remove_index("users", array("name", "age"));
-        $this->assertEquals(false, $this->adapter->has_index("users", array("name", "age") ));
+        $this->assertEquals(false, $this->adapter->has_index("users", array("name", "age")));
         $this->drop_table('users');
     }
 
@@ -508,17 +481,14 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         //$this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20), age int(3) );");
         $this->adapter->add_index("users", "name");
 
-        $this->assertEquals(true, $this->adapter->has_index("users", "name") );
+        $this->assertEquals(true, $this->adapter->has_index("users", "name"));
 
         //drop it
         $this->adapter->remove_index("users", "name");
-        $this->assertEquals(false, $this->adapter->has_index("users", "name") );
+        $this->assertEquals(false, $this->adapter->has_index("users", "name"));
         $this->drop_table('users');
     }
 
-    /**
-     * test remove index with custom index name
-     */
     public function test_remove_index_with_custom_index_name()
     {
         //create it
@@ -529,11 +499,11 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $this->adapter->add_index("users", "name", array('name' => 'my_special_index'));
 
-        $this->assertEquals(true, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
+        $this->assertTrue($this->adapter->has_index("users", "name", array('name' => 'my_special_index')));
 
         //drop it
         $this->adapter->remove_index("users", "name", array('name' => 'my_special_index'));
-        $this->assertEquals(false, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
+        $this->assertFalse($this->adapter->has_index("users", "name", array('name' => 'my_special_index')));
         $this->drop_table('users');
     }
 
