@@ -13,6 +13,16 @@
 
 define('SQLITE3_MAX_IDENTIFIER_LENGTH', 64);
 
+/**
+ * Ruckusing_Adapter_Sqlite3_Base
+ *
+ * @category Ruckusing
+ * @package  Ruckusing_Adapter
+ * @subpackage   Sqlite3
+ * @author    Piotr Olaszewski <piotroo89 % gmail dot com>
+ * @author    Andrzej Oczkowicz <andrzejoczkowicz % gmail . com>
+ * @link      https://github.com/ruckus/ruckusing-migrations
+ */
 class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements Ruckusing_Adapter_Interface
 {
     /**
