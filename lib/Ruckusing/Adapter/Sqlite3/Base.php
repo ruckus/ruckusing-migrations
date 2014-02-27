@@ -412,7 +412,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
                 return $element['name'] == $column ? $element : false;
             }));
 
-            if (is_array($pragmaTable[0])) {
+            if (isset($pragmaTable[0]) && is_array($pragmaTable[0])) {
                 $data['type'] = $pragmaTable[0]['type'];
                 $data['name'] = $column;
                 $data['field'] = $column;
@@ -441,5 +441,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->sqlite3->lastErrorMsg();
     }
 
+    public function primary_keys($table)
+    {
+        $result = $this->query('pragma table_info(' . $table . ')');
+        $primary_keys = array();
+        foreach ($result as $row) {
+            if ($row['pk']) {
+                $primary_keys[] = array(
+                    'name' => $row['name'],
+                    'type' => $row['type']
+                );
+            }
+        }
 
+        return $primary_keys;
+    }
 }
