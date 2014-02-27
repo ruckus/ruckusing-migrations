@@ -64,4 +64,16 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-}//class
+    public function test_query_create()
+    {
+        $this->adapter->query('DROP TABLE test');
+        $this->adapter->query('CREATE TABLE test(id int)');
+        $this->adapter->query('INSERT INTO test(id) VALUES(1)');
+
+        $id = $this->adapter->query('SELECT id FROM test LIMIT 1');
+        $this->assertEquals(1, $id);
+
+        $this->adapter->query('DROP TABLE test');
+    }
+
+}

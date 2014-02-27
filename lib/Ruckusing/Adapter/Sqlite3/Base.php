@@ -421,7 +421,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     private function isError($SQLite3Result)
     {
-        return $SQLite3Result !== FALSE;
+        return ($SQLite3Result === FALSE);
     }
 
     private function lastErrorMsg()
