@@ -259,9 +259,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test column definition
-     */
     public function test_column_definition()
     {
         $expected = '"age" varchar(255)';
@@ -302,18 +299,14 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
     }
 
-    /**
-     * test column info
-     */
     public function test_column_info()
     {
         $table = $this->adapter->create_table('users');
         $table->column('name', 'string', array('limit' => 20));
         $table->finish();
 
-        $expected = array();
         $actual = $this->adapter->column_info("users", "name");
-        $this->assertEquals('character varying(20)', $actual['type'] );
+        $this->assertEquals('varchar(20)', $actual['type'] );
         $this->assertEquals('name', $actual['field'] );
         $this->drop_table('users');
     }
