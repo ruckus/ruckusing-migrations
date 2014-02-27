@@ -23,9 +23,6 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         $this->adapter->logger->log("Test run started: " . date('Y-m-d g:ia T'));
     }
 
-    /**
-     * shutdown commands after test case
-     */
     protected function tearDown()
     {
         //delete any tables we created
@@ -34,12 +31,8 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * test column definition
-     */
     public function test_column_definition()
     {
-        $this->markTestIncomplete('wait for endrju');
         $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "last_name", "string", array('limit' => 32));
         $this->assertEquals("\"last_name\" varchar(32)", trim($c));
 
@@ -50,15 +43,12 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("\"last_name\" varchar(255) DEFAULT 'abc' NOT NULL", trim($c));
 
         $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "created_at", "datetime", array('null' => false));
-        $this->assertEquals("\"created_at\" timestamp NOT NULL", trim($c));
+        $this->assertEquals("\"created_at\" datetime NOT NULL", trim($c));
 
         $c = new Ruckusing_Adapter_ColumnDefinition($this->adapter, "id", "integer", array("primary_key" => true, "unsigned" => true));
         $this->assertEquals("\"id\" integer", trim($c));
     }
 
-    /**
-     * test column definition with limit
-     */
     public function test_column_definition_with_limit()
     {
         $bm = new Ruckusing_Migration_Base($this->adapter);
@@ -73,13 +63,8 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         $bm->drop_table($table_name);
     }
 
-    /**
-     * test column definition with not null
-     */
     public function test_column_definition_with_not_null()
     {
-        $this->markTestIncomplete('wait for endrju');
-
         $bm = new Ruckusing_Migration_Base($this->adapter);
         $ts = time();
         $table_name = "users_$ts";
@@ -88,8 +73,65 @@ class Sqlite3TableDefinitionTest extends PHPUnit_Framework_TestCase
         $table->finish();
 
         $username_actual = $this->adapter->column_info($table_name, "username");
-        $this->assertEquals('varying(17)', $username_actual['type']);
+        $this->assertEquals('varchar(17)', $username_actual['type']);
         $this->assertEquals(false, $username_actual['null']);
         $bm->drop_table($table_name);
+    }
+
+    public function test_column_definition_with_default_value()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $ts = time();
+        $table_name = "users_$ts";
+        $table = $bm->create_table($table_name);
+        $table->column('username', 'string', array('limit' => 17, 'default' => 'thor'));
+        $table->finish();
+
+        $username_actual = $this->adapter->column_info($table_name, "username");
+        $this->assertEquals('varchar(17)', $username_actual['type']);
+        $this->assertEquals("'thor'", $username_actual['default']);
+        $bm->drop_table($table_name);
+    }
+
+    public function test_multiple_primary_keys()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $ts = time();
+        $table_name = "users_$ts";
+        $table = $bm->create_table($table_name, array('id' => false));
+        $table->column('user_id', 'integer', array('primary_key' => true));
+        $table->column('username', 'string', array('primary_key' => true));
+        $table->finish();
+
+        $this->adapter->column_info($table_name, "user_id");
+        $this->adapter->column_info($table_name, "username");
+
+        $primary_keys = $this->adapter->primary_keys($table_name);
+        $this->assertEquals(true, is_array($primary_keys));
+        $field_names = array();
+        foreach ($primary_keys as $key) {
+            $field_names[] = $key['name'];
+        }
+        $this->assertEquals(true, in_array('user_id', $field_names));
+        $this->assertEquals(true, in_array('username', $field_names));
+
+        //make sure there is NO 'id' column
+        $id_actual = $this->adapter->column_info($table_name, "id");
+        $this->assertEquals(array(), $id_actual);
+        $bm->drop_table($table_name);
+    }
+
+    public function test_generate_table_without_primary_key()
+    {
+        $tableDefinition = new Ruckusing_Adapter_Sqlite3_TableDefinition($this->adapter, "users", array('id' => false));
+        $tableDefinition->column("first_name", "string");
+        $tableDefinition->column("last_name", "string", array('limit' => 32));
+        $tableDefinition->finish();
+
+        $column = $this->adapter->column_info("users", "id");
+        $this->assertEquals(array(), $column);
+
+        $primary_keys = $this->adapter->primary_keys('users');
+        $this->assertEquals(array(), $primary_keys);
     }
 }
