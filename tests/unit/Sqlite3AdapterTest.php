@@ -122,7 +122,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
     public function test_can_list_indexes()
     {
         $this->adapter->execute_ddl('DROP TABLE IF EXISTS "animals"');
-        $this->adapter->execute_ddl("CREATE TABLE animals (id serial primary key, name varchar(32))");
+        $this->adapter->execute_ddl("CREATE TABLE animals (id integer primary key, name varchar(32))");
         $this->adapter->execute_ddl("CREATE INDEX idx_animals_on_name ON animals(name)");
         $indexes = $this->adapter->indexes('animals');
         $length = count($indexes);
