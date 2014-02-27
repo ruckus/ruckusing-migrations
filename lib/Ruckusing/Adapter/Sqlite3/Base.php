@@ -2,12 +2,12 @@
 
 class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements Ruckusing_Adapter_Interface
 {
-    private $conn;
+    private $sqlite3;
 
     /**
      * Creates an instance of Ruckusing_Adapter_PgSQL_Base
      *
-     * @param array                 $dsn    The current dsn being used
+     * @param array $dsn The current dsn being used
      * @param Ruckusing_Util_Logger $logger the current logger
      *
      * @return Ruckusing_Adapter_Sqlite3_Base
@@ -38,21 +38,21 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     private function db_connect($dsn)
     {
-        if (!function_exists('sqlite_open')) {
+        if (!class_exists('SQLite3')) {
             throw new Ruckusing_Exception(
-                "\nIt appears you have not compiled PHP with SQLite support: missing function sqlite_open()",
+                "\nIt appears you have not compiled PHP with SQLite3 support: missing class SQLite3",
                 Ruckusing_Exception::INVALID_CONFIG
             );
         }
         $db_info = $this->get_dsn();
         if ($db_info) {
             $this->db_info = $db_info;
-            $this->conn = sqlite_open($db_info['database']);
-            if ($this->conn === FALSE) {
+            try {
+                $this->sqlite3 = new SQLite3($db_info['database']);
+            } catch (Exception $e) {
                 throw new Ruckusing_Exception(
                     "\n\nCould not connect to the DB, check database name\n\n",
-                    Ruckusing_Exception::INVALID_CONFIG
-                );
+                    Ruckusing_Exception::INVALID_CONFIG, $e->getCode(), $e);
             }
             return true;
         } else {

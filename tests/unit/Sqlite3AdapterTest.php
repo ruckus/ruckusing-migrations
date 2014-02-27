@@ -14,6 +14,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        parent::setUp();
         $ruckusing_config = require RUCKUSING_BASE . '/config/database.inc.php';
 
         if (!is_array($ruckusing_config) || !(array_key_exists("db", $ruckusing_config) && array_key_exists("sqlite_test", $ruckusing_config['db']))) {
