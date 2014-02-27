@@ -500,5 +500,4 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $this->drop_table('users');
     }
-
 }
