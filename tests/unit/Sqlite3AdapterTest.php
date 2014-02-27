@@ -52,7 +52,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->column('age', 'integer');
         $table->finish();
 
-        $id1 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d) RETURNING \"id\"", 'Taco', 32));
+        $id1 = $this->adapter->query(sprintf("INSERT INTO users (name, age) VALUES ('%s', %d)", 'Taco', 32));
         $this->assertEquals(1, $id1);
 
         $result = $this->adapter->select_one(sprintf("SELECT * FROM users WHERE name = '%s'", 'Taco'));
@@ -60,7 +60,7 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Taco', $result['name']);
         $this->assertEquals(32, $result['age']);
 
-        $this->drop_table('users');
+        $this->adapter->drop_table('users');
     }
 
     public function test_query_create()

@@ -495,7 +495,22 @@ SQL;
                 );
             }
         }
-
         return $primary_keys;
+    }
+
+    public function select_one($query)
+    {
+        $this->logger->log($query);
+        $query_type = $this->determine_query_type($query);
+
+        if ($query_type == SQL_SELECT || $query_type == SQL_SHOW) {
+            $res = $this->executeQuery($query);
+            if ($this->isError($res)) {
+                throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $query, $this->lastErrorMsg()), Ruckusing_Exception::QUERY_ERROR);
+            }
+            return $res->fetchArray(SQLITE3_ASSOC);
+        } else {
+            throw new Ruckusing_Exception("Query for select_one() is not one of SELECT or SHOW: $query", Ruckusing_Exception::QUERY_ERROR);
+        }
     }
 }
