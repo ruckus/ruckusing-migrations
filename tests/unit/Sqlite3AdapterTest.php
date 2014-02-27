@@ -281,9 +281,6 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
-    /**
-     * test renaming table
-     */
     public function test_rename_table()
     {
         $this->adapter->drop_table('users');
@@ -293,44 +290,22 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $table->column('name', 'string', array('limit' => 20));
         $table->finish();
 
-        $this->assertEquals(true, $this->adapter->has_table('users'));
-        $this->assertEquals(false, $this->adapter->has_table('users_new'));
+        $this->assertTrue($this->adapter->has_table('users'));
+        $this->assertFalse($this->adapter->has_table('users_new'));
         //rename it
         $this->adapter->rename_table('users', 'users_new');
-        $this->assertEquals(false, $this->adapter->has_table('users'));
-        $this->assertEquals(true, $this->adapter->has_table('users_new'));
+        $this->assertFalse($this->adapter->has_table('users'));
+        $this->assertTrue($this->adapter->has_table('users_new'));
         //clean up
         $this->adapter->drop_table('users');
         $this->adapter->drop_table('users_new');
     }
 
-    /**
-     * test renaming column
-     */
     public function test_rename_column()
     {
-        $this->adapter->drop_table('users');
-        //create it
-        $table = $this->adapter->create_table('users');
-        $table->column('name', 'string', array('limit' => 20));
-        $table->finish();
-
-        $before = $this->adapter->column_info("users", "name");
-        $this->assertEquals('character varying(20)', $before['type']);
-        $this->assertEquals('name', $before['field']);
-
-        //rename the name column
-        $this->adapter->rename_column('users', 'name', 'new_name');
-
-        $after = $this->adapter->column_info("users", "new_name");
-        $this->assertEquals('character varying(20)', $after['type']);
-        $this->assertEquals('new_name', $after['field']);
-        $this->drop_table('users');
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
     }
 
-    /**
-     * test adding column
-     */
     public function test_add_column()
     {
         //create it
@@ -345,19 +320,19 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->add_column("users", "fav_color", "string", array('limit' => 32));
         $col = $this->adapter->column_info("users", "fav_color");
         $this->assertEquals("fav_color", $col['field']);
-        $this->assertEquals('character varying(32)', $col['type']);
+        $this->assertEquals('varchar(32)', $col['type']);
 
         //add column
         $this->adapter->add_column("users", "latitude", "decimal", array('precision' => 10, 'scale' => 2));
         $col = $this->adapter->column_info("users", "latitude");
         $this->assertEquals("latitude", $col['field']);
-        $this->assertEquals('numeric(10,2)', $col['type']);
+        $this->assertEquals('decimal', $col['type']);
 
         //add column with unsigned parameter
         $this->adapter->add_column("users", "age", "integer", array('limit' => 2)); // the limit will be ignored
         $col = $this->adapter->column_info("users", "age");
         $this->assertEquals("age", $col['field']);
-        $this->assertEquals('integer', $col['type']);
+        $this->assertEquals('integer(2)', $col['type']);
 
         //add column with biginteger datatype
         $this->adapter->add_column("users", "weight", "biginteger");
