@@ -46,7 +46,7 @@ return array(
         ),
         'sqlite_test' => array(
             'type' => 'sqlite',
-            'database' => sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ruckusing_migrations_test.sqlite3',
+            'database' => RUCKUSING_WORKING_BASE . '/test.sqlite3',
             'host' => 'localhost',
             'port' => '',
             'user' => '',
