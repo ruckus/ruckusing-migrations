@@ -8,7 +8,7 @@ php:
 before_script:
   - mysql -uroot < tests/test.sql
   - psql -Upostgres -f tests/test.sql
-  - cat tests/test.sql | sqlite3 tests/dummy/db/test.sqlite3
+  - sqlite3 tests/dummy/db/test.sqlite3
 
 notifications:
   email:
