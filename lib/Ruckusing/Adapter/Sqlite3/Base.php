@@ -426,7 +426,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
         $optionsLimit = isset($options['limit']) ? $options['limit'] : null;
         $nativeLimit = isset($native_type['limit']) ? $native_type['limit'] : null;
-        $limit = $optionsLimit ? : $nativeLimit;
+        $limit = $optionsLimit ? $optionsLimit : $nativeLimit;
 
         if ($limit !== null) {
             $column_type_sql .= sprintf("(%d)", $limit);
