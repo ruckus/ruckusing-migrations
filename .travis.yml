@@ -8,6 +8,7 @@ php:
 before_script:
   - mysql -uroot < tests/test.sql
   - psql -Upostgres -f tests/test.sql
+  - touch tests/dummy/db/test.sqlite3
 
 notifications:
   email:
