@@ -227,16 +227,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->query($query);
     }
 
-    /**
-     * Quote a raw string.
-     *
-     * @param string $str Raw string
-     *
-     * @return string
-     */
     public function quote_string($str)
     {
-
+        return $this->sqlite3->escapeString($str);
     }
 
     public function database_exists($db)
