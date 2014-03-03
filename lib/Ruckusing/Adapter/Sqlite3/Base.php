@@ -57,7 +57,7 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
                 $this->sqlite3 = new SQLite3($db_info['database']);
             } catch (Exception $e) {
                 throw new Ruckusing_Exception("\n\nCould not connect to the DB, check database name\n\n",
-                    Ruckusing_Exception::INVALID_CONFIG, $e->getCode(), $e);
+                    Ruckusing_Exception::INVALID_CONFIG, $e);
             }
             return true;
         } else {
