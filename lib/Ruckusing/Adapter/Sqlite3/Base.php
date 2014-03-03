@@ -464,22 +464,28 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         try {
             $pragmaTable = $this->query('pragma table_info(' . $table . ')');
             $data = array();
-
-            $pragmaTable = array_values(array_filter($pragmaTable, function ($element) use ($column) {
-                return $element['name'] == $column ? $element : false;
-            }));
-
-            if (isset($pragmaTable[0]) && is_array($pragmaTable[0])) {
-                $data['type'] = $pragmaTable[0]['type'];
+            $pragmaColumnInfo = $this->extract_column_info($pragmaTable, $column);
+            if (is_array($pragmaColumnInfo)) {
+                $data['type'] = $pragmaColumnInfo['type'];
                 $data['name'] = $column;
                 $data['field'] = $column;
-                $data['null'] = $pragmaTable[0]['notnull'] == 0;
-                $data['default'] = $pragmaTable[0]['dflt_value'];
+                $data['null'] = $pragmaColumnInfo['notnull'] == 0;
+                $data['default'] = $pragmaColumnInfo['dflt_value'];
             }
             return $data;
         } catch (Exception $e) {
             return null;
         }
+    }
+
+    private function extract_column_info($pragmaTable, $columnName)
+    {
+        foreach ($pragmaTable as $columnInfo) {
+            if ($columnInfo['name'] == $columnName){
+                return $columnInfo;
+            }
+        }
+        return null;
     }
 
     public function execute_ddl($ddl)
