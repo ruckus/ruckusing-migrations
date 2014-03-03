@@ -30,12 +30,14 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      */
     private $sqlite3;
     private $db_info;
+    private $_in_transaction;
 
     public function __construct($dsn, $logger)
     {
         parent::__construct($dsn);
         $this->connect($dsn);
         $this->set_logger($logger);
+        $this->_in_transaction = false;
     }
 
     private function connect($dsn)
@@ -123,6 +125,27 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             );
         }
         return $SqliteResult;
+    }
+
+    public function start_transaction()
+    {
+        if ($this->inTransaction() === false) {
+            $this->beginTransaction();
+        }
+    }
+
+    public function commit_transaction()
+    {
+        if ($this->inTransaction()) {
+            $this->commit();
+        }
+    }
+
+    public function rollback_transaction()
+    {
+        if ($this->inTransaction()) {
+            $this->rollback();
+        }
     }
 
     private function determine_query_type($query)
@@ -561,5 +584,37 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
             }
         }
         return false;
+    }
+
+    private function inTransaction()
+    {
+        return $this->_in_transaction;
+    }
+
+    private function beginTransaction()
+    {
+        if ($this->_in_transaction) {
+            throw new Ruckusing_Exception('Transaction already started', Ruckusing_Exception::QUERY_ERROR);
+        }
+        $this->execute_ddl("BEGIN");
+        $this->_in_transaction = true;
+    }
+
+    private function commit()
+    {
+        if ($this->_in_transaction === false) {
+            throw new Ruckusing_Exception('Transaction not started', Ruckusing_Exception::QUERY_ERROR);
+        }
+        $this->execute_ddl("COMMIT");
+        $this->_in_transaction = true;
+    }
+
+    private function rollback()
+    {
+        if ($this->_in_transaction === false) {
+            throw new Ruckusing_Exception('Transaction not started', Ruckusing_Exception::QUERY_ERROR);
+        }
+        $this->execute_ddl("ROLLBACK");
+        $this->_in_transaction = false;
     }
 }
