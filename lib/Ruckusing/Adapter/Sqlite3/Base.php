@@ -586,6 +586,18 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return false;
     }
 
+    public function set_current_version($version)
+    {
+        $sql = sprintf("INSERT INTO %s (version) VALUES ('%s')", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);
+        return $this->execute_ddl($sql);
+    }
+
+    public function remove_version($version)
+    {
+        $sql = sprintf("DELETE FROM %s WHERE version = '%s'", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);
+        return $this->execute_ddl($sql);
+    }
+
     private function inTransaction()
     {
         return $this->_in_transaction;
