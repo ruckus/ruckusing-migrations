@@ -14,6 +14,7 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 * Postgres
 * MySQL
+* Sqlite
 
 ## Features
 
@@ -37,7 +38,7 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 * Copy `/path/to/ruckusing-migrations/config/database.inc.php` to `/path/to/mycodebase/ruckusing.conf.php` and update the `development` key with your DB credentials:
 
-`type` is one of `pgsql` or `mysql` depending on your database, as well `migrations_dir`, `db_dir`, `log_dir`, `ruckusing_base` paths.
+`type` is one of `pgsql`, `mysql`, `sqlite` depending on your database, as well `migrations_dir`, `db_dir`, `log_dir`, `ruckusing_base` paths.
 
 * If you want to use module migration directories, Edit `/path/to/mycodebase/ruckusing.conf.php` and update  `migrations_dir` like `array('default' => '/default/path', 'module_name' => '/module/migration/path')` paths.
 
