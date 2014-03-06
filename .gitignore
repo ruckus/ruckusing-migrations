@@ -7,3 +7,4 @@ tmp/
 ruckusing.conf.php
 tests/dummy/db/schema.txt
 tests/dummy/db/db
+tests/dummy/db/test.sqlite3
