@@ -4,11 +4,13 @@ php:
   - 5.2
   - 5.3
   - 5.4
-  
+
 before_script:
   - mysql -uroot < tests/test.sql
   - psql -Upostgres -f tests/test.sql
   - touch tests/dummy/db/test.sqlite3
+  - curl -s http://getcomposer.org/installer | php
+  - php composer.phar install
 
 notifications:
   email:
