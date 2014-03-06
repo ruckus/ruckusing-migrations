@@ -202,4 +202,13 @@ interface Ruckusing_Adapter_Interface
      */
     public function add_index($table_name, $column_name, $options = array());
 
+    /**
+     * Wrapper to execute a query
+     *
+     * @param string $query query to run
+     *
+     * @return boolean
+     */
+    public function query($query);
+
 }

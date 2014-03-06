@@ -8,3 +8,4 @@ ruckusing.conf.php
 tests/dummy/db/schema.txt
 tests/dummy/db/db
 migrations/
+tests/dummy/db/test.sqlite3
