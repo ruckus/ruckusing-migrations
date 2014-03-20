@@ -224,7 +224,15 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
 
     public function execute($query)
     {
-        return $this->query($query);
+        $result = null;
+        $queries = explode(';', $query);
+        foreach($queries as $query_s) {
+            $query_s = trim($query_s);
+            if (!empty($query_s)) {
+                $result = $this->query($query_s.';');
+            }
+        }
+        return $result;
     }
 
     public function quote_string($str)
