@@ -102,10 +102,11 @@ class Ruckusing_FrameworkRunner
      *
      * @param array $config The current config
      * @param array $argv   the supplied command line arguments
+     * @param Ruckusing_Util_Logger An optional custom logger
      *
      * @return Ruckusing_FrameworkRunner
      */
-    public function __construct($config, $argv)
+    public function __construct($config, $argv, Ruckusing_Util_Logger $log = null)
     {
         set_error_handler(array('Ruckusing_Exception', 'errorHandler'), E_ALL);
         set_exception_handler(array('Ruckusing_Exception', 'exceptionHandler'));
@@ -120,6 +121,7 @@ class Ruckusing_FrameworkRunner
         $this->verify_db_config();
 
         //initialize logger
+        $this->logger = $log;
         $this->initialize_logger();
 
         //include all adapters
@@ -279,17 +281,19 @@ class Ruckusing_FrameworkRunner
      */
     public function initialize_logger()
     {
-        if (is_dir($this->_config['log_dir']) && !is_writable($this->_config['log_dir'])) {
-            throw new Ruckusing_Exception(
-                            "\n\nCannot write to log directory: " . $this->_config['log_dir'] . "\n\nCheck permissions.\n\n",
-                            Ruckusing_Exception::INVALID_LOG
-            );
-        } elseif (!is_dir($this->_config['log_dir'])) {
-            //try and create the log directory
-            mkdir($this->_config['log_dir'], 0755, true);
+        if (!$this->logger) {
+            if (is_dir($this->_config['log_dir']) && !is_writable($this->_config['log_dir'])) {
+                throw new Ruckusing_Exception(
+                                "\n\nCannot write to log directory: " . $this->_config['log_dir'] . "\n\nCheck permissions.\n\n",
+                                Ruckusing_Exception::INVALID_LOG
+                );
+            } elseif (!is_dir($this->_config['log_dir'])) {
+                //try and create the log directory
+                mkdir($this->_config['log_dir'], 0755, true);
+            }
+            $log_name = sprintf("%s.log", $this->_env);
+            $this->logger = Ruckusing_Util_Logger::instance($this->_config['log_dir'] . DIRECTORY_SEPARATOR . $log_name);
         }
-        $log_name = sprintf("%s.log", $this->_env);
-        $this->logger = Ruckusing_Util_Logger::instance($this->_config['log_dir'] . DIRECTORY_SEPARATOR . $log_name);
     }
 
     /**
