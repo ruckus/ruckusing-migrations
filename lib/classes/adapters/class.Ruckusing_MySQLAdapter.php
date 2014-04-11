@@ -341,7 +341,7 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
 	}
 	
 	public function quote_string($str) {
-	 return mysqli_real_escape_string($str); 
+	 return mysqli_real_escape_string($this->conn, $str);
   }
   
   public function identifier($str) {
