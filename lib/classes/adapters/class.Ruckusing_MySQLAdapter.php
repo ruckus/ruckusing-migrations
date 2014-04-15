@@ -718,12 +718,16 @@ class Ruckusing_MySQLAdapter extends Ruckusing_BaseAdapter implements Ruckusing_
       if(empty($db_info['port'])) {
         $db_info['port'] = 3306;
       }
-      $this->conn = mysqli_connect($db_info['host'], $db_info['user'], $db_info['password'], $db_info['database'], $db_info['port']);
+
+      $this->conn = mysqli_connect($db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port']);
       if(!$this->conn) {
         die("\n\nCould not connect to the DB, check host / user / password\n\n");
       }
 	  if(defined('RUCKUSING_CURRENT_TASK') === true && RUCKUSING_CURRENT_TASK == 'db:deploy') {
 		  $this->create_database($this->getDbName()); //Creating db. Method checks if the database not already exists.
+	  }
+	  if(!mysqli_select_db($this->conn, $db_info['database'])) {
+		  die("\n\nCould not select the DB, check permissions on host\n\n");
 	  }
       return true;
     } else {
