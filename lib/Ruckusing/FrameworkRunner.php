@@ -494,9 +494,6 @@ class Ruckusing_FrameworkRunner
             case 'mysql':
                 $adapter_class = "Ruckusing_Adapter_MySQL_Base";
                 break;
-            case 'mssql':
-                $adapter_class = "Ruckusing_Adapter_MSSQL_Base";
-                break;
             case 'pgsql':
                 $adapter_class = "Ruckusing_Adapter_PgSQL_Base";
                 break;
