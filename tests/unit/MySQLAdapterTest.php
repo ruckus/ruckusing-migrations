@@ -454,46 +454,4 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $quoted = "Hello Sam\'s";
         $this->assertEquals($quoted, $this->adapter->quote_string($unquoted));
     }
-
-    public function test_execute_multiple_lines()
-    {
-        // test with output from phpmyadmin
-        $this->adapter->execute("
-drop table if exists `admin`;
-create table `admin` (
-  `id` int(11) not null auto_increment,
-  `email` varchar(100) collate utf8_unicode_ci default null,
-  `name` varchar(100) collate utf8_unicode_ci default null,
-  `salt` varchar(10) collate utf8_unicode_ci default null,
-  `password_hash` varchar(64) collate utf8_unicode_ci default null,
-  `status` varchar(20) collate utf8_unicode_ci default 'inactive',
-  `receives_order_email` tinyint(1) default true,
-  `created_at` timestamp,
-  `updated_at` timestamp,
-  primary key (`id`)
-) engine=innodb default charset=utf8 collate=utf8_unicode_ci;
-
-drop table if exists `adminsession`;
-create table `adminsession` (
-  `id` int(11) not null auto_increment,
-  `admin_id` int(11) default null,
-  `session_id` varchar(32) collate utf8_unicode_ci default null,
-  `created_at` timestamp,
-  `updated_at` timestamp,
-  primary key (`id`)
-) engine=innodb default charset=utf8 collate=utf8_unicode_ci;
-        ");
-
-        // test first table
-        $col = $this->adapter->column_info("admin", "email");
-        $this->assertEquals("email", $col['field']);
-
-        // test second table
-        $col = $this->adapter->column_info("adminsession", "admin_id");
-        $this->assertEquals("admin_id", $col['field']);
-
-        // cleanup
-        $this->adapter->execute("drop table `admin`; drop table `adminsession`;");
-        
-    }
 }//class
