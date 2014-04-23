@@ -457,7 +457,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
 
     public function test_execute_multiple_lines()
     {
-
+        // test with output from phpmyadmin
         $this->adapter->execute("
 drop table if exists `admin`;
 create table `admin` (
@@ -483,7 +483,17 @@ create table `adminsession` (
   primary key (`id`)
 ) engine=innodb default charset=utf8 collate=utf8_unicode_ci;
         ");
+
+        // test first table
         $col = $this->adapter->column_info("admin", "email");
         $this->assertEquals("email", $col['field']);
+
+        // test second table
+        $col = $this->adapter->column_info("adminsession", "admin_id");
+        $this->assertEquals("admin_id", $col['field']);
+
+        // cleanup
+        $this->adapter->execute("drop table `admin`; drop table `adminsession`;");
+        
     }
 }//class
