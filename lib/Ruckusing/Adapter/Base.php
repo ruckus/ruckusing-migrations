@@ -47,9 +47,9 @@ class Ruckusing_Adapter_Base
     /**
      * connection to db
      *
-     * @var object
+     * @var object|mysqli
      */
-    private $_conn;
+    protected $_conn;
 
     /**
      * logger

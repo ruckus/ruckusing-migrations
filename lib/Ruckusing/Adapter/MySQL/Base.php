@@ -1162,6 +1162,11 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 );
             }
 
+            $this->conn->query("SET CHARACTER SET '{$db_info['charset']}'");
+            $this->conn->query("SET character_set_results = '{$db_info['charset']}'");
+            $this->conn->query("SET character_set_server = '{$db_info['charset']}'");
+            $this->conn->query("SET character_set_client = '{$db_info['charset']}'");
+
             return true;
         } else {
             throw new Ruckusing_Exception(
