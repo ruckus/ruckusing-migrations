@@ -235,6 +235,7 @@ SQL;
      *
      * @param string $db the db name
      *
+     * @param array $options
      * @return boolean
      */
     public function create_database($db, $options = array())
@@ -361,6 +362,7 @@ SQL;
      *
      * @param string $query query to run
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function query($query)
@@ -410,6 +412,7 @@ SQL;
      *
      * @param string $query query to run
      *
+     * @throws Ruckusing_Exception
      * @return array
      */
     public function select_one($query)
@@ -478,11 +481,9 @@ SQL;
 
     /**
      * Create table
-     *
      * @param string $table_name the table name
-     * @param array  $options    the options
-     *
-     * @return object
+     * @param array $options the options
+     * @return bool|Ruckusing_Adapter_PgSQL_TableDefinition
      */
     public function create_table($table_name, $options = array())
     {
@@ -577,9 +578,10 @@ SQL;
      * Renames a table.
      * Also renames a table's primary key sequence if the sequence name matches the Ruckusing Migrations default.
      *
-     * @param string $name     the current table name
+     * @param string $name the current table name
      * @param string $new_name the new table name
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function rename_table($name, $new_name)
@@ -611,11 +613,12 @@ SQL;
     /**
      * Add a column
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param string $type        the column type
-     * @param array  $options     column options
+     * @param string $type the column type
+     * @param array $options column options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function add_column($table_name, $column_name, $type, $options = array())
@@ -679,10 +682,11 @@ SQL;
     /**
      * Rename a column
      *
-     * @param string $table_name      the table name
-     * @param string $column_name     the column name
+     * @param string $table_name the table name
+     * @param string $column_name the column name
      * @param string $new_column_name the new column name
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function rename_column($table_name, $column_name, $new_column_name)
@@ -719,11 +723,12 @@ SQL;
     /**
      * Change a column
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param string $type        the column type
-     * @param array  $options     column options
+     * @param string $type the column type
+     * @param array $options column options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function change_column($table_name, $column_name, $type, $options = array())
@@ -826,9 +831,10 @@ SQL;
     /**
      * Get a column info
      *
-     * @param string $table  the table name
+     * @param string $table the table name
      * @param string $column the column name
      *
+     * @throws Ruckusing_Exception
      * @return array
      */
     public function column_info($table, $column)
@@ -875,10 +881,11 @@ SQL;
     /**
      * Add an index
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param array  $options     index options
+     * @param array $options index options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function add_index($table_name, $column_name, $options = array())
@@ -938,10 +945,11 @@ SQL;
     /**
      * Drop an index
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param array  $options     index options
+     * @param array $options index options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function remove_index($table_name, $column_name, $options = array())
@@ -972,10 +980,11 @@ SQL;
     /**
      * Check an index
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param array  $options     index options
+     * @param array $options index options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function has_index($table_name, $column_name, $options = array())
@@ -1080,9 +1089,10 @@ SQL;
     /**
      * Convert type to sql
      *
-     * @param string $type    the native type
-     * @param array  $options
+     * @param string $type the native type
+     * @param array $options
      *
+     * @throws Ruckusing_Exception
      * @return string
      */
     public function type_to_sql($type, $options = array())
@@ -1255,6 +1265,7 @@ SQL;
      *
      * @param string $dsn the current dsn
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     private function db_connect($dsn)

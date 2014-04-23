@@ -178,6 +178,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      * Quote a table name string
      *
      * @param string $str table name
+     * @return string
      */
     public function quote_table($str)
     {
@@ -340,6 +341,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      *
      * @param string $query query to run
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function query($query)
@@ -384,6 +386,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      *
      * @param string $query query to run
      *
+     * @throws Ruckusing_Exception
      * @return array
      */
     public function select_one($query)
@@ -455,9 +458,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      * Create table
      *
      * @param string $table_name the table name
-     * @param array  $options    the options
-     *
-     * @return object
+     * @param array $options the options
+     * @return bool|Ruckusing_Adapter_MySQL_TableDefinition
      */
     public function create_table($table_name, $options = array())
     {
@@ -504,9 +506,10 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Rename a table
      *
-     * @param string $name     the current table name
+     * @param string $name the current table name
      * @param string $new_name the new table name
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function rename_table($name, $new_name)
@@ -531,11 +534,12 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Add a column
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param string $type        the column type
-     * @param array  $options     column options
+     * @param string $type the column type
+     * @param array $options column options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function add_column($table_name, $column_name, $type, $options = array())
@@ -592,10 +596,11 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Rename a column
      *
-     * @param string $table_name      the table name
-     * @param string $column_name     the column name
+     * @param string $table_name the table name
+     * @param string $column_name the column name
      * @param string $new_column_name the new column name
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function rename_column($table_name, $column_name, $new_column_name)
@@ -633,11 +638,12 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Change a column
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param string $type        the column type
-     * @param array  $options     column options
+     * @param string $type the column type
+     * @param array $options column options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function change_column($table_name, $column_name, $type, $options = array())
@@ -680,9 +686,10 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Get a column info
      *
-     * @param string $table  the table name
+     * @param string $table the table name
      * @param string $column the column name
      *
+     * @throws Ruckusing_Exception
      * @return array
      */
     public function column_info($table, $column)
@@ -716,10 +723,11 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Add an index
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param array  $options     index options
+     * @param array $options index options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function add_index($table_name, $column_name, $options = array())
@@ -777,10 +785,11 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Drop an index
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param array  $options     index options
+     * @param array $options index options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function remove_index($table_name, $column_name, $options = array())
@@ -811,10 +820,11 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Check an index
      *
-     * @param string $table_name  the table name
+     * @param string $table_name the table name
      * @param string $column_name the column name
-     * @param array  $options     index options
+     * @param array $options index options
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     public function has_index($table_name, $column_name, $options = array())
@@ -876,9 +886,10 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      * Convert type to sql
      * $limit = null, $precision = null, $scale = null
      *
-     * @param string $type    the native type
-     * @param array  $options
+     * @param string $type the native type
+     * @param array $options
      *
+     * @throws Ruckusing_Exception
      * @return string
      */
     public function type_to_sql($type, $options = array())
@@ -994,9 +1005,10 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Add column options
      *
-     * @param string $type    the native type
-     * @param array  $options
+     * @param string $type the native type
+     * @param array $options
      *
+     * @throws Ruckusing_Exception
      * @return string
      */
     public function add_column_options($type, $options)
@@ -1112,6 +1124,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      *
      * @param string $dsn the current dsn
      *
+     * @throws Ruckusing_Exception
      * @return boolean
      */
     private function db_connect($dsn)
@@ -1231,7 +1244,8 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     /**
      * Check query type
      *
-     * @param string $query query to run
+     * @param $query_type
+     * @internal param string $query query to run
      *
      * @return boolean
      */

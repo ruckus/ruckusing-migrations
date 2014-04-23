@@ -22,7 +22,7 @@ class Ruckusing_Migration_Base
     /**
      * adapter
      *
-     * @var Ruckusing_Adapter_Base
+     * @var \Ruckusing_Adapter_Base|\Ruckusing_Adapter_MySQL_Base|\Ruckusing_Adapter_PgSQL_Base|\Ruckusing_Adapter_Sqlite3_Base
      */
     private $_adapter;
 
@@ -31,7 +31,7 @@ class Ruckusing_Migration_Base
      *
      * @param Ruckusing_Adapter_Base $adapter the current adapter
      *
-     * @return void
+     * @return \Ruckusing_Migration_Base
      */
     public function __construct($adapter)
     {
@@ -58,6 +58,8 @@ class Ruckusing_Migration_Base
      * Set an adapter
      *
      * @param Ruckusing_Adapter_Base $adapter the adapter to set
+     * @throws Ruckusing_Exception
+     * @return $this
      */
     public function set_adapter($adapter)
     {
@@ -149,10 +151,10 @@ class Ruckusing_Migration_Base
     /**
      * Add a column
      *
-     * @param string $table_name  the name of the table
+     * @param string $table_name the name of the table
      * @param string $column_name the column name
-     * @param string $type        the column type
-     * @param string $options
+     * @param string $type the column type
+     * @param array|string $options
      *
      * @return boolean
      */
@@ -177,10 +179,10 @@ class Ruckusing_Migration_Base
     /**
      * Change a column
      *
-     * @param string $table_name  the name of the table
+     * @param string $table_name the name of the table
      * @param string $column_name the column name
-     * @param string $type        the column type
-     * @param string $options
+     * @param string $type the column type
+     * @param array|string $options
      *
      * @return boolean
      */
@@ -192,9 +194,9 @@ class Ruckusing_Migration_Base
     /**
      * Add an index
      *
-     * @param string $table_name  the name of the table
+     * @param string $table_name the name of the table
      * @param string $column_name the column name
-     * @param string $options
+     * @param array|string $options
      *
      * @return boolean
      */
@@ -206,9 +208,9 @@ class Ruckusing_Migration_Base
     /**
      * Remove an index
      *
-     * @param string $table_name  the name of the table
+     * @param string $table_name the name of the table
      * @param string $column_name the column name
-     * @param string $options
+     * @param array|string $options
      *
      * @return boolean
      */
@@ -221,9 +223,15 @@ class Ruckusing_Migration_Base
      * Create a table
      *
      * @param string $table_name the name of the table
-     * @param string $options
+     * @param array|string $options
      *
      * @return boolean
+     */
+
+    /**
+     * @param $table_name
+     * @param array $options
+     * @return mixed
      */
     public function create_table($table_name, $options = array())
     {
