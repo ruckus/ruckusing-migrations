@@ -27,15 +27,45 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
      * @var Ruckusing_Adapter_Sqlite3_Base
      */
     private $_adapter;
+    /**
+     * @var
+     */
     private $_name;
+    /**
+     * @var array
+     */
     private $_options;
+    /**
+     * @var string
+     */
     private $_sql = "";
+    /**
+     * @var bool
+     */
     private $_initialized = false;
+    /**
+     * @var array
+     */
     private $_columns = array();
+    /**
+     * @var Ruckusing_Adapter_TableDefinition
+     */
     private $_table_def;
+    /**
+     * @var array
+     */
     private $_primary_keys = array();
+    /**
+     * @var bool
+     */
     private $_auto_generate_id = true;
 
+    /**
+     * @param Ruckusing_Adapter_Base $adapter
+     * @param $name
+     * @param array $options
+     * @throws Ruckusing_Exception
+     */
     public function __construct($adapter, $name, $options = array())
     {
         //sanity check
@@ -64,6 +94,12 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         }
     }
 
+    /**
+     * @param $name
+     * @param $options
+     * @throws Exception
+     * @throws Ruckusing_Exception
+     */
     private function init_sql($name, $options)
     {
         //are we forcing table creation? If so, drop it first
@@ -84,6 +120,11 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         $this->_initialized = true;
     }
 
+    /**
+     * @param $column_name
+     * @param $type
+     * @param array $options
+     */
     public function column($column_name, $type, $options = array())
     {
         //if there is already a column by the same name then silently fail and continue
@@ -105,6 +146,11 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         $this->_columns[] = $column;
     }
 
+    /**
+     * @param bool $wants_sql
+     * @return bool|string
+     * @throws Ruckusing_Exception
+     */
     public function finish($wants_sql = false)
     {
         if (!$this->_initialized) {
@@ -136,6 +182,9 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         }
     }
 
+    /**
+     * @return string
+     */
     private function columns_to_str()
     {
         $fields = array();
@@ -148,6 +197,9 @@ class Ruckusing_Adapter_Sqlite3_TableDefinition extends Ruckusing_Adapter_TableD
         return join(",\n", $fields);
     }
 
+    /**
+     * @return string
+     */
     private function keys()
     {
         if (count($this->_primary_keys) > 0) {

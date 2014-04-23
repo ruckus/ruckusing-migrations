@@ -29,9 +29,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      * @var SQLite3
      */
     private $sqlite3;
+    /**
+     * @var
+     */
     private $db_info;
+    /**
+     * @var bool
+     */
     private $_in_transaction;
 
+    /**
+     * @param array $dsn
+     * @param $logger
+     */
     public function __construct($dsn, $logger)
     {
         parent::__construct($dsn);
@@ -40,11 +50,19 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->_in_transaction = false;
     }
 
+    /**
+     * @param $dsn
+     */
     private function connect($dsn)
     {
         $this->db_connect($dsn);
     }
 
+    /**
+     * @param $dsn
+     * @return bool
+     * @throws Ruckusing_Exception
+     */
     private function db_connect($dsn)
     {
         if (!class_exists('SQLite3')) {
@@ -71,6 +89,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     *
+     */
     public function create_schema_version_table()
     {
         if (!$this->has_table(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
@@ -81,21 +102,37 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     * @return mixed
+     */
     public function get_database_name()
     {
         return $this->db_info['database'];
     }
 
+    /**
+     * @param $string
+     * @return string
+     */
     public function identifier($string)
     {
         return '"' . $string . '"';
     }
 
+    /**
+     * @param string $value
+     * @param null $column
+     * @return string
+     */
     public function quote($value, $column = null)
     {
         return ("'{$value}'");
     }
 
+    /**
+     * @param string $query
+     * @return array|bool|int
+     */
     public function query($query)
     {
         $this->logger->log($query);
@@ -116,6 +153,11 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     * @param $query
+     * @return SQLite3Result
+     * @throws Ruckusing_Exception
+     */
     private function executeQuery($query)
     {
         $SqliteResult = $this->sqlite3->query($query);
@@ -127,6 +169,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $SqliteResult;
     }
 
+    /**
+     *
+     */
     public function start_transaction()
     {
         if ($this->inTransaction() === false) {
@@ -134,6 +179,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     *
+     */
     public function commit_transaction()
     {
         if ($this->inTransaction()) {
@@ -141,6 +189,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     *
+     */
     public function rollback_transaction()
     {
         if ($this->inTransaction()) {
@@ -148,6 +199,10 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     * @param $query
+     * @return int
+     */
     private function determine_query_type($query)
     {
         $query = strtolower(trim($query));
@@ -176,11 +231,17 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     * @return bool
+     */
     public function supports_migrations()
     {
         return true;
     }
 
+    /**
+     * @return array
+     */
     public function native_database_types()
     {
         $types = array(
@@ -210,18 +271,31 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $types;
     }
 
+    /**
+     * @param $output_file
+     * @return string
+     */
     public function schema($output_file)
     {
         $command = sprintf("sqlite3 '%s' .schema > '%s'", $this->db_info['database'], $output_file);
         return system($command);
     }
 
+    /**
+     * @param $db
+     * @param array $options
+     * @return bool
+     */
     public function create_database($db, $options = array())
     {
         $this->log_unsupported_feature(__FUNCTION__);
         return true;
     }
 
+    /**
+     * @param string $query
+     * @return array|bool|int|null
+     */
     public function execute($query)
     {
         $result = null;
@@ -235,33 +309,58 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $result;
     }
 
+    /**
+     * @param string $str
+     * @return string
+     */
     public function quote_string($str)
     {
         return $this->sqlite3->escapeString($str);
     }
 
+    /**
+     * @param string $db
+     * @return bool
+     */
     public function database_exists($db)
     {
         $this->log_unsupported_feature(__FUNCTION__);
         return true;
     }
 
+    /**
+     * @param string $table_name
+     * @param array $options
+     * @return Ruckusing_Adapter_Sqlite3_TableDefinition
+     */
     public function create_table($table_name, $options = array())
     {
         return new Ruckusing_Adapter_Sqlite3_TableDefinition($this, $table_name, $options);
     }
 
+    /**
+     * @param string $databaseName
+     * @return bool
+     */
     public function drop_database($databaseName)
     {
         $this->log_unsupported_feature(__FUNCTION__);
         return true;
     }
 
+    /**
+     * @param $feature
+     */
     public function log_unsupported_feature($feature)
     {
         $this->logger->log(sprintf("WARNING: Unsupported SQLite3 feature: %s", $feature));
     }
 
+    /**
+     * @param string $tbl
+     * @param bool $reload_tables
+     * @return bool
+     */
     public function table_exists($tbl, $reload_tables = false)
     {
         $query = sprintf("SELECT tbl_name FROM sqlite_master WHERE type='table' AND tbl_name=%s;", $this->quote_column_name($tbl));
@@ -269,6 +368,10 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return is_array($table) && sizeof($table) > 0;
     }
 
+    /**
+     * @param string $table_name
+     * @return bool
+     */
     public function drop_table($table_name)
     {
         $ddl = sprintf("DROP TABLE IF EXISTS %s", $this->quote_table_name($table_name));
@@ -276,11 +379,21 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return true;
     }
 
+    /**
+     * @param $string
+     * @return string
+     */
     public function quote_table_name($string)
     {
         return '"' . $string . '"';
     }
 
+    /**
+     * @param string $name
+     * @param string $new_name
+     * @return bool
+     * @throws Ruckusing_Exception
+     */
     public function rename_table($name, $new_name)
     {
         if (empty($name)) {
@@ -293,17 +406,35 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->execute_ddl($sql);
     }
 
+    /**
+     * @param string $table_name
+     * @param string $column_name
+     * @param string $new_column_name
+     * @return bool
+     */
     public function rename_column($table_name, $column_name, $new_column_name)
     {
         $this->log_unsupported_feature(__FUNCTION__);
         return true;
     }
 
+    /**
+     * @param $string
+     * @return string
+     */
     public function quote_column_name($string)
     {
         return '"' . $string . '"';
     }
 
+    /**
+     * @param string $table_name
+     * @param string $column_name
+     * @param string $type
+     * @param array $options
+     * @return bool
+     * @throws Ruckusing_Exception
+     */
     public function add_column($table_name, $column_name, $type, $options = array())
     {
         if (empty($table_name)) {
@@ -331,16 +462,33 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->execute_ddl($sql);
     }
 
+    /**
+     * @param string $table_name
+     * @param string $column_name
+     */
     public function remove_column($table_name, $column_name)
     {
         $this->log_unsupported_feature(__FUNCTION__);
     }
 
+    /**
+     * @param string $table_name
+     * @param string $column_name
+     * @param string $type
+     * @param array $options
+     */
     public function change_column($table_name, $column_name, $type, $options = array())
     {
         $this->log_unsupported_feature(__FUNCTION__);
     }
 
+    /**
+     * @param string $table_name
+     * @param string $column_name
+     * @param array $options
+     * @return bool
+     * @throws Ruckusing_Exception
+     */
     public function remove_index($table_name, $column_name, $options = array())
     {
         if (empty($table_name)) {
@@ -360,6 +508,13 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->execute_ddl($sql);
     }
 
+    /**
+     * @param string $table_name
+     * @param string $column_name
+     * @param array $options
+     * @return bool
+     * @throws Ruckusing_Exception
+     */
     public function add_index($table_name, $column_name, $options = array())
     {
         if (empty($table_name)) {
@@ -409,6 +564,12 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $this->execute_ddl($sql);
     }
 
+    /**
+     * @param $type
+     * @param $options
+     * @param bool $performing_change
+     * @return string
+     */
     public function add_column_options($type, $options, $performing_change = false)
     {
         if (!is_array($options)) {
@@ -436,6 +597,12 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $sql;
     }
 
+    /**
+     * @param $type
+     * @param array $options
+     * @return string
+     * @throws Ruckusing_Exception
+     */
     public function type_to_sql($type, $options = array())
     {
         $natives = $this->native_database_types();
@@ -460,6 +627,12 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $column_type_sql;
     }
 
+    /**
+     * @param $table
+     * @param $column
+     * @return array|null
+     * @throws Ruckusing_Exception
+     */
     public function column_info($table, $column)
     {
         if (empty($table)) {
@@ -486,6 +659,11 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     * @param $pragmaTable
+     * @param $columnName
+     * @return null
+     */
     private function extract_column_info($pragmaTable, $columnName)
     {
         foreach ($pragmaTable as $columnInfo) {
@@ -496,12 +674,20 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return null;
     }
 
+    /**
+     * @param $ddl
+     * @return bool
+     */
     public function execute_ddl($ddl)
     {
         $this->query($ddl);
         return true;
     }
 
+    /**
+     * @param $table_name
+     * @return array
+     */
     public function indexes($table_name)
     {
         $sql = sprintf("PRAGMA INDEX_LIST(%s);", $this->quote_table_name($table_name));
@@ -518,16 +704,27 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $indexes;
     }
 
+    /**
+     * @param $SQLite3Result
+     * @return bool
+     */
     private function isError($SQLite3Result)
     {
         return ($SQLite3Result === FALSE);
     }
 
+    /**
+     * @return string
+     */
     private function lastErrorMsg()
     {
         return $this->sqlite3->lastErrorMsg();
     }
 
+    /**
+     * @param $table
+     * @return array
+     */
     public function primary_keys($table)
     {
         $result = $this->query('pragma table_info(' . $table . ')');
@@ -543,6 +740,11 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return $primary_keys;
     }
 
+    /**
+     * @param $query
+     * @return array
+     * @throws Ruckusing_Exception
+     */
     public function select_one($query)
     {
         $this->logger->log($query);
@@ -559,17 +761,34 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         }
     }
 
+    /**
+     * @param $query
+     * @return array|bool|int
+     */
     public function select_all($query)
     {
         return $this->query($query);
     }
 
+    /**
+     * @param $column_name
+     * @param $type
+     * @param null $options
+     * @return string
+     */
     public function column_definition($column_name, $type, $options = null)
     {
         $col = new Ruckusing_Adapter_ColumnDefinition($this, $column_name, $type, $options);
         return $col->__toString();
     }
 
+    /**
+     * @param $table_name
+     * @param $column_name
+     * @param array $options
+     * @return bool
+     * @throws Ruckusing_Exception
+     */
     public function has_index($table_name, $column_name, $options = array())
     {
         if (empty($table_name)) {
@@ -593,23 +812,37 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         return false;
     }
 
+    /**
+     * @param $version
+     * @return bool
+     */
     public function set_current_version($version)
     {
         $sql = sprintf("INSERT INTO %s (version) VALUES ('%s')", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);
         return $this->execute_ddl($sql);
     }
 
+    /**
+     * @param $version
+     * @return bool
+     */
     public function remove_version($version)
     {
         $sql = sprintf("DELETE FROM %s WHERE version = '%s'", RUCKUSING_TS_SCHEMA_TBL_NAME, $version);
         return $this->execute_ddl($sql);
     }
 
+    /**
+     * @return bool
+     */
     private function inTransaction()
     {
         return $this->_in_transaction;
     }
 
+    /**
+     * @throws Ruckusing_Exception
+     */
     private function beginTransaction()
     {
         if ($this->_in_transaction) {
@@ -619,6 +852,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->_in_transaction = true;
     }
 
+    /**
+     * @throws Ruckusing_Exception
+     */
     private function commit()
     {
         if ($this->_in_transaction === false) {
@@ -628,6 +864,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
         $this->_in_transaction = true;
     }
 
+    /**
+     * @throws Ruckusing_Exception
+     */
     private function rollback()
     {
         if ($this->_in_transaction === false) {

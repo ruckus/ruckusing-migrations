@@ -47,9 +47,9 @@ class Ruckusing_Adapter_Base
     /**
      * connection to db
      *
-     * @var object
+     * @var object|mysqli
      */
-    private $_conn;
+    protected $_conn;
 
     /**
      * logger
@@ -114,6 +114,7 @@ class Ruckusing_Adapter_Base
      * Set a logger
      *
      * @param Ruckusing_Util_Logger $logger The current logger
+     * @throws Ruckusing_Exception
      */
     public function set_logger($logger)
     {
@@ -129,6 +130,7 @@ class Ruckusing_Adapter_Base
     /**
      * Get the current logger
      *
+     * @param $logger
      * @return Ruckusing_Util_Logger
      */
     public function get_logger($logger)

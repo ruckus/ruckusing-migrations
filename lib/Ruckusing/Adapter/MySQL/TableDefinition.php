@@ -88,9 +88,10 @@ class Ruckusing_Adapter_MySQL_TableDefinition
      * Creates an instance of Ruckusing_Adapters_MySQL_Adapter
      *
      * @param Ruckusing_Adapter_MySQL_Base $adapter the current adapter
-     * @param string                       $name    the table name
-     * @param array                        $options the options
+     * @param string $name the table name
+     * @param array $options the options
      *
+     * @throws Ruckusing_Exception
      * @return Ruckusing_Adapter_MySQL_TableDefinition
      */
     public function __construct($adapter, $name, $options = array())
@@ -196,6 +197,7 @@ class Ruckusing_Adapter_MySQL_TableDefinition
      *
      * @param boolean $wants_sql
      *
+     * @throws Ruckusing_Exception
      * @return boolean | string
      */
     public function finish($wants_sql = false)
@@ -260,7 +262,9 @@ class Ruckusing_Adapter_MySQL_TableDefinition
      * Init create sql
      *
      * @param string $name
-     * @param array  $options
+     * @param array $options
+     * @throws Exception
+     * @throws Ruckusing_Exception
      */
     private function init_sql($name, $options)
     {
