@@ -101,16 +101,30 @@ create table `adminsession` (
 ) engine=innodb default charset=utf8 collate=utf8_unicode_ci;
         ");
 
-        // test first table
+        // test first table created ok
         $col = $this->adapter->column_info("admin", "email");
         $this->assertEquals("email", $col['field']);
 
-        // test second table
+        // test second table created ok
         $col = $this->adapter->column_info("adminsession", "admin_id");
         $this->assertEquals("admin_id", $col['field']);
 
+        // test multiple queries with a semicolon inside quotes
+        $base->execute("
+            DROP TABLE IF EXISTS `demo`;
+            CREATE TABLE `demo` (
+              `id` INT(11) NOT NULL AUTO_INCREMENT,
+              `name` VARCHAR(100) NOT NULL,
+              PRIMARY KEY (`id`)
+            );
+            INSERT INTO demo(id, name) VALUES(1,'A;A');
+            INSERT INTO demo(id, name) VALUES(2,'b;b');
+        ");
+        $rows = $this->adapter->select_all('SELECT * FROM demo');
+        $this->assertEquals(2, count($rows));
+
         // cleanup
-        $base->execute("drop table `admin`; drop table `adminsession`;");
+        $base->execute("DROP TABLE `admin`; DROP TABLE `adminsession`; DROP TABLE `demo`;");
         
     }
 }
