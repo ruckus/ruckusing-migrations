@@ -346,15 +346,7 @@ SQL;
 
     public function execute($query)
     {
-        $result = null;
-        $queries = explode(';', $query);
-        foreach($queries as $query_s) {
-            $query_s = trim($query_s);
-            if (!empty($query_s)) {
-                $result = $this->query($query_s.';');
-            }
-        }
-        return $result;
+        return $this->query($query);
     }
 
     /**

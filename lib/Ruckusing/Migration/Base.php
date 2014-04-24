@@ -239,6 +239,32 @@ class Ruckusing_Migration_Base
     }
 
     /**
+     * Split up multiple sql queries from a single query string
+     * @link   http://stackoverflow.com/questions/4001797/how-to-break-queries-using-regex-in-php
+     * @param  string $query The query to be split
+     * @return array Each query string found
+     */
+    protected function split_query($query)
+    {
+        $open = false;
+        $buffer = null;
+        $parts = array();
+        for($i = 0, $l = strlen($query); $i < $l; $i++) {
+            if ($query[$i] == ';' && !$open) {
+                $parts[] = trim($buffer);
+                $buffer = null;
+                continue;
+            }
+            if ($query[$i] == "'") {
+                $open = ($open) ? false: true;
+            }
+            $buffer .= $query[$i];
+        }
+        if ($buffer) $parts[] = trim($buffer);
+        return $parts;
+    }
+
+    /**
      * Execute a query
      *
      * @param string $query the query to run
@@ -248,7 +274,7 @@ class Ruckusing_Migration_Base
     public function execute($query)
     {
         $result = null;
-        $queries = explode(';', $query);
+        $queries = $this->split_query($query);
         foreach($queries as $query_s) {
             $query_s = trim($query_s);
             if (!empty($query_s)) {
