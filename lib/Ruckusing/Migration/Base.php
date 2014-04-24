@@ -221,17 +221,9 @@ class Ruckusing_Migration_Base
 
     /**
      * Create a table
-     *
      * @param string $table_name the name of the table
      * @param array|string $options
-     *
-     * @return boolean
-     */
-
-    /**
-     * @param $table_name
-     * @param array $options
-     * @return mixed
+     * @return bool|Ruckusing_Adapter_MySQL_TableDefinition|Ruckusing_Adapter_PgSQL_TableDefinition|Ruckusing_Adapter_Sqlite3_TableDefinition
      */
     public function create_table($table_name, $options = array())
     {
