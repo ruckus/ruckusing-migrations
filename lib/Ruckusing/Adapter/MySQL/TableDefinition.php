@@ -216,7 +216,7 @@ class Ruckusing_Adapter_MySQL_TableDefinition
         if(isset($this->_adapter->db_info['charset'])){
             $opt_str .= " DEFAULT CHARSET=".$this->_adapter->db_info['charset'];
         } else {
-            $opt_str .= " DEFAULT CHARSET=latin1";
+            $opt_str .= " DEFAULT CHARSET=utf8";
         }
 
         $close_sql = sprintf(") %s;",$opt_str);
