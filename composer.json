@@ -17,14 +17,14 @@
         "email":    "codycaughlan@gmail.com",
         "issues":   "https://github.com/ruckus/ruckusing-migrations/issues",
         "source":   "https://github.com/ruckus/ruckusing-migrations"
-    },	
+    },
 	"require":{
 		"php": ">=5.2.0"
 	},
 	"require-dev": {
         "phpunit/phpunit": "3.7.*"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "autoload": {
         "psr-0": {
             "Ruckusing": "lib/",
