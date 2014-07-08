@@ -87,6 +87,13 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
         //generate a complete migration file
         $next_version = Ruckusing_Util_Migrator::generate_timestamp();
         $class = Ruckusing_Util_Naming::camelcase($migration_name);
+        if(!self::classNameIsCorrect($class)){
+            throw new Ruckusing_Exception(
+                    "Bad migration name,PHP class can't be named as $class.Please, choose another name.",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+
         $all_dirs = $framework->migrations_directories();
 
         if ($re = self::classNameIsDuplicated($class, $all_dirs)) {
@@ -165,6 +172,21 @@ class Task_Db_Generate extends Ruckusing_Task_Base implements Ruckusing_Task_Int
             }
         }
 
+        return false;
+    }
+    
+    /**
+     * Indicate if a class name is correct or not.
+     *
+     * @param string $classname      The class name to test
+     *
+     * @return bool
+     */
+    public static function classNameIsCorrect($classname){
+        $correct_class_name_regex = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+        if(preg_match($correct_class_name_regex, $classname)){
+            return true;
+        }
         return false;
     }
 
