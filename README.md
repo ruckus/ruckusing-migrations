@@ -44,6 +44,20 @@ See the [Wiki](https://github.com/ruckus/ruckusing-migrations/wiki) for the comp
 
 * Copy `/path/to/ruckusing-migrations/ruckus.php` to `/path/to/mycodebase/ruckus.php`.
 
+### Custom Tasks
+
+All tasks in `lib/Task` are enabled by default. If you would like to implement custom tasks then you can specify the directory
+of your tasks in your over-ridden `ruckusing.conf.php` in the `tasks_dir` key:
+
+```php
+# ruckusing.conf.php
+
+return array(
+ /* ... snip ... */,
+ 'tasks_dir' => RUCKUSING_WORKING_BASE . '/custom_tasks'
+);
+```
+
 ## Generating Skeleton Migration files
 
 From the top-level of your code base, run:
@@ -238,7 +252,7 @@ Tables can be removed by using the `drop_table` method call. As might be expecte
 
 **Arguments:**:
   `table_name`: The name of the table to remove.
-  
+
 **Example:**
 ```php
    $this->drop_table("users");

@@ -38,13 +38,19 @@ class Ruckusing_Task_Manager
     /**
      * Creates an instance of Ruckusing_Task_Manager
      *
-     * @param Ruckusing_Adpater_Base $adapter The current adapter being used
+     * @param Ruckusing_Adapter_Base $adapter The current adapter being used
+     * @param Associative Array $config Extra configuration
      *
      * @return Ruckusing_Task_Manager
      */
-    public function __construct($adapter)
+    public function __construct($adapter, $config = null)
     {
         $this->setAdapter($adapter);
+        $this->_config = $config;
+        $this->load_all_tasks(RUCKUSING_TASK_DIR);
+        if(is_array($config) && array_key_exists('tasks_dir', $config)) {
+          $this->load_all_tasks($config['tasks_dir']);
+        }
     }
 
     /**
@@ -106,14 +112,7 @@ class Ruckusing_Task_Manager
      */
     public function has_task($key)
     {
-        if (empty($this->_tasks)) {
-            $this->load_all_tasks(RUCKUSING_TASK_DIR);
-        }
-        if (array_key_exists($key, $this->_tasks)) {
-            return true;
-        }
-
-        return false;
+        return array_key_exists($key, $this->_tasks);
     }
 
     /**

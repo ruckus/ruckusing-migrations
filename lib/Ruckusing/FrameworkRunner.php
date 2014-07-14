@@ -178,11 +178,11 @@ class Ruckusing_FrameworkRunner
     }
 
     /**
-     * Initialize the task
+     * Initialize the task manager
      */
     public function init_tasks()
     {
-        $this->_task_mgr = new Ruckusing_Task_Manager($this->_adapter);
+        $this->_task_mgr = new Ruckusing_Task_Manager($this->_adapter, $this->_config);
     }
 
     /**
