@@ -262,7 +262,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     }
 
     /**
-     * Dump the complete schema of the DB. This is really just all of the
+     * Dump the complete structure of the DB. This is really just all of the
      * CREATE TABLE statements for all of the tables in the DB.
      * NOTE: this does NOT include any INSERT statements or the actual data
      * (that is, this method is NOT a replacement for mysqldump)
@@ -271,7 +271,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
      *
      * @return int|FALSE
      */
-    public function schema($output_file)
+    public function structure($output_file)
     {
         $final = "";
         $views = '';
@@ -290,6 +290,63 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 if (count($row) == 2) {
                     if (isset($row['Create Table'])) {
                         $final .= $row['Create Table'] . ";\n\n";
+                    } elseif (isset($row['Create View'])) {
+                        $views .= $row['Create View'] . ";\n\n";
+                    }
+                }
+            }
+        }
+        $data = $final.$views;
+
+        return file_put_contents($output_file, $data, LOCK_EX);
+    }
+
+    /**
+     * Dump the complete structure and the versions of the migratiosn of the DB.
+     * This is really just all of the CREATE TABLE statements for all of the
+     * tables in the DB.
+     * NOTE: this does NOT include any INSERT statements other than for the 
+     * migrations table.
+     * (that is, this method is NOT a replacement for mysqldump)
+     *
+     * @param string $output_file the filepath to output to
+     *
+     * @return int|FALSE
+     */
+    public function schema($output_file)
+    {
+        $final = "/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;\n\n";
+        $views = '';
+        $this->load_tables(true);
+        foreach ($this->_tables as $tbl => $idx) {
+
+            if ($tbl == RUCKUSING_TS_SCHEMA_TBL_NAME) {
+                $migrations_schema = $this->query("SHOW CREATE TABLE " . RUCKUSING_TS_SCHEMA_TBL_NAME . ";")[0]['Create Table'].";\n\n";
+                $migration_versions = $this->query("SELECT * FROM " . RUCKUSING_TS_SCHEMA_TBL_NAME . ";");
+
+                $final .= $migrations_schema;
+                $final .= "LOCK TABLES `" . RUCKUSING_TS_SCHEMA_TBL_NAME . "` WRITE;\n\n";
+
+                $final .= "INSERT IGNORE INTO `" . RUCKUSING_TS_SCHEMA_TBL_NAME . "` (`version`)\nVALUES\n";
+
+                foreach ($migration_versions as $row) {
+                    $final .= "    ('" . $row['version'] . "'),\n";
+                }
+                $final = rtrim($final, ",\n");
+                $final .= ";\n\n";
+
+                $final .= "UNLOCK TABLES;\n\n";
+                continue;
+            }
+
+            $stmt = sprintf("SHOW CREATE TABLE %s", $this->identifier($tbl));
+            $result = $this->query($stmt);
+
+            if (is_array($result) && count($result) == 1) {
+                $row = $result[0];
+                if (count($row) == 2) {
+                    if (isset($row['Create Table'])) {
+                        $final .= preg_replace("/AUTO_INCREMENT=([0-9]*)/", "AUTO_INCREMENT=1", $row['Create Table']) . ";\n\n";
                     } elseif (isset($row['Create View'])) {
                         $views .= $row['Create View'] . ";\n\n";
                     }

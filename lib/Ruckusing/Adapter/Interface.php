@@ -53,6 +53,13 @@ interface Ruckusing_Adapter_Interface
     public function native_database_types();
 
     /**
+     * structure
+     *
+     * @return void
+     */
+    public function structure($output_file);
+
+    /**
      * schema
      *
      * @return void

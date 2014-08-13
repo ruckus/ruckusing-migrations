@@ -318,8 +318,29 @@ SQL;
      *
      * @return int|FALSE
      */
+    public function structure($output_file)
+    {
+        $command = sprintf("pg_dump -U %s -Fp -s -f '%s' %s",
+                $this->db_info['user'],
+                $output_file,
+                $this->db_info['database']
+        );
+
+        return system($command);
+    }
+
+    /**
+     * Dump the complete schema of the DB. This is really just all of the
+     * CREATE TABLE statements for all of the tables in the DB.
+     * NOTE: this does NOT include any INSERT statements or the actual data
+     *
+     * @param string $output_file the filepath to output to
+     *
+     * @return int|FALSE
+     */
     public function schema($output_file)
     {
+        //Can't really do this properly as I don't know PgSQL
         $command = sprintf("pg_dump -U %s -Fp -s -f '%s' %s",
                 $this->db_info['user'],
                 $output_file,
