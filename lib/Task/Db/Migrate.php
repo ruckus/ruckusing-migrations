@@ -332,12 +332,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             }
             //check to make sure our destination directory is writable
             if (!is_writable($path)) {
-                throw new Ruckusing_Exception(
-                    "ERROR: Migrations directory '"
-                    . $path
-                    . "' is not writable by the current user. Check permissions and try again.\n",
-                    Ruckusing_Exception::INVALID_MIGRATION_DIR
-                );
+                $this->_return .= sprintf("\n\tMigrations directory (%s) is not writable. Migrations can be applied, bot not created.", $path);
             }
         }
     }
