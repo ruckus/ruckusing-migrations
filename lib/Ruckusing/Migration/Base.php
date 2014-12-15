@@ -218,6 +218,30 @@ class Ruckusing_Migration_Base
     {
         return $this->_adapter->remove_index($table_name, $column_name, $options);
     }
+    
+    /**
+     * Add timestamps
+     *
+     * @param string $table_name  the name of the table
+     *
+     * @return boolean
+     */
+    public function add_timestamps($table_name)
+    {
+        return $this->_adapter->add_timestamps($table_name);
+    }
+    
+    /**
+     * Remove timestamps
+     *
+     * @param string $table_name  the name of the table
+     *
+     * @return boolean
+     */
+    public function remove_timestamps($table_name)
+    {
+        return $this->_adapter->remove_timestamps($table_name);
+    }
 
     /**
      * Create a table

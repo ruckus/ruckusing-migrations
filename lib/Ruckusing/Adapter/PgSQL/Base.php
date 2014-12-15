@@ -969,6 +969,48 @@ SQL;
 
         return $this->execute_ddl($sql);
     }
+    
+    /**
+     * Add timestamps
+     *
+     * @param string $table_name  the table name
+     *
+     * @return boolean
+     */
+    public function add_timestamps($table_name)
+    {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing table name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        $created_at = $this->add_column($table_name, "created_at", "datetime", array("null" => false));
+        $updated_at = $this->add_column($table_name, "updated_at", "datetime", array("null" => false));
+
+        return $created_at && $updated_at;
+    }
+    
+    /**
+     * Remove timestamps
+     *
+     * @param string $table_name  the table name
+     *
+     * @return boolean
+     */
+    public function remove_timestamps($table_name)
+    {
+        if (empty($table_name)) {
+            throw new Ruckusing_Exception(
+                    "Missing table name parameter",
+                    Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        $created_at = $this->remove_column($table_name, "created_at");
+        $updated_at = $this->remove_column($table_name, "updated_at");
+
+        return $created_at && $updated_at;
+    }
 
     /**
      * Check an index

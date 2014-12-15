@@ -170,6 +170,16 @@ class Ruckusing_Adapter_MySQL_TableDefinition
 
         $this->_columns[] = $column;
     }//column
+    
+    /**
+     * Shortcut to create timestamps columns (created_at, updated_at)
+     *    
+     */
+    public function timestamps()
+    {
+      $this->column("updated_at", "timestamp", array("null" => false));
+      $this->column("created_at", "datetime");
+    }
 
     /**
      * Get all primary keys

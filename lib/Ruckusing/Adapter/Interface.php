@@ -201,6 +201,24 @@ interface Ruckusing_Adapter_Interface
      * @return boolean
      */
     public function add_index($table_name, $column_name, $options = array());
+    
+    /**
+     * add timestamps
+     *
+     * @param string $table_name  The table name
+     *
+     * @return boolean
+     */
+    public function add_timestamps($table_name);
+    
+    /**
+     * remove timestamps
+     *
+     * @param string $table_name  The table name
+     *
+     * @return boolean
+     */
+    public function remove_timestamps($table_name);
 
     /**
      * Wrapper to execute a query
