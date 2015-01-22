@@ -123,8 +123,29 @@ create table `adminsession` (
         $rows = $this->adapter->select_all('SELECT * FROM demo');
         $this->assertEquals(2, count($rows));
 
+        // test multiple queries with a single quote inside query
+        $base->execute("
+            DROP TABLE IF EXISTS `demo2`;
+            CREATE TABLE `demo2` (
+              `id` INT(11) NOT NULL AUTO_INCREMENT,
+              `name` VARCHAR(100) NOT NULL,
+              PRIMARY KEY (`id`)
+            );
+
+            -- comment with ' quote
+            INSERT INTO demo2(id, name) VALUES(1,'A;A');
+            INSERT INTO demo2(id, name) VALUES(2,'b\\'b');
+            INSERT INTO demo2(id, name) VALUES(3,'cc')
+        ");
+        $rows = $this->adapter->select_all('SELECT * FROM demo2');
+        $this->assertEquals(3, count($rows));
+
         // cleanup
-        $base->execute("DROP TABLE `admin`; DROP TABLE `adminsession`; DROP TABLE `demo`;");
-        
+        $base->execute("
+            DROP TABLE `admin`;
+            DROP TABLE `adminsession`;
+            DROP TABLE `demo`;
+            DROP TABLE `demo2`;
+        ");
     }
 }
