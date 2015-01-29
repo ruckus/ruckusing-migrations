@@ -35,6 +35,8 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        if(!$this->adapter)
+            return;
         //delete any tables we created
         if ($this->adapter->has_table('users',true)) {
             $this->adapter->drop_table('users');
