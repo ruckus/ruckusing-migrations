@@ -767,7 +767,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         }
         $sql = sprintf("CREATE %sINDEX %s ON %s(%s)",
                 $unique ? "UNIQUE " : "",
-                $index_name,
+                $this->identifier($index_name),
                 $this->identifier($table_name),
                 join(", ", $cols));
 
