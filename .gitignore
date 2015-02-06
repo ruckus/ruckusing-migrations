@@ -10,3 +10,4 @@ tests/dummy/db/db
 migrations/
 tests/dummy/db/test.sqlite3
 custom_tasks/*
+dev-notes.txt
