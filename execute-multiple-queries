@@ -1,5 +1,0 @@
-This fork adds multiple queries support when running $this->execute($query); in migration.
-
-With this, you can export queries from PHPMyAdmin or your favourite SQL Client and copy-paste it to ruckusing.
-
-Have fun ruckusing!
