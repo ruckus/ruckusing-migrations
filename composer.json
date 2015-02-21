@@ -40,6 +40,5 @@
         "issues": "https://github.com/ruckus/ruckusing-migrations/issues",
         "source": "https://github.com/ruckus/ruckusing-migrations"
     },
-    "type": "library",
-    "version": "1.0.8"
+    "type": "library"
 }
