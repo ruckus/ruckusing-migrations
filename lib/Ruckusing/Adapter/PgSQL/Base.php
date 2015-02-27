@@ -864,7 +864,9 @@ SQL;
                 $data['null'] = $result['attnotnull'] == 'f';
                 $data['default'] = $result['adsrc'];
             }
-
+            else{
+              $data = null;
+            }
             return $data;
         } catch (Exception $e) {
             return null;

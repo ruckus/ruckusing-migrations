@@ -133,6 +133,7 @@ The available methods are (brief list below, with detailed usageg further down):
 * `remove_column`
 * `rename_column`
 * `change_column`
+* `add_timestamps`
 
 ## Index-level operations
 * `add_index`
@@ -312,7 +313,7 @@ Database columns can be renamed (assuming the underlying RDMBS/adapter supports 
     $this->rename_column("users", "first_name", "fname");
 ```
 
-## Modifying an existing column
+### Modifying an existing column
 The type, defaults or `NULL` support for existing columns can be modified. If you want to just rename a column then use the `rename_column` method. This method takes a generalized type for the column's type and also an array of options which affects the column definition. For the available types and options, see the documentation on adding new columns, AddingColumns.
 
 
@@ -330,6 +331,28 @@ The type, defaults or `NULL` support for existing columns can be modified. If yo
 **Example A:** From the `users` table, change the length of the `first_name` column to 128.
 ```php
     $this->change_column("users", "first_name", "string", array('limit' => 128) );
+```
+
+### Add timestamps columns
+We often need colunmns to timestamp the _created at_ and _updated at_ operations. This convenient method is here to easily generate them for you.
+
+**Method Call:**`add_timestamps`
+
+**Arguments:**
+  `table_name`: The name of the table to which the columns will be added
+  
+  `created_name`: The desired of the _created at_ column, be default `created_at`
+  
+  `updated_name`:  The desired of the _updated at_ column, be default `updated_at`
+  
+**Exemple A:** Add timestamps columns to `users` table.
+```php
+    $this->add_timestamps("users");
+```
+
+**Exemple B:** Add timestamps columns to `users` table with `created` and `updated` column names.
+```php
+    $this->add_timestamps("users", "created", "updated");
 ```
 
 ## Index-level operations
