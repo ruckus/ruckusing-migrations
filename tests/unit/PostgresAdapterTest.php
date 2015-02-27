@@ -364,7 +364,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
         //verify it does not exist
         $col = $this->adapter->column_info("users", "name");
-        $this->assertEquals(array(), $col);
+        $this->assertEquals(null, $col);
         $this->drop_table('users');
     }
 
@@ -534,13 +534,10 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
         //verify they does not exist
         $col = $this->adapter->column_info($table_name, "name");
-        fwrite(STDERR, print_r($col, TRUE));
         $this->assertEquals('name', $col['field']);
         $col = $this->adapter->column_info($table_name, "created_at");
-        fwrite(STDERR, print_r($col, TRUE));
         $this->assertEquals(null, $col);
         $col = $this->adapter->column_info($table_name, "updated_at");
-        fwrite(STDERR, print_r($col, TRUE));
         $this->assertEquals(null, $col);
         
         $this->drop_table($table_name);

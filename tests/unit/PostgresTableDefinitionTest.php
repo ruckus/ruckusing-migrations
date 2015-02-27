@@ -225,7 +225,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         //make sure there is NO 'id' column
         $id_actual = $this->adapter->column_info($table_name, "id");
-        $this->assertEquals(array(), $id_actual);
+        $this->assertEquals(null, $id_actual);
         $bm->drop_table($table_name);
     }
 
@@ -249,7 +249,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         //make sure there is NO 'id' column
         $id_actual = $this->adapter->column_info($table_name, "id");
-        $this->assertEquals(array(), $id_actual);
+        $this->assertEquals(null, $id_actual);
         $bm->drop_table($table_name);
     }
 
@@ -264,7 +264,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
         $actual = $t1->finish();
 
         $col = $this->adapter->column_info("users", "id");
-        $this->assertEquals(array(), $col);
+        $this->assertEquals(null, $col);
 
         $primary_keys = $this->adapter->primary_keys('users');
         $this->assertEquals(array(), $primary_keys);
