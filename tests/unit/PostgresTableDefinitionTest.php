@@ -35,6 +35,8 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        if(!$this->adapter)
+            return;
         //delete any tables we created
         if ($this->adapter->has_table('users',true)) {
             $this->adapter->drop_table('users');
@@ -153,6 +155,50 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * test timestamp definition with default value
+     */
+    public function test_timestamps_with_default_value()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $ts = time();
+        $table_name = "users_$ts";
+        $table = $bm->create_table($table_name);
+        $table->timestamps();
+        $table->finish();
+
+        $col = $this->adapter->column_info($table_name, "created_at");
+        $this->assertEquals('created_at', $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type']);
+        $col = $this->adapter->column_info($table_name, "updated_at");
+        $this->assertEquals('updated_at', $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type']);
+        $bm->drop_table($table_name);
+    }
+
+    /**
+     * test timestamp definition with defined value
+     */
+    public function test_timestamps_with_defined_value()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $ts = time();
+        $table_name = "users_$ts";
+        $created = "created";
+        $updated = "updated";
+        $table = $bm->create_table($table_name);
+        $table->timestamps($created, $updated);
+        $table->finish();
+
+        $col = $this->adapter->column_info($table_name, $created);
+        $this->assertEquals($created, $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type']);
+        $col = $this->adapter->column_info($table_name, $updated);
+        $this->assertEquals($updated, $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type']);
+        $bm->drop_table($table_name);
+    }
+
+    /**
      * test multiple primary keys
      */
     public function test_multiple_primary_keys()
@@ -179,7 +225,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         //make sure there is NO 'id' column
         $id_actual = $this->adapter->column_info($table_name, "id");
-        $this->assertEquals(array(), $id_actual);
+        $this->assertEquals(null, $id_actual);
         $bm->drop_table($table_name);
     }
 
@@ -203,7 +249,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 
         //make sure there is NO 'id' column
         $id_actual = $this->adapter->column_info($table_name, "id");
-        $this->assertEquals(array(), $id_actual);
+        $this->assertEquals(null, $id_actual);
         $bm->drop_table($table_name);
     }
 
@@ -218,7 +264,7 @@ class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
         $actual = $t1->finish();
 
         $col = $this->adapter->column_info("users", "id");
-        $this->assertEquals(array(), $col);
+        $this->assertEquals(null, $col);
 
         $primary_keys = $this->adapter->primary_keys('users');
         $this->assertEquals(array(), $primary_keys);

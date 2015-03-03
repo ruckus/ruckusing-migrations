@@ -414,6 +414,31 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
         $this->drop_table('users');
     }
 
+    public function test_add_timestamps()
+    {
+      $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
+    }
+
+    public function test_remove_timestamps()
+    {
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
+    }
+
+    public function test_add_empty_timestamps()
+    {
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
+    }
+
+    public function test_add_named_timestamps()
+    {
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
+    }
+
+    public function test_remove_named_timestamps()
+    {
+        $this->markTestSkipped('In sqlite alter columns operations are unsupported - http://www.sqlite.org/omitted.html');
+    }
+
     public function test_select_all_and_returning()
     {
         $table = $this->adapter->create_table('users');

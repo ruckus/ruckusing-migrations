@@ -36,6 +36,9 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        if(!$this->adapter)
+          return;
+        
         //delete any tables we created
         if ($this->adapter->has_table('users',true)) {
             $this->adapter->drop_table('users');
@@ -361,7 +364,7 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 
         //verify it does not exist
         $col = $this->adapter->column_info("users", "name");
-        $this->assertEquals(array(), $col);
+        $this->assertEquals(null, $col);
         $this->drop_table('users');
     }
 
@@ -478,6 +481,156 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
         $this->adapter->remove_index("users", "name", array('name' => 'my_special_index'));
         $this->assertEquals(false, $this->adapter->has_index("users", "name", array('name' => 'my_special_index')) );
         $this->drop_table('users');
+    }
+
+    /**
+     * test add timestamps
+     */
+    public function test_add_timestamps()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $table_name = 'users';
+        
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE $table_name ( name varchar(20) );");
+
+        $col = $this->adapter->column_info($table_name, "name");
+        $this->assertEquals("name", $col['field']);
+
+        //add timestamps
+        $bm->add_timestamps($table_name);
+        
+        $col = $this->adapter->column_info($table_name, "created_at");
+        $this->assertEquals("created_at", $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type'] );
+        
+        $col = $this->adapter->column_info($table_name, "updated_at");
+        $this->assertEquals("updated_at", $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type'] );
+
+        $this->drop_table($table_name);
+    }
+
+    /**
+     * test remove timestamps
+     */
+    public function test_remove_timestamps()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $table_name = 'users';
+        
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE $table_name ( name varchar(20), created_at timestamp not null, updated_at timestamp not null );");
+        
+        //verify they exists
+        $col = $this->adapter->column_info($table_name, "created_at");
+        $this->assertEquals("created_at", $col['field']);
+        
+        $col = $this->adapter->column_info($table_name, "updated_at");
+        $this->assertEquals("updated_at", $col['field']);
+
+        //drop them
+        $bm->remove_timestamps($table_name);
+
+        //verify they does not exist
+        $col = $this->adapter->column_info($table_name, "name");
+        $this->assertEquals('name', $col['field']);
+        $col = $this->adapter->column_info($table_name, "created_at");
+        $this->assertEquals(null, $col);
+        $col = $this->adapter->column_info($table_name, "updated_at");
+        $this->assertEquals(null, $col);
+        
+        $this->drop_table($table_name);
+    }
+
+    /**
+     * test add empty colmun names timestamps
+     */
+    public function test_add_empty_timestamps()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $table_name = 'users';
+        
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE $table_name ( name varchar(20) );");
+
+        $col = $this->adapter->column_info($table_name, "name");
+        $this->assertEquals("name", $col['field']);
+
+        try{
+          //add timestamps
+          $bm->add_timestamps($table_name, "", "");
+        } catch (Ruckusing_Exception $exception) {
+            if (Ruckusing_Exception::INVALID_ARGUMENT == $exception->getCode()) {
+                $this->drop_table($table_name);
+                return;
+            }
+        }
+        $this->fail('Expected to raise & catch Ruckusing_Exception::INVALID_ARGUMENT');
+    }
+
+    /**
+     * test add named timestamps
+     */
+    public function test_add_named_timestamps()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $table_name = 'users';
+        $created_name = 'created';
+        $updated_name = 'updated';
+        
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE $table_name ( name varchar(20) );");
+
+        $col = $this->adapter->column_info($table_name, "name");
+        $this->assertEquals("name", $col['field']);
+
+        //add timestamps
+        $bm->add_timestamps($table_name, $created_name, $updated_name);
+        
+        $col = $this->adapter->column_info($table_name, $created_name);
+        $this->assertEquals($created_name, $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type'] );
+        
+        $col = $this->adapter->column_info($table_name, $updated_name);
+        $this->assertEquals($updated_name, $col['field']);
+        $this->assertEquals('timestamp without time zone', $col['type'] );
+
+        $this->drop_table($table_name);
+    }
+    
+    /**
+     * test remove named timestamps
+     */
+    public function test_remove_named_timestamps()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $table_name = 'users';
+        $created_name = 'created';
+        $updated_name = 'updated';
+
+        //create it
+        $this->adapter->execute_ddl("CREATE TABLE $table_name ( name varchar(20), $created_name timestamp not null, $updated_name timestamp not null );");
+
+        //verify they exists
+        $col = $this->adapter->column_info($table_name, $created_name);
+        $this->assertEquals($created_name, $col['field']);
+        
+        $col = $this->adapter->column_info($table_name, $updated_name);
+        $this->assertEquals($updated_name, $col['field']);
+
+        //drop them
+        $bm->remove_timestamps($table_name, $created_name, $updated_name);
+
+        //verify they does not exist
+        $col = $this->adapter->column_info($table_name, $created_name);
+        fwrite(STDERR, print_r($col, TRUE));
+        $this->assertEquals(null, $col);
+        $col = $this->adapter->column_info($table_name, $updated_name);
+        fwrite(STDERR, print_r($col, TRUE));
+        $this->assertEquals(null, $col);
+        
+        $this->drop_table($table_name);
     }
 
     /**
