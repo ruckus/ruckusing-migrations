@@ -260,28 +260,36 @@ class Ruckusing_Migration_Base
 
     /**
      * Split up multiple sql queries from a single query string
-     * @link   http://stackoverflow.com/questions/4001797/how-to-break-queries-using-regex-in-php
+     *
      * @param  string $query The query to be split
      * @return array Each query string found
      */
     protected function split_query($query)
     {
-        $open = false;
-        $buffer = null;
-        $parts = array();
-        for($i = 0, $l = strlen($query); $i < $l; $i++) {
-            if ($query[$i] == ';' && !$open) {
-                $parts[] = trim($buffer);
-                $buffer = null;
+        $res = array();
+        $buffer = '';
+        $lines = preg_split("/\r\n|\n|\r/", $query);
+        foreach ($lines as $line) {
+            $t_line = trim($line);
+            // Skip it if it's a comment
+            if (substr($t_line, 0, 2) == '--' || $t_line == '') {
                 continue;
             }
-            if ($query[$i] == "'") {
-                $open = ($open) ? false: true;
+
+            $buffer .= $line;
+
+            // If it has a semicolon at the end, it's the end of the query
+            if (substr($t_line, -1, 1) == ';') {
+                $res[] = $buffer;
+                $buffer = '';
             }
-            $buffer .= $query[$i];
         }
-        if ($buffer) $parts[] = trim($buffer);
-        return $parts;
+
+        if ($buffer) {
+            $res[] = $buffer;
+        }
+
+        return $res;
     }
 
     /**
@@ -298,7 +306,7 @@ class Ruckusing_Migration_Base
         foreach($queries as $query_s) {
             $query_s = trim($query_s);
             if (!empty($query_s)) {
-                $result = $this->_adapter->query($query_s.';');
+                $result = $this->_adapter->query($query_s);
             }
         }
         return $result;
