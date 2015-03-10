@@ -220,6 +220,36 @@ class Ruckusing_Migration_Base
     }
 
     /**
+     * Adds a foreign key
+     * @param unknown $orig_table_name
+     * @param unknown $dest_table_name
+     * @param unknown $options.
+     *
+     * Possible options are:
+     *  - orig_column_name: The column name from the origin table (defaults to "destTable_id")
+     *  - dest_column_name: The column name in the destination_table (defaults to "id")
+     *  - on_update: action on update. example: RESTRICT, CASCADE
+     *  - on_delete: action on delete. example: RESTRICT, CASCADE
+     * @return boolean
+     */
+
+    public function add_foreign_key($orig_table_name, $dest_table_name, $options = array())
+    {
+        return $this->_adapter->add_foreign_key($orig_table_name, $dest_table_name, $options);
+    }
+
+    /**
+     * Removes a foreign key
+     * @param unknown $table_name
+     * @param unknown $key_name
+     */
+
+    public function remove_foreign_key($table_name, $key_name)
+    {
+        return $this->_adapter->remove_foreign_key($table_name, $key_name);
+    }
+
+    /**
      * Create a table
      * @param string $table_name the name of the table
      * @param array|string $options

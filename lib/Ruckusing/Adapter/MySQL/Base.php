@@ -621,7 +621,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 $this->identifier($table_name),
                 $this->identifier($column_name),
                 $this->identifier($new_column_name), $current_type);
-        
+
         $sql .= $this->add_column_options($current_type, $column_info);
 
         return $this->execute_ddl($sql);
@@ -805,6 +805,92 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             $index_name = Ruckusing_Util_Naming::index_name($table_name, $column_name);
         }
         $sql = sprintf("DROP INDEX %s ON %s", $this->identifier($index_name), $this->identifier($table_name));
+
+        return $this->execute_ddl($sql);
+    }
+
+    /**
+     *
+     * @param unknown $orig_table_name
+     * @param unknown $dest_table_name
+     * @param unknown $options
+     * @throws Ruckusing_Exception
+     * @return boolean
+     */
+
+    public function add_foreign_key($orig_table_name, $dest_table_name, $options = array())
+    {
+        if (empty($orig_table_name)) {
+            throw new Ruckusing_Exception(
+                "Missing origin table name parameter",
+                Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (empty($dest_table_name)) {
+            throw new Ruckusing_Exception(
+                "Missing destination table name parameter",
+                Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (is_array($options) && array_key_exists('orig_column_name', $options)) {
+            $orig_column_name = $options['orig_column_name'];
+        } else {
+            $orig_column_name = Inflector::singularize($dest_table_name) . "_id";
+        }
+        if (is_array($options) && array_key_exists('dest_column_name', $options)) {
+            $dest_column_name = $options['dest_column_name'];
+        } else {
+            $dest_column_name = "id";
+        }
+        if (is_array($options) && array_key_exists('constraint_name', $options)) {
+            $constraint_name = $options['constraint_name'];
+        } else {
+            $constraint_name = "{$orig_table_name}_{$orig_column_name}_fk";
+        }
+        if (is_array($options) && array_key_exists('on_update', $options)) {
+            $on_update = " ON UPDATE " . $options['on_update'];
+        } else {
+            $on_update = '';
+        }
+        if (is_array($options) && array_key_exists('on_delete', $options)) {
+            $on_delete = " ON DELETE" . $options['on_delete'];
+        } else {
+            $on_delete = '';
+        }
+
+        $sql = sprintf("ALTER TABLE %s ADD CONSTRAINT %s FOREIGN KEY (%s) REFERENCES %s(%s)%s%s",
+            $this->identifier($orig_table_name),
+            $this->identifier($constraint_name),
+            $this->identifier($orig_column_name),
+            $this->identifier($dest_table_name),
+            $this->identifier($dest_column_name),
+            $on_update,
+            $on_delete
+        );
+
+        return $this->execute_ddl($sql);
+    }
+
+    public function remove_foreign_key($table_name, $key_name)
+    {
+
+        if (empty($orig_table_name)) {
+            throw new Ruckusing_Exception(
+                "Missing table name parameter",
+                Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+        if (empty($key_name)) {
+            throw new Ruckusing_Exception(
+                "Missing key name parameter",
+                Ruckusing_Exception::INVALID_ARGUMENT
+            );
+        }
+
+        $sql = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s",
+            $this->identifier($orig_table_name),
+            $this->identifier($key_name)
+       );
 
         return $this->execute_ddl($sql);
     }
