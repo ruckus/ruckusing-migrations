@@ -154,6 +154,26 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
     }
 
     /**
+     * Execute several queries
+     *
+     * @param string $queries queries to run
+     *
+     * @throws Ruckusing_Exception
+     * @return boolean
+     */
+    public function multi_query($queries)
+    {
+        $res = $this->sqlite3->exec($queries);
+        if ($this->isError($res)) {
+            throw new Ruckusing_Exception(sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $queries, $this->lastErrorMsg()),
+                Ruckusing_Exception::QUERY_ERROR
+            );
+        }
+
+        return true;
+    }
+
+    /**
      * @param $query
      * @return SQLite3Result
      * @throws Ruckusing_Exception

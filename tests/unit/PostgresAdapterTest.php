@@ -11,6 +11,9 @@
  */
 class PostgresAdapterTest extends PHPUnit_Framework_TestCase
 {
+    /** @var Ruckusing_Adapter_PgSQL_Base */
+    protected $adapter;
+
     /**
      * Setup commands before test case
      */
@@ -678,6 +681,44 @@ class PostgresAdapterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(32, $result['age']);
 
         $this->drop_table('users');
+    }
+
+    /**
+     * test multiple queries
+     */
+    public function test_multiple_queries()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
+        $this->adapter->multi_query("
+            INSERT INTO users (name)
+            VALUES ('Bill');
+            INSERT INTO users (name)
+            VALUES ('John')
+        ");
+
+        $users = $this->adapter->select_all('SELECT * FROM users');
+        $expected = array(
+            array('name' => 'Bill'),
+            array('name' => 'John'),
+        );
+
+        $this->assertEquals($expected, $users);
+    }
+
+    /**
+     * test multiple queries with error in second query
+     *
+     * @expectedException Ruckusing_Exception
+     */
+    public function test_multiple_queries_error_in_second_query()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
+        @$this->adapter->multi_query("
+            INSERT INTO users (name)
+            VALUES ('Bill');
+            INSERT INTO users (name2)
+            VALUES ('John')
+        ");
     }
 
 }//class

@@ -401,6 +401,27 @@ SQL;
     }
 
     /**
+     * Execute several queries
+     *
+     * @param string $queries queries to run
+     *
+     * @throws Ruckusing_Exception
+     * @return boolean
+     */
+    public function multi_query($queries)
+    {
+        $res = pg_query($this->conn, $queries);
+        if ($this->isError($res)) {
+            throw new Ruckusing_Exception(
+                sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $queries, pg_last_error($this->conn)),
+                Ruckusing_Exception::QUERY_ERROR
+            );
+        }
+
+        return true;
+    }
+
+    /**
      * Select one
      *
      * @param string $query query to run
