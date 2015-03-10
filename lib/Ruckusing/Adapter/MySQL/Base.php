@@ -874,7 +874,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     public function remove_foreign_key($table_name, $key_name)
     {
 
-        if (empty($orig_table_name)) {
+        if (empty($table_name)) {
             throw new Ruckusing_Exception(
                 "Missing table name parameter",
                 Ruckusing_Exception::INVALID_ARGUMENT
@@ -888,7 +888,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
         }
 
         $sql = sprintf("ALTER TABLE %s DROP FOREIGN KEY %s",
-            $this->identifier($orig_table_name),
+            $this->identifier($table_name),
             $this->identifier($key_name)
        );
 
