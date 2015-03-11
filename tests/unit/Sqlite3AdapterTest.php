@@ -461,4 +461,37 @@ class Sqlite3AdapterTest extends PHPUnit_Framework_TestCase
 
         $this->drop_table('users');
     }
+
+    public function test_multiple_queries()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
+        $this->adapter->multi_query("
+            INSERT INTO users (name)
+            VALUES ('Bill');
+            INSERT INTO users (name)
+            VALUES ('John')
+        ");
+
+        $users = $this->adapter->select_all('SELECT * FROM users');
+        $expected = array(
+            array('name' => 'Bill'),
+            array('name' => 'John'),
+        );
+
+        $this->assertEquals($expected, $users);
+    }
+
+    /**
+     * @expectedException Ruckusing_Exception
+     */
+    public function test_multiple_queries_error_in_second_query()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE users ( name varchar(20) );");
+        @$this->adapter->multi_query("
+            INSERT INTO users (name)
+            VALUES ('Bill');
+            INSERT INTO users (name2)
+            VALUES ('John')
+        ");
+    }
 }

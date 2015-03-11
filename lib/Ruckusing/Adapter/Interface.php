@@ -233,4 +233,13 @@ interface Ruckusing_Adapter_Interface
      */
     public function query($query);
 
+    /**
+     * Wrapper to execute multiple queries
+     *
+     * @param string $queries queries to run
+     *
+     * @return boolean
+     */
+    public function multi_query($queries);
+
 }

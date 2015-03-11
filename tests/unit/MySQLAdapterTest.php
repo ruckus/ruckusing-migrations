@@ -11,6 +11,9 @@
  */
 class MySQLAdapterTest extends PHPUnit_Framework_TestCase
 {
+    /** @var Ruckusing_Adapter_MySQL_Base */
+    protected $adapter;
+
     /**
      * Setup commands before test case
      */
@@ -599,5 +602,102 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
         $unquoted = "Hello Sam's";
         $quoted = "Hello Sam\'s";
         $this->assertEquals($quoted, $this->adapter->quote_string($unquoted));
+    }
+
+    /**
+     * test multiple queries
+     */
+    public function test_multiple_queries()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $this->adapter->multi_query("
+            INSERT INTO users (name)
+            VALUES ('Bill');
+            INSERT INTO users (name)
+            VALUES ('John')
+        ");
+
+        $users = $this->adapter->select_all('SELECT * FROM users');
+        $expected = array(
+            array('name' => 'Bill'),
+            array('name' => 'John'),
+        );
+
+        $this->assertEquals($expected, $users);
+    }
+
+    /**
+     * test multiple queries with error in first query
+     *
+     * @expectedException Ruckusing_Exception
+     */
+    public function test_multiple_queries_error_in_first_query()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $this->adapter->multi_query("
+            INSERT INTO users (name2)
+            VALUES ('Bill');
+            INSERT INTO users (name)
+            VALUES ('John')
+        ");
+    }
+
+    /**
+     * test multiple queries with error in second query
+     *
+     * @expectedException Ruckusing_Exception
+     */
+    public function test_multiple_queries_error_in_second_query()
+    {
+        $this->adapter->execute_ddl("CREATE TABLE `users` ( name varchar(20) );");
+        $this->adapter->multi_query("
+            INSERT INTO users (name)
+            VALUES ('Bill');
+            INSERT INTO users (name2)
+            VALUES ('John')
+        ");
+    }
+
+    /**
+     * test query with trigger
+     */
+    public function test_query_trigger()
+    {
+        $this->adapter->multi_query("
+            DROP TABLE IF EXISTS test;
+            DROP TABLE IF EXISTS log;
+
+            CREATE TABLE `test` (
+                `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `content` TEXT NOT NULL
+            ) ENGINE = MYISAM;
+
+            CREATE TABLE `log` (
+                `id` INT( 11 ) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `msg` VARCHAR( 255 ) NOT NULL,
+                `time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                `row_id` INT( 11 ) NOT NULL
+            ) ENGINE = MYISAM;
+
+            CREATE TRIGGER `update_test` AFTER INSERT ON `test`
+            FOR EACH ROW BEGIN
+               INSERT INTO log SET msg = 'insert', row_id = NEW.id;
+            END;
+
+            INSERT INTO test (id, content)
+                VALUES
+                  (2, 'Cup');
+        ");
+
+        $log = $this->adapter->select_one('SELECT id, msg, row_id FROM log');
+        $expected = array(
+            'id' => 1,
+            'msg' => 'insert',
+            'row_id' => 2,
+        );
+        $this->assertEquals($expected, $log);
+
+        $this->adapter->drop_table('test');
+        $this->adapter->drop_table('log');
     }
 }//class

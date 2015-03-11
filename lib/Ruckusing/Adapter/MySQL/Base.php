@@ -374,6 +374,36 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     }
 
     /**
+     * Execute several queries
+     *
+     * @param string $queries queries to run
+     *
+     * @throws Ruckusing_Exception
+     * @return boolean
+     */
+    public function multi_query($queries)
+    {
+        $res = $this->conn->multi_query($queries);
+        if ($this->isError($res)) {
+            throw new Ruckusing_Exception(
+                sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $queries, $this->conn->error),
+                Ruckusing_Exception::QUERY_ERROR
+            );
+        }
+        while ($this->conn->more_results()) {
+            $res = $this->conn->next_result();
+            if ($this->isError($res)) {
+                throw new Ruckusing_Exception(
+                    sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $queries, $this->conn->error),
+                    Ruckusing_Exception::QUERY_ERROR
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Select one
      *
      * @param string $query query to run
