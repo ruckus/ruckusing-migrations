@@ -220,16 +220,18 @@ class Ruckusing_Migration_Base
     }
 
     /**
-     * Adds a foreign key
-     * @param unknown $orig_table_name
-     * @param unknown $dest_table_name
-     * @param unknown $options.
+     * Adds a foreign key on the given origin table to the given destination table
+     * @param string $orig_table_name The origin table name
+     * @param string $dest_table_name The destination table name
+     * @param array $options
      *
      * Possible options are:
-     *  - orig_column_name: The column name from the origin table (defaults to "destTable_id")
+     *  - orig_column_name: The column name from the origin table (defaults to "dest_table_id")
      *  - dest_column_name: The column name in the destination_table (defaults to "id")
+     *  - constraint_name: The anme of the foreign key (defaults to "name_of_the_origin_table_name_of_the_origin_column_fk")
      *  - on_update: action on update. example: RESTRICT, CASCADE
      *  - on_delete: action on delete. example: RESTRICT, CASCADE
+     *
      * @return boolean
      */
 
