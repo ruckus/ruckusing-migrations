@@ -854,7 +854,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             $on_update = '';
         }
         if (is_array($options) && array_key_exists('on_delete', $options)) {
-            $on_delete = " ON DELETE" . $options['on_delete'];
+            $on_delete = " ON DELETE " . $options['on_delete'];
         } else {
             $on_delete = '';
         }
