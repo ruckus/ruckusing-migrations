@@ -125,6 +125,6 @@ create table `adminsession` (
 
         // cleanup
         $base->execute("DROP TABLE `admin`; DROP TABLE `adminsession`; DROP TABLE `demo`;");
-        
+
     }
 }
