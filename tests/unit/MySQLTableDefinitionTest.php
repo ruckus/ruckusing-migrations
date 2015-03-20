@@ -39,6 +39,9 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
         if ($this->adapter->has_table('users',true)) {
             $this->adapter->drop_table('users');
         }
+        if ($this->adapter->has_table('reservations',true)) {
+            $this->adapter->drop_table('reservations');
+        }
     }
 
     /*
@@ -255,4 +258,39 @@ class MySQLTableDefinitionTest extends PHPUnit_Framework_TestCase
         $col = $this->adapter->column_info("users", "id");
         $this->assertEquals(null, $col);
     }
+
+    /**
+     * test that we can generate a table w/o a primary key
+     */
+    public function test_create_foreign_key()
+    {
+        $bm = new Ruckusing_Migration_Base($this->adapter);
+        $t1 = $bm->create_table('users', array('id' => false));
+        $t1->column('id', 'integer', array('unsigned' => true, 'primary_key' => true, 'auto_increment' => true));
+        $t1->finish();
+
+        $t2 = $bm->create_table('reservations', array('id' => false));
+        $t2->column('id', 'integer', array('unsigned' => true, 'primary_key' => true, 'auto_increment' => true));
+        $t2->column('user_id', 'integer', array('unsigned' => true));
+        $t2->finish();
+
+        $bm->add_foreign_key('reservations', 'users');
+
+        $result = $bm->select_one("select TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
+                FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+                WHERE TABLE_NAME = 'reservations' AND REFERENCED_TABLE_NAME = 'users' AND COLUMN_NAME = 'user_id' AND REFERENCED_COLUMN_NAME = 'id';");
+
+        $key = null;
+        if (is_array($result) && isset($result['CONSTRAINT_NAME'])) {
+            $key = $result['CONSTRAINT_NAME'];
+        }
+
+        $this->assertEquals('reservations_user_id_fk', $key);
+
+        $bm->drop_table('reservations');
+        $bm->drop_table('users');
+
+
+    }
+
 }
