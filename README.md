@@ -429,6 +429,39 @@ Easy enough. If the index was created using the sibling to this method (`add_ind
 ```
 
 
+## Foreign key operations
+
+Foreign keys can be created and removed
+
+### Adding a new foreign key
+
+*Method Call:* `add_foreign_key`
+
+**Arguments:**
+  `orig_table_name`: The name of the table to add the foreign key to.
+  
+  `dest_table_name`: The name of the table that the key references.
+
+  `options`: (Optional) An associative array of options to control the foreign key generation. Keys / Value pairs:
+
+   `orig_column_name`: The column name for the foreign key (defaults to `dest_table_name_id`)
+
+   `dest_column_name` : The referenced column name in the referenced table (defaults to `id`)
+   
+   `constraint_name` : The name of the foreign key (defaults to "name_of_the_origin_table_name_of_the_origin_column_fk")
+
+   `on_update` : action on update. example: RESTRICT, CASCADE
+
+   `on_delete` : action on delete. example: RESTRICT, CASCADE
+
+### Removing a new foreign key
+
+*Method Call:* `remove_foreign_key`
+
+**Arguments:**
+  `table_name`: The name of the table that contians the foreign key.
+  `key_name`: The name of the foreign key to be removed.
+
 ## Query Execution
 
 Arbitrary query execution is available via a set of methods.
