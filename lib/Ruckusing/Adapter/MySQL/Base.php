@@ -384,14 +384,27 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
     public function multi_query($queries)
     {
         $res = $this->conn->multi_query($queries);
+
+        // free up mysqli
+        if ($result = $this->conn->store_result()) {
+            $result->free();
+        }
+
         if ($this->isError($res)) {
             throw new Ruckusing_Exception(
                 sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $queries, $this->conn->error),
                 Ruckusing_Exception::QUERY_ERROR
             );
         }
+
         while ($this->conn->more_results()) {
             $res = $this->conn->next_result();
+
+            // free up mysqli
+            if ($result = $this->conn->store_result()) {
+                $result->free();
+            }
+
             if ($this->isError($res)) {
                 throw new Ruckusing_Exception(
                     sprintf("Error executing 'query' with:\n%s\n\nReason: %s\n\n", $queries, $this->conn->error),
