@@ -636,6 +636,7 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
     {
         $this->adapter->multi_query("SELECT VERSION()");
         $this->adapter->multi_query("SELECT VERSION()");
+        $this->adapter->multi_query("SELECT VERSION(); SELECT VERSION(); ");
     }
 
     /**
