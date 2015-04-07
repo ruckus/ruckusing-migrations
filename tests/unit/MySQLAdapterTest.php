@@ -627,6 +627,19 @@ class MySQLAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * test multiple calls to the multi_query method
+     * 
+     * (Once failed with "Commands out of sync; you can't run this command now")
+     *
+     */
+    public function test_multiple_multi_query_calls()
+    {
+        $this->adapter->multi_query("SELECT VERSION()");
+        $this->adapter->multi_query("SELECT VERSION()");
+        $this->adapter->multi_query("SELECT VERSION(); SELECT VERSION(); ");
+    }
+
+    /**
      * test multiple queries with error in first query
      *
      * @expectedException Ruckusing_Exception
