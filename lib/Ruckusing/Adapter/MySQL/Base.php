@@ -1162,8 +1162,12 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
             $sql .= sprintf(" DEFAULT %s", $default_value);
         }
 
-        if (array_key_exists('null', $options) && ($options['null'] === false || $options['null'] === 'NO')) {
-            $sql .= " NOT NULL";
+        if (array_key_exists('null', $options)) {
+            if ($options['null'] === false || $options['null'] === 'NO') {
+                $sql .= " NOT NULL";
+            } elseif ('timestamp' === $type) {
+                $sql .= " NULL";
+            }
         }
         if (array_key_exists('comment', $options)) {
             $sql .= sprintf(" COMMENT '%s'", $this->quote_string($options['comment']));
