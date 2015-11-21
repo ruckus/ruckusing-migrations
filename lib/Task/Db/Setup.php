@@ -54,12 +54,12 @@ class Task_Db_Setup extends Ruckusing_Task_Base implements Ruckusing_Task_Interf
         $output = "Started: " . date('Y-m-d g:ia T') . "\n\n";
         $output .= "[db:setup]: \n";
         //it doesnt exist, create it
-        if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
-            $output .= sprintf("\tCreating table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME);
+        if (!$this->_adapter->table_exists($this->_adapter->get_schema_version_table_name())) {
+            $output .= sprintf("\tCreating table: %s", $this->_adapter->get_schema_version_table_name());
             $this->_adapter->create_schema_version_table();
             $output .= "\n\tDone.\n";
         } else {
-            $output .= sprintf("\tNOTICE: table '%s' already exists. Nothing to do.", RUCKUSING_TS_SCHEMA_TBL_NAME);
+            $output .= sprintf("\tNOTICE: table '%s' already exists. Nothing to do.", $this->_adapter->get_schema_version_table_name());
         }
         $output .= "\n\nFinished: " . date('Y-m-d g:ia T') . "\n\n";
 

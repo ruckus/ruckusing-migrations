@@ -354,12 +354,12 @@ class Ruckusing_FrameworkRunner
             $existing_version_old_style = $this->_adapter->select_one($query_sql);
             if (count($existing_version_old_style) > 0) {
                 //make sure it doesnt exist in our new table, who knows how it got inserted?
-                $new_vers_sql = sprintf("SELECT version FROM %s WHERE version = %d", RUCKUSING_TS_SCHEMA_TBL_NAME, $file['version']);
+                $new_vers_sql = sprintf("SELECT version FROM %s WHERE version = %d", $this->_adapter->get_schema_version_table_name(), $file['version']);
                 $existing_version_new_style = $this->_adapter->select_one($new_vers_sql);
                 if (empty($existing_version_new_style)) {
                     // use sprintf & %d to force it to be stripped of any leading zeros, we *know* this represents an old version style
                     // so we dont have to worry about PHP and integer overflow
-                    $insert_sql = sprintf("INSERT INTO %s (version) VALUES (%d)", RUCKUSING_TS_SCHEMA_TBL_NAME, $file['version']);
+                    $insert_sql = sprintf("INSERT INTO %s (version) VALUES (%d)", $this->_adapter->get_schema_version_table_name(), $file['version']);
                     $this->_adapter->query($insert_sql);
                 }
             }
