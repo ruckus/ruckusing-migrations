@@ -75,7 +75,7 @@ class Ruckusing_Util_Migrator
         // We only want one row but we cannot assume that we are using MySQL and use a LIMIT statement
         // as it is not part of the SQL standard. Thus we have to select all rows and use PHP to return
         // the record we need
-        $versions_nested = $this->_adapter->select_all(sprintf("SELECT version FROM %s", RUCKUSING_TS_SCHEMA_TBL_NAME));
+        $versions_nested = $this->_adapter->select_all(sprintf("SELECT version FROM %s", $this->_adapter->get_schema_version_table_name()));
         $versions = array();
         foreach ($versions_nested as $v) {
             $versions[] = $v['version'];
@@ -329,7 +329,7 @@ class Ruckusing_Util_Migrator
      */
     private function executed_migrations()
     {
-        $query_sql = sprintf('SELECT version FROM %s', RUCKUSING_TS_SCHEMA_TBL_NAME);
+        $query_sql = sprintf('SELECT version FROM %s', $this->_adapter->get_schema_version_table_name());
         $versions = $this->_adapter->select_all($query_sql);
         $executed = array();
         foreach ($versions as $v) {

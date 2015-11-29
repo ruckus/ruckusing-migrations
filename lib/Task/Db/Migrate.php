@@ -313,7 +313,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
      */
     private function verify_environment()
     {
-        if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME) ) {
+        if (!$this->_adapter->table_exists($this->_adapter->get_schema_version_table_name()) ) {
             $this->_return .= "\n\tSchema version table does not exist. Auto-creating.";
             $this->auto_create_schema_info_table();
         }
@@ -341,7 +341,7 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     private function auto_create_schema_info_table()
     {
         try {
-            $this->_return .= sprintf("\n\tCreating schema version table: %s", RUCKUSING_TS_SCHEMA_TBL_NAME . "\n\n");
+            $this->_return .= sprintf("\n\tCreating schema version table: %s", $this->_adapter->get_schema_version_table_name() . "\n\n");
             $this->_adapter->create_schema_version_table();
 
             return true;

@@ -51,15 +51,15 @@ class Task_Db_Version extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
     {
         $output = "Started: " . date('Y-m-d g:ia T') . "\n\n";
         $output .= "[db:version]: \n";
-        if (!$this->_adapter->table_exists(RUCKUSING_TS_SCHEMA_TBL_NAME)) {
+        if (!$this->_adapter->table_exists($this->_adapter->get_schema_version_table_name())) {
             //it doesnt exist, create it
-            $output .= "\tSchema version table (" . RUCKUSING_TS_SCHEMA_TBL_NAME . ") does not exist. Do you need to run 'db:setup'?";
+            $output .= "\tSchema version table (" . $this->_adapter->get_schema_version_table_name() . ") does not exist. Do you need to run 'db:setup'?";
         } else {
             //it exists, read the version from it
             // We only want one row but we cannot assume that we are using MySQL and use a LIMIT statement
             // as it is not part of the SQL standard. Thus we have to select all rows and use PHP to return
             // the record we need
-            $versions_nested = $this->_adapter->select_all(sprintf("SELECT version FROM %s", RUCKUSING_TS_SCHEMA_TBL_NAME));
+            $versions_nested = $this->_adapter->select_all(sprintf("SELECT version FROM %s", $this->_adapter->get_schema_version_table_name()));
             $versions = array();
             foreach ($versions_nested as $v) {
                 $versions[] = $v['version'];

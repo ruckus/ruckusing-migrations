@@ -150,4 +150,15 @@ class Ruckusing_Adapter_Base
         return $this->table_exists($tbl);
     }
 
+    /**
+     * Allows to override hardcoded schema table name constant in case of parallel migrations.
+     *
+     * @return string
+     */
+    public function get_schema_version_table_name() {
+        if (isset($this->_dsn['schema_version_table_name'])) {
+            return $this->_dsn['schema_version_table_name'];
+        }
+        return RUCKUSING_TS_SCHEMA_TBL_NAME;
+    }
 }
