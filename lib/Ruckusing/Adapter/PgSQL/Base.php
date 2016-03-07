@@ -825,7 +825,7 @@ SQL;
      */
     private function change_column_null($table_name, $column_name, $null, $default = null)
     {
-        if (($null !== false) || ($default !== null)) {
+        if (($null === false) || ($default !== null)) {
             $sql = sprintf("UPDATE %s SET %s=%s WHERE %s IS NULL",
                     $this->quote_table_name($table_name),
                     $this->quote_column_name($column_name),
