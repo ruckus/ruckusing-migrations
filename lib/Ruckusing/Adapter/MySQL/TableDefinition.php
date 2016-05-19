@@ -221,15 +221,15 @@ class Ruckusing_Adapter_MySQL_TableDefinition
                     Ruckusing_Exception::INVALID_TABLE_DEFINITION
             );
         }
+        $opt_str = '';
         if (is_array($this->_options) && array_key_exists('options', $this->_options)) {
             $opt_str = $this->_options['options'];
         } else {
-            $opt_str = null;
-        }
-        if(isset($this->_adapter->db_info['charset'])){
-            $opt_str .= " DEFAULT CHARSET=".$this->_adapter->db_info['charset'];
-        } else {
-            $opt_str .= " DEFAULT CHARSET=utf8";
+            if(isset($this->_adapter->db_info['charset'])){
+                $opt_str = " DEFAULT CHARSET=".$this->_adapter->db_info['charset'];
+            } else {
+                $opt_str = " DEFAULT CHARSET=utf8";
+            }
         }
 
         $close_sql = sprintf(") %s;",$opt_str);
