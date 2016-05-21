@@ -42,9 +42,9 @@ class Ruckusing_Adapter_Sqlite3_Base extends Ruckusing_Adapter_Base implements R
      * @param array $dsn
      * @param $logger
      */
-    public function __construct($dsn, $logger)
+    public function __construct($dsn, $logger, $config)
     {
-        parent::__construct($dsn);
+        parent::__construct($dsn, $config);
         $this->connect($dsn);
         $this->set_logger($logger);
         $this->_in_transaction = false;
