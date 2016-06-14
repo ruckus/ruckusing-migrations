@@ -1,16 +1,32 @@
 language: php
+sudo: false
 
 php:
   - 5.3
   - 5.4
   - 5.5
+  - 5.6
+  - 7.0
+  - hhvm
 
 before_script:
   - mysql -uroot < tests/test.sql
   - psql -Upostgres -f tests/test.sql
   - touch tests/dummy/db/test.sqlite3
-  - curl -s http://getcomposer.org/installer | php
-  - php composer.phar install
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - travis_retry composer self-update
+  - travis_retry composer require satooshi/php-coveralls:1.0.0
+  - travis_retry composer install --no-interaction --prefer-source
+  - composer dump-autoload -o
+  
+script:
+  - mkdir -p build/logs
+  - php vendor/bin/phpunit -c phpunit.xml.dist
+  
+after_script:
+  - php vendor/bin/coveralls -v
+  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   email:
