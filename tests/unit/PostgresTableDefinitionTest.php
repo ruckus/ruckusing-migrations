@@ -12,6 +12,11 @@
 class PostgresTableDefinitionTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var $adapter Ruckusing_Adapter_Sqlite3_Base
+     */
+    private $adapter;
+    
+    /**
      * Setup commands before test case
      */
     protected function setUp()
