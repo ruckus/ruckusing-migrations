@@ -127,6 +127,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 'enum'          => array('name' => "enum", 'values' => array()),
                 'uuid'          => array('name' => "char", 'limit' => 36),
                 'char'          => array('name' => "char"),
+                'json'           => array('name' => "json"),
         );
 
         return $types;
@@ -809,7 +810,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
 
         return $this->execute_ddl($sql);
     }
-    
+
     /**
      * Add timestamps
      *
@@ -844,7 +845,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
 
         return $created_at && $updated_at;
     }
-    
+
     /**
      * Remove timestamps
      *
