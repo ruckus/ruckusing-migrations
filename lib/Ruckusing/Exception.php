@@ -80,6 +80,7 @@ class Ruckusing_Exception extends Exception
     {
         file_put_contents('php://stderr', "\n" . basename($file) . "({$line}) : {$message}\n\n");
         if ($code != E_WARNING && $code != E_NOTICE) {
+            file_put_contents('php://stderr', "\n" . $exception->getTraceAsString()."\n\n");
             exit(1);
         }
     }
@@ -92,6 +93,7 @@ class Ruckusing_Exception extends Exception
     public static function exceptionHandler($exception)
     {
         file_put_contents('php://stderr', "\n" . basename($exception->getFile()) . "({$exception->getLine()}) : {$exception->getMessage()}\n\n");
+        file_put_contents('php://stderr', "\n" . $exception->getTraceAsString()."\n\n");
         exit(1);
     }
 
