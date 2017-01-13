@@ -217,7 +217,7 @@ class Ruckusing_Util_Migrator
             if (!is_dir($path)) {
                 if (mkdir($path, 0755, true) === FALSE) {
                     throw new Ruckusing_Exception(
-                    		"\n\tUnable to create migrations directory at %s, check permissions?", $path,
+                    		sprintf("\n\tUnable to create migrations directory at %s, check permissions?", $path),
                     		Ruckusing_Exception::INVALID_MIGRATION_DIR
                     );
                 }
