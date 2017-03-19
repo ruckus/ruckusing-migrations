@@ -173,15 +173,12 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
             $this->_return .= "\nsteps: " . $steps . " $direction\n";
         }
 
-        // If we are not at the bottom then adjust our index (to satisfy array_slice)
         if ($current_index == -1 && $direction === 'down') {
             $available = array();
         } else {
-            if ($direction === 'up') {
-                $current_index += 1;
-            } else {
-                $current_index += $steps;
-            }
+            // If we are not at the bottom then adjust our index (to satisfy array_slice)
+            $current_index += 1;
+
             // check to see if we have enough migrations to run - the user
             // might have asked to run more than we have available
             $available = array_slice($migrations, $current_index, $steps);
