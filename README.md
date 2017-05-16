@@ -95,6 +95,19 @@ class CreateUsersTable extends Ruckusing_Migration_Base {
 
 All of the methods below are to be implemented in the `up()` and `down()` methods.
 
+## Environments
+
+You can switch environments via the `ENV` command line argument. The default environtment is `development`.
+
+To specify an additional environment add it to `ruckusing.conf.php` under the `db` key.
+
+Running with a different environment:
+
+```
+$ ENV=test php db:migrate
+```
+
+
 ## Running Migrations
 
 Run all pending migrations:
@@ -340,11 +353,11 @@ We often need colunmns to timestamp the _created at_ and _updated at_ operations
 
 **Arguments:**
   `table_name`: The name of the table to which the columns will be added
-  
+
   `created_name`: The desired of the _created at_ column, be default `created_at`
-  
+
   `updated_name`:  The desired of the _updated at_ column, be default `updated_at`
-  
+
 **Exemple A:** Add timestamps columns to `users` table.
 ```php
     $this->add_timestamps("users");
