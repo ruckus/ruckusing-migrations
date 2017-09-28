@@ -1280,6 +1280,8 @@ SQL;
                     $default_format = '%d';
                 } elseif (is_bool($options['default'])) {
                     $default_format = "'%d'";
+                } elseif (preg_match('/(\(\))/', $options['default'])) {
+                    $default_format = '%s';
                 } else {
                     $default_format = "'%s'";
                 }
