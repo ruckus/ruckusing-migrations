@@ -1274,7 +1274,7 @@ class Ruckusing_Adapter_MySQL_Base extends Ruckusing_Adapter_Base implements Ruc
                 if (empty($db_info['ssl_cipher_algos'])) {
                     $db_info['ssl_cipher_algos'] = null;
                 }
-                mysqli_ssl_set($this->conn, $db_info['ssl_key'], $db_info['ssl_certificate'], $db_info['ssl_ca_certificate'], $db_info['ssl_ca_path'], $db_info['ssl_cipher_algos']);
+                $this->conn->ssl_set($db_info['ssl_key'], $db_info['ssl_certificate'], $db_info['ssl_ca_certificate'], $db_info['ssl_ca_path'], $db_info['ssl_cipher_algos']);
                 $this->conn->real_connect($this->conn, $db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port'], $db_info['socket']);
             } else {
                 $this->conn = new mysqli($db_info['host'], $db_info['user'], $db_info['password'], '', $db_info['port'], $db_info['socket']); //db name leaved for selection
