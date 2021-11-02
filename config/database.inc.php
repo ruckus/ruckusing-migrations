@@ -23,7 +23,14 @@ return array(
             'password' => '',
             //'charset' => 'utf8',
             //'directory' => 'custom_name',
-            //'socket' => '/var/run/mysqld/mysqld.sock'
+            //'socket' => '/var/run/mysqld/mysqld.sock',
+            //'ssl_enabled' => false,
+            //# For TLS/SSL, the following settings are used in mysqli_ssl_set.
+            //'ssl_key' => 'key.pem',
+            //'ssl_certificate' => 'cert.pem',
+            //'ssl_ca_certificate' => 'cacert.pem',
+            //'ssl_ca_path' => NULL,
+            //'ssl_cipher_algos' => NULL,
         ),
         'pg_test' => array(
             'type' => 'pgsql',
