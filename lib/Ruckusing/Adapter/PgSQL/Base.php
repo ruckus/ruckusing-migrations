@@ -24,6 +24,8 @@ define('PG_MAX_IDENTIFIER_LENGTH', 64);
  */
 class Ruckusing_Adapter_PgSQL_Base extends Ruckusing_Adapter_Base implements Ruckusing_Adapter_Interface
 {
+    private $db_info;
+    private $conn;
     /**
      * Name of adapter
      *
