@@ -21,6 +21,7 @@ define('RUCKUSING_TASK_DIR', RUCKUSING_BASE . DIRECTORY_SEPARATOR . 'lib' . DIRE
  */
 class Ruckusing_Task_Manager
 {
+    private $_config;
     /**
      * adapter
      *

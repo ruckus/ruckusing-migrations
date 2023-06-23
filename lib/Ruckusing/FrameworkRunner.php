@@ -22,6 +22,7 @@
  */
 class Ruckusing_FrameworkRunner
 {
+    private $logger;
     /**
      * reference to our DB connection
      *
