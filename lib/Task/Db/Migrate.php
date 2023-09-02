@@ -247,12 +247,55 @@ class Task_Db_Migrate extends Ruckusing_Task_Base implements Ruckusing_Task_Inte
                 $obj = new $klass($this->_adapter);
                 $start = $this->start_timer();
                 try {
+                    /*
+                     * Run up or down, before transaction start
+                     * This allows commands to run on both up and down to be set in one place.
+                     */
+                    if(method_exists($obj, "setup")) {
+                        $obj->setup();
+                    }
+
+                    /*
+                     * Run up or down, before transaction
+                     * This allows for commands that can't run in transactions
+                     */
+                    $method = "pretransaction_" . $target_method;
+                    if(method_exists($obj, $method)) {
+                        $result =  $obj->$method();
+                    }
+
                     //start transaction
                     $this->_adapter->start_transaction();
+
+                    //Run up or down, after transaction start
+                    if(method_exists($obj, "transaction_setup")) {
+                        $obj->transaction_setup();
+                    }
                     $result =  $obj->$target_method();
                     //successfully ran migration, update our version and commit
                     $this->_migrator_util->resolve_current_version($file['version'], $target_method);
+
+                    //Run up or down, before transaction commit
+                    if(method_exists($obj, "transaction_cleanup")) {
+                        $obj->transaction_cleanup();
+                    }
+
                     $this->_adapter->commit_transaction();
+
+                    //Run up or down, after commit
+                    $method = "postcommit_" . $target_method;
+                    if(method_exists($obj, $method)) {
+                        $result =  $obj->$method();
+                    }
+
+                    /*
+                     * Run up or down, after transaction end
+                     * This allows commands to run on both up and down to be set in one place.
+                     */
+                    if(method_exists($obj, "cleanup")) {
+                        $obj->cleanup();
+                    }
+
                 } catch (Ruckusing_Exception $e) {
                     $this->_adapter->rollback_transaction();
                     //wrap the caught exception in our own
